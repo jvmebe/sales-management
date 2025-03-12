@@ -23,3 +23,4 @@ const items = data.items;
         {/each}
     </tbody>
 </table>
+<a href="/paycondition/new">Novo</a>
