@@ -17,7 +17,7 @@ export async function load({ params }) {
 }
 
 export const actions = {
-    default: async ({request}) => {
+    edit: async ({request}) => {
         const data = await request.formData();
         console.log("WHAT" + data.get('ID'));
         const sql = 'UPDATE payment_condition SET DESCRIPTION = ?, INSTALLMENT_QTY = ? WHERE ID = ?;'

@@ -7,7 +7,7 @@
     console.log(data.condition.ID);
 </script>
 
-<Form method="POST">
+<Form method="POST" action="?/edit">
     
     <FormGroup floating label="Código">
         <Input disabled={isDisabled} readonly value={data.condition.ID} name="ID" type="number" />
