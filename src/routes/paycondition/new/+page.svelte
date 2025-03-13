@@ -1,11 +1,15 @@
-<form method="POST">
-	<label>
-		Nome da Condição de Pagamento
-		<input name="DESCRIPTION" type="text">
-	</label>
-	<label>
-		Password
-		<input name="INSTALLMENT_QTY" type="number">
-	</label>
-	<button>Salvar</button>
-</form>
+<script lang="ts">
+    import { Button, Input, FormGroup, Form } from "@sveltestrap/sveltestrap";
+</script>
+
+<Form method="POST">
+    <FormGroup floating label="Nome da Condição de Pagamento">
+        <Input name="DESCRIPTION" type="text" placeholder="Digite uma descrição" />
+    </FormGroup>
+    <FormGroup floating label="Quantidade de Parcelas" >
+        <Input name="INSTALLMENT_QTY" type="number" placeholder="12" />
+    </FormGroup>
+
+	
+	<Button>Salvar</Button>
+</Form>
