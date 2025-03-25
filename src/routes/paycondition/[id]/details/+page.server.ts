@@ -24,5 +24,8 @@ export const actions = {
         console.log(await query(sql, [data.get('DESCRIPTION'), data.get('INSTALLMENT_QTY'), data.get('ID')]))
 
         redirect(303, '/paycondition')
+    },
+    delete: async ({ request }) => {
+        const data = await request.formData();
     }
 } satisfies Actions;
