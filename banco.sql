@@ -34,3 +34,10 @@ CREATE TABLE state (
   country_id INT NOT NULL,
   FOREIGN KEY (country_id) REFERENCES country(id)
 );
+
+CREATE TABLE city (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  nome VARCHAR(255) NOT NULL,
+  state_id INT NOT NULL,
+  FOREIGN KEY (state_id) REFERENCES state(id)
+);
