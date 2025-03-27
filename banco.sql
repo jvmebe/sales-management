@@ -41,3 +41,23 @@ CREATE TABLE city (
   state_id INT NOT NULL,
   FOREIGN KEY (state_id) REFERENCES state(id)
 );
+
+CREATE TABLE supplier (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  is_juridico BOOLEAN NOT NULL,
+  ativo BOOLEAN NOT NULL DEFAULT TRUE,
+  nome VARCHAR(255) NOT NULL,
+  apelido VARCHAR(255) NOT NULL,
+  cpf VARCHAR(20),
+  rg VARCHAR(20),
+  data_nascimento DATE,
+  email VARCHAR(255),
+  telefone VARCHAR(50),
+  endereco VARCHAR(255),
+  bairro VARCHAR(255),
+  cep VARCHAR(20),
+  cidade_id INT,
+  inscricao_municipal VARCHAR(50),
+  inscricao_estadual_substituto_tributario VARCHAR(50),
+  FOREIGN KEY (cidade_id) REFERENCES city(id)
+);
