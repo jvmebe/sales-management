@@ -1,4 +1,3 @@
-// src/routes/cidade/popup/+page.server.ts
 import type { PageServerLoad } from './$types';
 import { query } from '$lib/db';
 

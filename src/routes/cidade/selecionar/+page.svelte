@@ -1,4 +1,3 @@
-<!-- src/routes/cidade/popup/+page.svelte -->
 <script lang="ts">
   export let data: { cities: Array<{ id: number; nome: string }> };
 

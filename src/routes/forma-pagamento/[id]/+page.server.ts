@@ -1,4 +1,3 @@
-// src/routes/forma-de-pagamento/[id]/+page.server.ts
 import type { PageServerLoad, Actions } from './$types';
 import { query } from '$lib/db';
 import { redirect, error } from '@sveltejs/kit';
