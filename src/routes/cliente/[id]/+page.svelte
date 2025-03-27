@@ -39,7 +39,7 @@
   let cidade_nome = data.client.cidade_nome || '';
 
   function openCityPopup() {
-    window.open('/cidade/popup', 'Selecionar Cidade', 'width=600,height=400');
+    window.open('/cidade/selecionar', 'Selecionar Cidade', 'width=600,height=400');
   }
 
   onMount(() => {

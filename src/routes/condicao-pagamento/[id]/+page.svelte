@@ -4,20 +4,20 @@
       installments: Array<{ id: number; numero: number; forma_pagamento_id: number; valor_porcentagem: number; dias_vencimento: number }>;
       paymentMethods: Array<{ id: number; descricao: string }>;
     };
-  
+
     let descricao = data.condition.descricao;
     let numParcelas: number = data.condition.num_parcelas;
     let errorMessage: string = '';
-  
+
     let installments = data.installments.map(installment => ({
       parcela_numero: installment.numero,
       forma_pagamento: installment.forma_pagamento_id,
       valor_porcentagem: installment.valor_porcentagem,
       dias_vencimento: installment.dias_vencimento
     }));
-  
+
     $: totalPercentage = installments.reduce(
-    (sum, inst) => sum + Number(inst.valor_porcentagem), 
+    (sum, inst) => sum + Number(inst.valor_porcentagem),
         0
     );
 
@@ -34,13 +34,13 @@
       ];
       numParcelas = installments.length;
     }
-  
+
     function removeInstallment(index: number) {
       installments = installments.filter((_, i) => i !== index);
       installments = installments.map((inst, idx) => ({ ...inst, parcela_numero: idx + 1 }));
       numParcelas = installments.length;
     }
-  
+
     function generateInstallments() {
       const n = numParcelas;
       if (!n || n <= 0) {
@@ -68,7 +68,7 @@
       });
       installments = tempInstallments;
     }
-  
+
 
     function handleSubmit(event: Event) {
       if (totalPercentage !== 100) {
@@ -77,7 +77,7 @@
       }
     }
   </script>
-  
+
   <h1>Detalhes da Condição de Pagamento</h1>
   {#if errorMessage}
     <p style="color: red;">{errorMessage}</p>
@@ -96,7 +96,7 @@
       </label>
       <button type="button" on:click={generateInstallments}>Gerar Parcelas</button>
     </div>
-  
+
     <h2>Parcelas</h2>
     <button type="button" on:click={addInstallment}>Adicionar Parcela Manualmente</button>
     {#if installments.length > 0}
@@ -140,7 +140,7 @@
       </table>
       <p>Total das porcentagens: {totalPercentage}%</p>
     {/if}
-  
+
     <button type="submit" name="action" value="update">Atualizar</button>
     <button type="submit" name="action" value="delete" on:click|preventDefault={() => {
       if (confirm('Confirma a exclusão?')) {
@@ -148,11 +148,10 @@
       }
     }}>Excluir</button>
   </form>
-  
+
   <!-- Formulário oculto para exclusão -->
   <form id="deleteForm" method="post" style="display: none;">
     <input type="hidden" name="action" value="delete" />
   </form>
-  
-  <a href="/condicao-de-pagamento">Voltar</a>
-  
+
+  <a href="/condicao-pagamento">Voltar</a>

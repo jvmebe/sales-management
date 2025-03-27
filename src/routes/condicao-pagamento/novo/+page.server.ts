@@ -27,7 +27,7 @@ export const actions: Actions = {
     // Validação: soma das porcentagens deve ser igual a 100%
     const totalPercentage = valorPorcentagens.reduce((sum, val) => sum + val, 0);
     if (totalPercentage !== 100) {
-      return { 
+      return {
         error: `A soma das porcentagens deve ser igual a 100%. Atualmente está em ${totalPercentage}%.`,
         formData: {
           descricao,
@@ -57,6 +57,6 @@ export const actions: Actions = {
       );
     }
 
-    throw redirect(303, '/condicao-de-pagamento');
+    throw redirect(303, '/condicao-pagamento');
   }
 };
