@@ -23,16 +23,16 @@ export const actions: Actions = {
     const cep = formData.get('cep')?.toString();
     const cidade_id = formData.get('cidade_id')?.toString();
     const inscricao_municipal = formData.get('inscricao_municipal')?.toString();
-    const inscricao_estadual_substituto = formData.get('inscricao_estadual_substituto')?.toString();
+    const inscricao_estadual_substituto_tributario = formData.get('inscricao_estadual_substituto_tributario')?.toString();
 
     if (!nome || !apelido || !cidade_id) {
       return { error: 'Nome, apelido e cidade são obrigatórios.' };
     }
 
     await query(
-      `INSERT INTO supplier (is_juridico, ativo, nome, apelido, cpf, rg, data_nascimento, email, telefone, endereco, bairro, cep, cidade_id, inscricao_municipal, inscricao_estadual_substituto)
+      `INSERT INTO supplier (is_juridico, ativo, nome, apelido, cpf, rg, data_nascimento, email, telefone, endereco, bairro, cep, cidade_id, inscricao_municipal, inscricao_estadual_substituto_tributario)
        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-      [is_juridico, ativo, nome, apelido, cpf, rg, data_nascimento, email, telefone, endereco, bairro, cep, cidade_id, inscricao_municipal, inscricao_estadual_substituto]
+      [is_juridico, ativo, nome, apelido, cpf, rg, data_nascimento, email, telefone, endereco, bairro, cep, cidade_id, inscricao_municipal, inscricao_estadual_substituto_tributario]
     );
     throw redirect(303, '/fornecedor');
   }

@@ -139,7 +139,7 @@
   <div>
     <label>
       Inscrição Estadual Substituto Tributário:
-      <input type="text" name="inscricao_estadual_substituto" bind:value={inscricao_estadual_substituto} />
+      <input type="text" name="inscricao_estadual_substituto_tributario" bind:value={inscricao_estadual_substituto} />
     </label>
   </div>
   <button type="submit">Criar Fornecedor</button>
