@@ -1,29 +1,29 @@
 <script lang="ts">
   export let data: { cities: Array<{ id: number; nome: string; state_nome: string; state_sigla: string }> };
+  import Button from "$lib/components/ui/button/button.svelte";
+  import * as Table from "$lib/components/ui/table/index.js";
+  import DynamicTable from "$lib/components/table.svelte";
+
+  const columns = [
+    { label: 'ID', key: 'id', class: 'w-[100px]' },
+    { label: 'Nome', key: 'nome' },
+    { label: 'Estado', key: 'state_nome' }
+    ];
+
+
 </script>
 
-<h1>Cidades</h1>
-<a href="/cidade/novo">Nova Cidade</a>
+<h1 class="text-3xl">Cidades</h1>
+<Button style="float: right; margin-bottom: 1em" href="/cidade/novo">Nova Cidade</Button>
 
-<table>
-  <thead>
-    <tr>
-      <th>ID</th>
-      <th>Nome</th>
-      <th>Estado</th>
-      <th>Ações</th>
-    </tr>
-  </thead>
-  <tbody>
-    {#each data.cities as city}
-      <tr>
-        <td>{city.id}</td>
-        <td>{city.nome}</td>
-        <td>{city.state_nome} ({city.state_sigla})</td>
-        <td>
-          <a href={`/cidade/${city.id}`}>Detalhes</a>
-        </td>
-      </tr>
-    {/each}
-  </tbody>
-</table>
+<DynamicTable {columns} rows={data.cities}>
+  <svelte:fragment slot="extraHead">
+    <Table.Head class="text-right pr-16">Ações</Table.Head>
+  </svelte:fragment>
+
+  <svelte:fragment slot="rowExtras" let:row>
+    <Table.Cell class="text-right">
+      <Button href={`/cidade/${row.id}`}>Detalhes</Button>
+    </Table.Cell>
+  </svelte:fragment>
+</DynamicTable>

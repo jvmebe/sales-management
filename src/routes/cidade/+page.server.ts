@@ -9,4 +9,9 @@ export const load: PageServerLoad = async () => {
     JOIN state s ON c.state_id = s.id
   `);
   return { cities };
+
+
+    
+
+
 };

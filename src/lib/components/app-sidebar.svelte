@@ -6,6 +6,7 @@
 	import Command from "@lucide/svelte/icons/command";
 	import Frame from "@lucide/svelte/icons/frame";
 	import GalleryVerticalEnd from "@lucide/svelte/icons/gallery-vertical-end";
+	import ClipboardPen from "@lucide/svelte/icons/clipboard-pen"
 	import Map from "@lucide/svelte/icons/map";
 	import Settings2 from "@lucide/svelte/icons/settings-2";
 	import SquareTerminal from "@lucide/svelte/icons/square-terminal";
@@ -19,104 +20,48 @@
 		},
 		teams: [
 			{
-				name: "Acme Inc",
+				name: "Empresa",
 				logo: GalleryVerticalEnd,
-				plan: "Enterprise",
-			},
-			{
-				name: "Acme Corp.",
-				logo: AudioWaveform,
-				plan: "Startup",
-			},
-			{
-				name: "Evil Corp.",
-				logo: Command,
-				plan: "Free",
 			},
 		],
 		navMain: [
 			{
-				title: "Playground",
+				title: "Cadastros",
 				url: "#",
-				icon: SquareTerminal,
+				icon: ClipboardPen,
 				isActive: true,
 				items: [
 					{
-						title: "History",
-						url: "#",
+						title: "Cidade",
+						url: "/cidade",
 					},
 					{
-						title: "Starred",
-						url: "#",
+						title: "Estado",
+						url: "/estado",
 					},
 					{
-						title: "Settings",
-						url: "#",
-					},
-				],
-			},
-			{
-				title: "Models",
-				url: "#",
-				icon: Bot,
-				items: [
-					{
-						title: "Genesis",
-						url: "#",
+						title: "País",
+						url: "/pais",
 					},
 					{
-						title: "Explorer",
-						url: "#",
+						title: "Cliente",
+						url: "/cliente",
 					},
 					{
-						title: "Quantum",
-						url: "#",
-					},
-				],
-			},
-			{
-				title: "Documentation",
-				url: "#",
-				icon: BookOpen,
-				items: [
-					{
-						title: "Introduction",
-						url: "#",
+						title: "Fornecedor",
+						url: "/fornecedor",
 					},
 					{
-						title: "Get Started",
-						url: "#",
+						title: "Funcionário",
+						url: "/funcionario",
 					},
 					{
-						title: "Tutorials",
-						url: "#",
+						title: "Forma de Pagamento",
+						url: "/forma-pagamento",
 					},
 					{
-						title: "Changelog",
-						url: "#",
-					},
-				],
-			},
-			{
-				title: "Settings",
-				url: "#",
-				icon: Settings2,
-				items: [
-					{
-						title: "General",
-						url: "#",
-					},
-					{
-						title: "Team",
-						url: "#",
-					},
-					{
-						title: "Billing",
-						url: "#",
-					},
-					{
-						title: "Limits",
-						url: "#",
+						title: "Condição de Pagamento",
+						url: "/condicao-pagamento",
 					},
 				],
 			},
@@ -131,6 +76,7 @@
 	import TeamSwitcher from "$lib/components/team-switcher.svelte";
 	import * as Sidebar from "$lib/components/ui/sidebar/index.js";
 	import type { ComponentProps } from "svelte";
+    import { Title } from "./ui/sheet";
 
 	let {
 		ref = $bindable(null),

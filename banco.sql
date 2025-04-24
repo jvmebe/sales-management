@@ -61,3 +61,45 @@ CREATE TABLE supplier (
   inscricao_estadual_substituto_tributario VARCHAR(50),
   FOREIGN KEY (cidade_id) REFERENCES city(id)
 );
+
+CREATE TABLE employee (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  nome VARCHAR(255) NOT NULL,
+  apelido VARCHAR(255) NOT NULL,
+  data_nascimento DATE,
+  cpf VARCHAR(20),
+  rg VARCHAR(20),
+  email VARCHAR(255),
+  telefone VARCHAR(50),
+  endereco VARCHAR(255),
+  bairro VARCHAR(255),
+  cidade_id INT,
+  cep VARCHAR(20),
+  ativo BOOLEAN NOT NULL DEFAULT TRUE,
+  matricula VARCHAR(50),
+  cargo VARCHAR(255),
+  salario DECIMAL(10,2),
+  data_admissao DATE,
+  turno VARCHAR(50),
+  carga_horaria INT,
+  FOREIGN KEY (cidade_id) REFERENCES city(id)
+);
+
+
+CREATE TABLE client (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  is_juridica BOOLEAN NOT NULL,    -- TRUE para pessoa jurídica, FALSE para pessoa física
+  is_ativo BOOLEAN NOT NULL DEFAULT TRUE,
+  nome VARCHAR(255) NOT NULL,
+  apelido VARCHAR(255) NOT NULL,
+  cpf VARCHAR(20),                 -- CPF ou CNPJ, conforme o caso
+  rg VARCHAR(20),                  -- RG ou Inscrição Estadual
+  data_nascimento DATE,            -- Data de Nascimento ou Data de Fundação
+  telefone VARCHAR(50),
+  email VARCHAR(255),
+  endereco VARCHAR(255),
+  bairro VARCHAR(255),
+  cep VARCHAR(20),
+  cidade_id INT,
+  FOREIGN KEY (cidade_id) REFERENCES city(id)
+);

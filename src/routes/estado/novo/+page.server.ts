@@ -18,6 +18,8 @@ export const actions: Actions = {
       return { error: 'Nome, sigla (2 letras) e país são obrigatórios' };
     }
 
+    console.log(formData);
+
     await query('INSERT INTO state (nome, sigla, country_id) VALUES (?, ?, ?)', [nome, sigla, country_id]);
     throw redirect(303, '/estado');
   }
