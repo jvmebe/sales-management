@@ -1,10 +1,12 @@
 <script lang="ts">
     export let data: { countries: Array<{ id: number; nome: string; sigla: string }> };
+
+    import Button from "$lib/components/ui/button/button.svelte";
   </script>
-  
+
   <h1>Países</h1>
-  <a href="/pais/novo">Novo País</a>
-  
+  <Button>Novo País</Button>
+
   <table>
     <thead>
       <tr>
@@ -27,4 +29,3 @@
       {/each}
     </tbody>
   </table>
-  
