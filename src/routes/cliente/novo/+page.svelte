@@ -1,5 +1,9 @@
 <script lang="ts">
   import { onMount } from 'svelte';
+  import ClienteForm from './cliente-form.svelte';
+  import type { PageData } from '../$types';
+
+  let { data } = $props();
 
   let is_juridica = "false";
   let is_ativo = true;
@@ -30,14 +34,12 @@
     };
   });
 
-  $: labelNome = is_juridica === "true" ? 'Razão Social' : 'Nome';
-  $: labelApelido = is_juridica === "true" ? 'Nome Fantasia' : 'Apelido';
-  $: labelCPF = is_juridica === "true" ? 'CNPJ' : 'CPF';
-  $: labelRG = is_juridica === "true" ? 'Inscrição Estadual' : 'RG';
-  $: labelDataNascimento = is_juridica === "true" ? 'Data Fundação' : 'Data Nascimento';
 </script>
 
 <h1>Novo Cliente</h1>
+
+<ClienteForm {data}/>
+
 <form method="post">
   <fieldset>
     <legend>Tipo de Cliente</legend>
@@ -59,27 +61,27 @@
   </div>
 
   <div>
-    <label>{labelNome}:
+    <label>Nome:
       <input type="text" name="nome" bind:value={nome} required />
     </label>
   </div>
   <div>
-    <label>{labelApelido}:
+    <label>Apelido:
       <input type="text" name="apelido" bind:value={apelido} required />
     </label>
   </div>
   <div>
-    <label>{labelCPF}:
+    <label>CPF:
       <input type="text" name="cpf" bind:value={cpf} />
     </label>
   </div>
   <div>
-    <label>{labelRG}:
+    <label>RG:
       <input type="text" name="rg" bind:value={rg} />
     </label>
   </div>
   <div>
-    <label>{labelDataNascimento}:
+    <label>Data Nasc:
       <input type="date" name="data_nascimento" bind:value={data_nascimento} />
     </label>
   </div>
