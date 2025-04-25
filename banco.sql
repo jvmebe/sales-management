@@ -90,16 +90,20 @@ CREATE TABLE client (
   id INT AUTO_INCREMENT PRIMARY KEY,
   is_juridica BOOLEAN NOT NULL,    -- TRUE para pessoa jurídica, FALSE para pessoa física
   is_ativo BOOLEAN NOT NULL DEFAULT TRUE,
-  nome VARCHAR(255) NOT NULL,
-  apelido VARCHAR(255) NOT NULL,
-  cpf VARCHAR(20),                 -- CPF ou CNPJ, conforme o caso
-  rg VARCHAR(20),                  -- RG ou Inscrição Estadual
+  nome VARCHAR(100) NOT NULL,
+  apelido VARCHAR(100) NOT NULL,
+  cpf VARCHAR(11),                 -- CPF ou CNPJ, conforme o caso
+  rg VARCHAR(10),                  -- RG ou Inscrição Estadual
   data_nascimento DATE,            -- Data de Nascimento ou Data de Fundação
-  telefone VARCHAR(50),
-  email VARCHAR(255),
-  endereco VARCHAR(255),
-  bairro VARCHAR(255),
-  cep VARCHAR(20),
+  telefone VARCHAR(11),
+  email VARCHAR(100),
+  endereco VARCHAR(100),
+  numero INT,
+  bairro VARCHAR(100),
+  cep VARCHAR(8),
+  limite_credito DECIMAL(10,2),
   cidade_id INT,
-  FOREIGN KEY (cidade_id) REFERENCES city(id)
+  cond_pag_id INT,
+  FOREIGN KEY (cidade_id) REFERENCES city(id),
+  FOREIGN KEY (cond_pag_id) REFERENCES payment_condition(id)
 );
