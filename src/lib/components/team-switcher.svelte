@@ -4,6 +4,11 @@
 	import { useSidebar } from "$lib/components/ui/sidebar/index.js";
 	import ChevronsUpDown from "@lucide/svelte/icons/chevrons-up-down";
 	import Plus from "@lucide/svelte/icons/plus";
+	import { goto } from "$app/navigation";
+
+	function goHome() {
+	  goto('/');
+	}
 
 	// This should be `Component` after @lucide/svelte updates types
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -13,7 +18,7 @@
 	let activeTeam = $state(teams[0]);
 </script>
 
-<Sidebar.Menu>
+<Sidebar.Menu onclick={goHome}>
 	<Sidebar.MenuItem>
 		<DropdownMenu.Root>
 			<DropdownMenu.Trigger>
@@ -21,7 +26,6 @@
 					<Sidebar.MenuButton
 						{...props}
 						size="lg"
-						class="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
 					>
 						<div
 							class="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg"

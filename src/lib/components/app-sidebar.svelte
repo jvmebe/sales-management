@@ -31,35 +31,42 @@
 				icon: ClipboardPen,
 				isActive: true,
 				items: [
-					{
+					{   id: 'sub1',
 						title: "Cidade",
 						url: "/cidade",
 					},
 					{
+					    id: 'sub2',
 						title: "Estado",
 						url: "/estado",
 					},
 					{
+					    id: 'sub3',
 						title: "País",
 						url: "/pais",
 					},
 					{
+					    id: 'sub4',
 						title: "Cliente",
 						url: "/cliente",
 					},
 					{
+					    id: 'sub5',
 						title: "Fornecedor",
 						url: "/fornecedor",
 					},
 					{
+					    id: 'sub6',
 						title: "Funcionário",
 						url: "/funcionario",
 					},
 					{
+					    id: 'sub7',
 						title: "Forma de Pagamento",
 						url: "/forma-pagamento",
 					},
 					{
+					    id: 'sub8',
 						title: "Condição de Pagamento",
 						url: "/condicao-pagamento",
 					},

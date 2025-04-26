@@ -1,4 +1,5 @@
 import type { PageServerLoad } from './$types';
+import { Client } from '$lib/models';
 import { query } from '$lib/db';
 
 export const load: PageServerLoad = async () => {
@@ -7,5 +8,7 @@ export const load: PageServerLoad = async () => {
     FROM client cl
     LEFT JOIN city ci ON cl.cidade_id = ci.id
   `);
+
   return { clients };
+
 };

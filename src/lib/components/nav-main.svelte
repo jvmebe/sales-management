@@ -2,11 +2,13 @@
 	import * as Collapsible from "$lib/components/ui/collapsible/index.js";
 	import * as Sidebar from "$lib/components/ui/sidebar/index.js";
 	import ChevronRight from "@lucide/svelte/icons/chevron-right";
+	import { dndzone } from "svelte-dnd-action";
 
 	let {
 		items,
 	}: {
 		items: {
+		    id: string;
 			title: string;
 			url: string;
 			// this should be `Component` after @lucide/svelte updates types
@@ -14,6 +16,7 @@
 			icon?: any;
 			isActive?: boolean;
 			items?: {
+			    id: string;
 				title: string;
 				url: string;
 			}[];
@@ -47,6 +50,7 @@
 						<Collapsible.Content>
 							{#if mainItem.items}
 								<Sidebar.MenuSub>
+								<div use:dndzone={{ items: mainItem.items, type: 'shortcut' }}>
 									{#each mainItem.items as subItem (subItem.title)}
 										<Sidebar.MenuSubItem>
 											<Sidebar.MenuSubButton>
@@ -58,6 +62,7 @@
 											</Sidebar.MenuSubButton>
 										</Sidebar.MenuSubItem>
 									{/each}
+								</div>
 								</Sidebar.MenuSub>
 							{/if}
 						</Collapsible.Content>

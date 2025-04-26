@@ -7,9 +7,11 @@ import {zod} from "sveltekit-superforms/adapters"
 import { fail } from 'sveltekit-superforms';
 
 export const load: PageServerLoad = async () => {
-  return {
-    form: await superValidate(zod(formSchema),)
-   }
+  const conditions = await query('SELECT * FROM payment_condition');
+
+  const form = await superValidate(zod(formSchema),);
+
+  return {conditions, form}
 };
 
 export const actions: Actions = {
