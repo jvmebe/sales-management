@@ -9,18 +9,15 @@ export const formSchema = z.object({
   cpf: z
     .string()
     .regex(/^\d{11}$/, 'CPF/CNPJ deve conter 11 dígitos numéricos'),
-  rg: z.string().max(10),
-  data_nascimento: z.coerce.date(),
+  rg: z.string().max(10).min(6, "Campo obrigatório"),
+  data_nascimento: z.string(),
   telefone: z.string().max(11),
-  email: z.string().max(100).email(),
+  email: z.string().max(100).email("Email inválido"),
   endereco: z.string().max(100),
   numero: z.coerce.number().int(),
-  bairro: z.string().max(100),
+  bairro: z.string().max(100).min(3, "Campo obrigatório"),
   cep: z.string().length(8, 'CEP deve conter 8 dígitos'),
-  limite_credito: z.coerce
-    .string()
-    .regex(/^\d+(\.\d{1,2})?$/, 'Valor inválido')
-    .transform((val) => parseFloat(val)),
+  limite_credito: z.coerce.number(),
   cidade_id: z.coerce.number().int(),
   cond_pag_id: z.coerce.number().int(),
 });

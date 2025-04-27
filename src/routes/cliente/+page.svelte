@@ -23,7 +23,7 @@
 
   <svelte:fragment slot="rowExtras" let:row>
     <Table.Cell class="text-right">
-      <Button href={`/pais/${row.id}`}>Detalhes</Button>
+      <Button href={`/cliente/${row.id}`}>Detalhes</Button>
     </Table.Cell>
   </svelte:fragment>
 </DynamicTable>

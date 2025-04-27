@@ -1,28 +1,27 @@
 <script lang="ts">
     export let data: { paymentMethods: Array<{ id: number; descricao: string }> };
-  </script>
-  
-  <h1>Formas de Pagamento</h1>
-  <a href="/forma-pagamento/novo">Nova Forma</a>
-  
-  <table>
-    <thead>
-      <tr>
-        <th>ID</th>
-        <th>Descrição</th>
-        <th>Ações</th>
-      </tr>
-    </thead>
-    <tbody>
-      {#each data.paymentMethods as method}
-        <tr>
-          <td>{method.id}</td>
-          <td>{method.descricao}</td>
-          <td>
-            <a href={`/forma-pagamento/${method.id}`}>Detalhes</a>
-          </td>
-        </tr>
-      {/each}
-    </tbody>
-  </table>
-  
+    import Button from "$lib/components/ui/button/button.svelte";
+    import * as Table from "$lib/components/ui/table/index.js";
+    import DynamicTable from "$lib/components/table.svelte";
+
+    const columns = [
+        { label: 'ID', key: 'id', class: 'w-[100px]' },
+        { label: 'Descrição', key: 'descricao' },
+    ]
+
+</script>
+
+<h1 class="text-3xl">Formas de Pagamento</h1>
+<Button style="float: right; margin-bottom: 1em" href="/forma-pagamento/novo">Nova Forma</Button>
+
+<DynamicTable {columns} rows={data.paymentMethods}>
+    <svelte:fragment slot="extraHead">
+      <Table.Head class="text-right pr-16">Ações</Table.Head>
+    </svelte:fragment>
+
+    <svelte:fragment slot="rowExtras" let:row>
+      <Table.Cell class="text-right">
+        <Button href={`/pais/${row.id}`}>Detalhes</Button>
+      </Table.Cell>
+    </svelte:fragment>
+</DynamicTable>
