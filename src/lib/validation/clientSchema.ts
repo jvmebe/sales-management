@@ -15,11 +15,13 @@ export const formSchema = z.object({
   email: z.string().max(100).email("Email inválido"),
   endereco: z.string().max(100),
   numero: z.coerce.number().int(),
+  complemento: z.string().max(100).optional(),
   bairro: z.string().max(100).min(3, "Campo obrigatório"),
   cep: z.string().length(8, 'CEP deve conter 8 dígitos'),
   limite_credito: z.coerce.number(),
   cidade_id: z.coerce.number().int(),
   cond_pag_id: z.coerce.number().int(),
+  cond_pag_nome: z.string(),
 });
 
 

@@ -8,8 +8,8 @@ import { fail } from 'sveltekit-superforms';
 
 export const load: PageServerLoad = async () => {
   return {
-      form: await superValidate(zod(formSchema)),
-    };
+    form: await superValidate(zod(formSchema)),
+  };
 };
 
 export const actions: Actions = {

@@ -1,10 +1,8 @@
 <script lang="ts">
   import type { PageData } from "../$types";
-    import CidadeForm from "./cidade-form.svelte";
+  import CidadeForm from '$lib/components/forms/cidade-form.svelte';
 
   let { data } = $props();
-
-  console.log(data.form)
 
 
 </script>

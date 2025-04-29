@@ -1,14 +1,24 @@
-// src/routes/cliente/[id]/+page.server.ts
 import type { PageServerLoad, Actions } from './$types';
 import { query } from '$lib/db';
 import { redirect, error } from '@sveltejs/kit';
+import { zod } from 'sveltekit-superforms/adapters';
+import { superValidate, fail } from 'sveltekit-superforms';
+import { formSchema } from '$lib/validation/clientSchema';
+
 
 export const load: PageServerLoad = async ({ params }) => {
   const { id } = params;
-  const results = await query(
-    `SELECT cl.*, ci.nome as cidade_nome
-     FROM client cl
-     LEFT JOIN city ci ON cl.cidade_id = ci.id
+  const results:any = await query(
+    `SELECT
+          cl.*,
+          ci.nome   AS cidade_nome,
+          pc.id     AS condicao_pagamento_id,
+          pc.descricao AS condicao_pagamento_descricao
+        FROM client cl
+        LEFT JOIN city ci
+          ON cl.cidade_id = ci.id
+        LEFT JOIN payment_condition pc
+          ON cl.cond_pag_id = pc.id
      WHERE cl.id = ?`,
     [id]
   );
@@ -18,42 +28,54 @@ export const load: PageServerLoad = async ({ params }) => {
     throw error(404, 'Cliente não encontrado');
   }
 
-  return { client };
+  client.data_nascimento = client.data_nascimento.toISOString().split('T')[0];
+
+  console.log(client);
+  let form = await superValidate(client, zod(formSchema));
+
+  return {
+    client, form
+  };
 };
 
 export const actions: Actions = {
-  default: async ({ request, params }) => {
-    const formData = await request.formData();
-    const actionType = formData.get('action')?.toString();
-    const { id } = params;
-
-    if (actionType === 'update') {
-      const is_juridica = formData.get('is_juridica') === 'true';
-      const is_ativo = formData.get('is_ativo') === 'true';
-      const nome = formData.get('nome')?.toString();
-      const apelido = formData.get('apelido')?.toString();
-      const cpf = formData.get('cpf')?.toString();
-      const rg = formData.get('rg')?.toString();
-      const data_nascimento = formData.get('data_nascimento')?.toString();
-      const telefone = formData.get('telefone')?.toString();
-      const email = formData.get('email')?.toString();
-      const endereco = formData.get('endereco')?.toString();
-      const bairro = formData.get('bairro')?.toString();
-      const cep = formData.get('cep')?.toString();
-      const cidade_id = formData.get('cidade_id')?.toString();
-
-      if (!nome || !apelido || !cidade_id) {
-        return { error: 'Nome, apelido e cidade são obrigatórios.' };
-      }
-
-      await query(
-        `UPDATE client SET is_juridica = ?, is_ativo = ?, nome = ?, apelido = ?, cpf = ?, rg = ?, data_nascimento = ?, telefone = ?, email = ?, endereco = ?, bairro = ?, cep = ?, cidade_id = ?
-         WHERE id = ?`,
-        [is_juridica, is_ativo, nome, apelido, cpf, rg, data_nascimento, telefone, email, endereco, bairro, cep, cidade_id, id]
-      );
-    } else if (actionType === 'delete') {
-      await query('DELETE FROM client WHERE id = ?', [id]);
+  default: async (event) => {
+    const form = await superValidate(event, zod(formSchema));
+    console.log(form.data)
+    if (!form.valid) {
+      console.log(form.errors)
+      return fail(400, {
+        form,
+      });
     }
-    throw redirect(303, '/cliente');
-  }
+
+    await query(
+      `INSERT INTO client (
+        is_juridica, is_ativo, nome, apelido, cpf, rg, data_nascimento,
+        telefone, email, endereco, numero, bairro, cep,
+        limite_credito, cidade_id, cond_pag_id
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [
+        form.data.is_juridica,
+        form.data.is_ativo,
+        form.data.nome,
+        form.data.apelido,
+        form.data.cpf,
+        form.data.rg,
+        form.data.data_nascimento,
+        form.data.telefone,
+        form.data.email,
+        form.data.endereco,
+        form.data.numero,
+        form.data.bairro,
+        form.data.cep,
+        form.data.limite_credito,
+        form.data.cidade_id,
+        form.data.cond_pag_id
+      ]
+    );
+    return {
+      form,
+    };
+  },
 };

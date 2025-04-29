@@ -1,7 +1,6 @@
 <script lang="ts">
     import { onMount } from "svelte";
     import * as Form from "$lib/components/ui/form/index.js";
-    import { Input } from "$lib/components/ui/input/index.js";
     import FormInput from "$lib/components/form-input.svelte";
     import { formSchema, type FormSchema } from "$lib/validation/clientSchema";
     import * as RadioGroup from "$lib/components/ui/radio-group/index.js";
@@ -16,27 +15,26 @@
     import DatePicker from "$lib/components/date-picker.svelte";
     import PickerDialog from "$lib/components/picker-dialog.svelte"
 
-    let { data }: { data: { form: SuperValidated<Infer<FormSchema>> } } =
-        $props();
-    console.log(data)
+    let { data } = $props();
+    export const ssr = false;
 
     const form = superForm(data.form, {
         validators: zodClient(formSchema),
     });
 
-
-
     const { form: formData, enhance } = form;
 
-    let estado_nome = $state("");
-    let date = $state("");
+
+
+    let date = $state(Date.parse($formData.data_nascimento));
     let cond_pag = $state({
-      id: '',
+      id: $formData.cond_pag_id,
       descricao: '',
     });
     let cidade = $state({
       id: '',
       nome: '',
+      state_nome: '',
     });
     let labelNome = $state("Nome");
     let labelApelido = $state("Apelido");
@@ -45,29 +43,52 @@
     let labelDataNasc = $state("Data de Nascimento");
 
 
-    $formData.is_juridica = false;
     $formData.is_ativo = true;
+
+    if(data.client != undefined) {
+      console.log(data.client);
+      let client = data.client;
+      $formData.nome = client.nome;
+      $formData.apelido = client.apelido;
+      cidade.id = client.cidade_id;
+      cidade.nome = client.cidade_nome;
+      $formData.endereco = client.endereco
+      $formData.complemento = client.complemento;
+      $formData.bairro = client.bairro;
+      $formData.cep = client.cep;
+      $formData.rg = client.rg;
+      $formData.cpf = client.cpf;
+      $formData.data_nascimento = client.data_nascimento;
+      $formData.email = client.email;
+      $formData.telefone = client.telefone;
+      $formData.limite_credito = client.limite_credito;
+      cond_pag.descricao = client.condicao_pagamento_descricao;
+      cond_pag.id = client.condicao_pagamento_id;
+    }
+
 
     const columns = [
       { label: 'ID', key: 'id', class: 'w-[50px]' },
       { label: 'Descrição', key: 'descricao' },
-      { label: 'Núm. Parcelas', key: 'numero_parcelas', class: 'w-[80px]' },
       ];
 
     const cityColumns = [
       { label: 'ID', key: 'id', class: 'w-[50px]' },
       { label: 'Nome', key: 'nome' },
+      { label: 'Estado', key: 'state_nome'},
       ];
 
     async function getCities():Promise<any> {
       const response = await fetch('/cidade');
       let cityRows = await response.json();
+      console.log(cityRows);
       return cityRows;
     }
 
     async function getPayconditions():Promise<any> {
       const response = await fetch('/condicao-pagamento');
       let condRows = await response.json();
+      console.log(condRows);
       return condRows;
     }
 
@@ -86,8 +107,8 @@
 
     $effect(() => {
       date;
-
       $formData.data_nascimento = date;
+      //console.log($formData.data_nascimento);
     })
 
     $effect(() => {
@@ -110,6 +131,10 @@
       }
     })
 
+    let mounted = false;
+      onMount(() => {
+        mounted = true;
+      });
 
 </script>
 
@@ -118,7 +143,7 @@
         <Form.Legend>Tipo de Cliente</Form.Legend>
         <RadioGroup.Root
             bind:value={$formData.is_juridica}
-            class="flex flex-col space-y-1"
+            class="flex gap-4"
             name="is_juridica"
         >
             <div class="flex items-center space-x-3 space-y-0">
@@ -150,7 +175,7 @@
     </div>
     <Separator class="my-4" />
     <div class="flex gap-4">
-        <FormInput form={form} label="Estado" readonly={true} classes="w-48" name="estado_nome" bind:userInput={estado_nome}/>
+        <FormInput form={form} label="Estado" readonly={true} classes="w-48" name="estado_nome" bind:userInput={cidade.state_nome}/>
         <FormInput form={form} label="Cidade" readonly={true} classes="w-96" name="cidade_nome" bind:userInput={cidade.nome}/>
         <div class="mt-8 ml-0">
             <PickerDialog title="Escolher cidade" columns={cityColumns} bind:pickedItem={cidade} getData={getCities} uri="cidade"/>
@@ -168,7 +193,9 @@
         <FormInput form={form} label={labelRg} classes="w-36 flex flex-col" name="rg" bind:userInput={$formData.rg}/>
         <FormInput form={form} label={labelCpf} classes="w-36 flex flex-col" name="cpf" bind:userInput={$formData.cpf}/>
         <Form.Field {form} name="data_nascimento" class="flex flex-col">
-            <DatePicker label={labelDataNasc} bind:date={date} />
+
+                <DatePicker label={labelDataNasc} bind:date={date} />
+
         </Form.Field>
         <FormInput form={form} label="Email" classes="w-1/5 flex flex-col" name="email" bind:userInput={$formData.email}/>
         <FormInput form={form} label="Telefone" classes="w-1/5 flex flex-col" name="telefone" bind:userInput={$formData.telefone}/>

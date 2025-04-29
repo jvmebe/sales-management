@@ -13,7 +13,7 @@
   </script>
 
 <h1 class="text-3xl">Países</h1>
-<Button style="float: right; margin-bottom: 1em" href="/cidade/novo">Novo País</Button>
+<Button style="float: right; margin-bottom: 1em" href="/pais/novo">Novo País</Button>
 
 <DynamicTable {columns} rows={data.countries}>
   <svelte:fragment slot="extraHead">

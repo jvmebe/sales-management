@@ -1,7 +1,7 @@
 import type { PageServerLoad, Actions } from './$types';
 import { query } from '$lib/db';
 import { redirect, error } from '@sveltejs/kit';
-import { formSchema } from './schema';
+import { formSchema } from '$lib/validation/citySchema';
 import { zod } from 'sveltekit-superforms/adapters';
 import { superValidate } from 'sveltekit-superforms';
 
@@ -21,7 +21,7 @@ export const load: PageServerLoad = async ({ params }) => {
     throw error(404, 'Cidade não encontrada');
   }
 
-  const form = await superValidate(zod(formSchema),)
+  const form = await superValidate(city, zod(formSchema))
 
   return { form, city };
 };

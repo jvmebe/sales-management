@@ -30,6 +30,7 @@
       value = date
           ? parseDate(date)
           : undefined;
+      $inspect(value);
   });
 </script>
 

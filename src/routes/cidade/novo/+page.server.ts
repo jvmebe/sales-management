@@ -2,26 +2,37 @@ import type { Actions, PageServerLoad } from './$types';
 import { query } from '$lib/db';
 import { redirect } from '@sveltejs/kit';
 import { superValidate } from 'sveltekit-superforms';
-import { formSchema } from './schema';
+import { formSchema } from '$lib/validation/citySchema';
 import {zod} from "sveltekit-superforms/adapters"
+import { fail } from 'sveltekit-superforms';
 
 export const load: PageServerLoad = async () => {
   return {
-    form: await superValidate(zod(formSchema),)
+    form: await superValidate(zod(formSchema)),
    }
 };
 
 export const actions: Actions = {
-  default: async ({ request }) => {
-    const formData = await request.formData();
-    const nome = formData.get('nome')?.toString();
-    const state_id = formData.get('state_id')?.toString();
-
-    if (!nome || !state_id) {
-      return { error: 'Nome e Estado são obrigatórios' };
+  default: async (event) => {
+    const form = await superValidate(event, zod(formSchema));
+    if (!form.valid) {
+      //console.log(form.errors);
+      return fail(400, {
+        form,
+      });
     }
 
-    await query('INSERT INTO city (nome, state_id) VALUES (?, ?)', [nome, state_id]);
-    throw redirect(303, '/cidade');
-  }
+    console.log(form.data);
+
+    await query(
+      `INSERT INTO city (nome, state_id) VALUES (?, ?)`,
+      [
+        form.data.nome,
+        form.data.state_id,
+      ]
+    );
+    return {
+      form,
+    };
+  },
 };

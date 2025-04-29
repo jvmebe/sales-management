@@ -1,18 +1,36 @@
-import type { Actions } from './$types';
+import type { Actions, PageServerLoad } from './$types';
 import { query } from '$lib/db';
+import { zod } from 'sveltekit-superforms/adapters';
+import { superValidate, fail } from 'sveltekit-superforms';
+import { formSchema } from '$lib/validation/countrySchema';
 import { redirect } from '@sveltejs/kit';
 
-export const actions: Actions = {
-  default: async ({ request }) => {
-    const formData = await request.formData();
-    const nome = formData.get('nome')?.toString();
-    const sigla = formData.get('sigla')?.toString().toUpperCase();
+export const load: PageServerLoad = async () => {
+  return {
+    form: await superValidate(zod(formSchema)),
+  };
+};
 
-    if (!nome || !sigla || sigla.length !== 2) {
-      return { error: 'Nome e sigla (2 letras) são obrigatórios' };
+export const actions: Actions = {
+  default: async (event) => {
+    const form = await superValidate(event, zod(formSchema));
+    console.log(form.data)
+    if (!form.valid) {
+      console.log(form.errors)
+      return fail(400, {
+        form,
+      });
     }
 
-    await query('INSERT INTO country (nome, sigla) VALUES (?, ?)', [nome, sigla]);
-    throw redirect(303, '/pais');
-  }
+    await query(
+      `INSERT INTO country (
+        nome, sigla
+      ) VALUES (?, ?)`,
+      [
+        form.data.nome,
+        form.data.sigla,
+      ]
+    );
+    redirect(303, '/pais');
+  },
 };
