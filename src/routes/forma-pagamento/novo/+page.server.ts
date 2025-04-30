@@ -1,18 +1,35 @@
-import type { Actions } from './$types';
+import type { Actions, PageServerLoad } from './$types';
 import { query } from '$lib/db';
 import { redirect } from '@sveltejs/kit';
+import { superValidate } from 'sveltekit-superforms';
+import { formSchema } from '$lib/validation/paymentSchema';
+import {zod} from "sveltekit-superforms/adapters"
+import { fail } from 'sveltekit-superforms';
+
+export const load: PageServerLoad = async () => {
+  return {
+    form: await superValidate(zod(formSchema)),
+   }
+};
 
 export const actions: Actions = {
-  default: async ({ request }) => {
-    const formData = await request.formData();
-    const descricao = formData.get('descricao')?.toString();
-
-    if (!descricao) {
-      return { error: 'Descrição é obrigatória' };
+  default: async (event) => {
+    const form = await superValidate(event, zod(formSchema));
+    if (!form.valid) {
+      //console.log(form.errors);
+      return fail(400, {
+        form,
+      });
     }
 
-    await query('INSERT INTO payment_method (descricao) VALUES (?)', [descricao]);
+    console.log(form.data);
 
-    throw redirect(303, '/forma-pagamento');
-  }
+    await query(
+      `INSERT INTO payment_method (descricao) VALUES (?)`,
+      [
+        form.data.descricao,
+      ]
+    );
+    redirect(303, '/forma-pagamento')
+  },
 };

@@ -1,13 +1,10 @@
 <script lang="ts">
-    import { enhance } from '$app/forms';
-  </script>
-  
-  <h1>Criar Nova Forma de Pagamento</h1>
-  <form method="post" use:enhance>
-    <label>
-      Descrição:
-      <input type="text" name="descricao" required />
-    </label>
-    <button type="submit">Criar</button>
-  </form>
-  
+  import { onMount } from 'svelte';
+  import FormaPagForm from '$lib/components/forms/forma-pag-form.svelte';
+  let { data } = $props();
+</script>
+
+<h1 class="text-3xl mb-5">Novo Fornecedor</h1>
+
+<FormaPagForm {data}></FormaPagForm>
+<a href="/fornecedor">Voltar</a>

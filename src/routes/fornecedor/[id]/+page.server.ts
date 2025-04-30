@@ -1,6 +1,10 @@
-import type { PageServerLoad, Actions } from './$types';
+import type { Actions, PageServerLoad } from './$types';
 import { query } from '$lib/db';
 import { redirect, error } from '@sveltejs/kit';
+import { superValidate } from 'sveltekit-superforms';
+import { formSchema } from '$lib/validation/supplierSchema';
+import {zod} from "sveltekit-superforms/adapters"
+import { fail } from 'sveltekit-superforms';
 
 export const load: PageServerLoad = async ({ params }) => {
   const { id } = params;
@@ -15,45 +19,64 @@ export const load: PageServerLoad = async ({ params }) => {
   if (!supplier) {
     throw error(404, 'Fornecedor não encontrado');
   }
-  return { supplier };
+
+  supplier.data_nascimento = supplier.data_nascimento.toISOString().split('T')[0];
+
+  console.log(supplier);
+  let form = await superValidate(supplier, zod(formSchema));
+
+  return {
+    supplier, form
+  };
 };
 
 export const actions: Actions = {
-  default: async ({ request, params }) => {
-    const formData = await request.formData();
-    const actionType = formData.get('action')?.toString();
-    const { id } = params;
+  default: async (event) => {
+    const form = await superValidate(event, zod(formSchema));
+    console.log(form.data);
 
-    if (actionType === 'update') {
-      const is_juridico = formData.get('is_juridico') === 'true';
-      const ativo = formData.get('ativo') === 'true';
-      const nome = formData.get('nome')?.toString();
-      const apelido = formData.get('apelido')?.toString();
-      const cpf = formData.get('cpf')?.toString();
-      const rg = formData.get('rg')?.toString();
-      const data_nascimento = formData.get('data_nascimento')?.toString();
-      const email = formData.get('email')?.toString();
-      const telefone = formData.get('telefone')?.toString();
-      const endereco = formData.get('endereco')?.toString();
-      const bairro = formData.get('bairro')?.toString();
-      const cep = formData.get('cep')?.toString();
-      const cidade_id = formData.get('cidade_id')?.toString();
-      const inscricao_municipal = formData.get('inscricao_municipal')?.toString();
-      const inscricao_estadual_substituto = formData.get('inscricao_estadual_substituto')?.toString();
-
-      if (!nome || !apelido || !cidade_id) {
-        return { error: 'Nome, apelido e cidade são obrigatórios.' };
-      }
-
-      await query(
-        `UPDATE supplier
-         SET is_juridico = ?, ativo = ?, nome = ?, apelido = ?, cpf = ?, rg = ?, data_nascimento = ?, email = ?, telefone = ?, endereco = ?, bairro = ?, cep = ?, cidade_id = ?, inscricao_municipal = ?, inscricao_estadual_substituto = ?
-         WHERE id = ?`,
-        [is_juridico, ativo, nome, apelido, cpf, rg, data_nascimento, email, telefone, endereco, bairro, cep, cidade_id, inscricao_municipal, inscricao_estadual_substituto, id]
-      );
-    } else if (actionType === 'delete') {
-      await query('DELETE FROM supplier WHERE id = ?', [id]);
+    if (!form.valid) {
+      console.log(form.errors);
+      return fail(400, { form });
     }
-    throw redirect(303, '/fornecedor');
+
+    // Get ID from URL parameters
+    const id = Number(event.params.id);
+    if (!id || isNaN(id)) {
+      return fail(400, { message: "ID inválido" });
+    }
+
+    // Format the date properly
+    const date = new Date(form.data.data_nascimento);
+    form.data.data_nascimento = date.toISOString().split("T")[0];
+
+    await query(
+      `UPDATE sale_system.supplier
+       SET is_juridica = ?, ativo = ?, nome = ?, apelido = ?, cpf = ?, rg = ?, data_nascimento = ?,
+           email = ?, telefone = ?, endereco = ?, numero = ?, complemento = ?, bairro = ?, cep = ?,
+           cidade_id = ?, inscricao_estadual_substituto_tributario = ?
+       WHERE id = ?`,
+      [
+        form.data.is_juridica,
+        form.data.ativo,
+        form.data.nome,
+        form.data.apelido,
+        form.data.cpf ?? null,
+        form.data.rg ?? null,
+        form.data.data_nascimento,
+        form.data.email ?? null,
+        form.data.telefone ?? null,
+        form.data.endereco ?? null,
+        form.data.numero ?? null,
+        form.data.complemento ?? null,
+        form.data.bairro ?? null,
+        form.data.cep ?? null,
+        form.data.cidade_id ?? null,
+        form.data.inscricao_estadual_substituto_tributario,
+        id, // WHERE id = ?
+      ]
+    );
+
+    return { form };
   }
-};
+}

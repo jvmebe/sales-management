@@ -21,7 +21,11 @@ export const load: PageServerLoad = async ({ params }) => {
     throw error(404, 'Cidade não encontrada');
   }
 
+  console.log(city);
+
   const form = await superValidate(city, zod(formSchema))
+
+  console.log(form)
 
   return { form, city };
 };

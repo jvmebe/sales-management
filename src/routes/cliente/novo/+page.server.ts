@@ -23,6 +23,10 @@ export const actions: Actions = {
       });
     }
 
+    const date = new Date(form.data.data_nascimento);
+    console.log(date);
+    form.data.data_nascimento = date.toISOString().split("T")[0];;
+
     await query(
       `INSERT INTO client (
         is_juridica, is_ativo, nome, apelido, cpf, rg, data_nascimento,

@@ -2,7 +2,7 @@
     import { onMount } from "svelte";
     import * as Form from "$lib/components/ui/form/index.js";
     import FormInput from "$lib/components/form-input.svelte";
-    import { formSchema, type FormSchema } from "$lib/validation/clientSchema";
+    import { formSchema, type FormSchema } from "$lib/validation/supplierSchema";
     import * as RadioGroup from "$lib/components/ui/radio-group/index.js";
     import SuperDebug, {
         type SuperValidated,
@@ -27,10 +27,6 @@
 
 
     let date = $state($formData.data_nascimento);
-    let cond_pag = $state({
-      id: $formData.cond_pag_id,
-      descricao: '',
-    });
     let cidade = $state({
       id: '',
       nome: '',
@@ -44,33 +40,6 @@
 
 
     $formData.is_ativo = true;
-
-    if(data.client != undefined) {
-      console.log(data.client);
-      let client = data.client;
-      $formData.nome = client.nome;
-      $formData.apelido = client.apelido;
-      cidade.id = client.cidade_id;
-      cidade.nome = client.cidade_nome;
-      $formData.endereco = client.endereco
-      $formData.complemento = client.complemento;
-      $formData.bairro = client.bairro;
-      $formData.cep = client.cep;
-      $formData.rg = client.rg;
-      $formData.cpf = client.cpf;
-      $formData.data_nascimento = client.data_nascimento;
-      $formData.email = client.email;
-      $formData.telefone = client.telefone;
-      $formData.limite_credito = client.limite_credito;
-      cond_pag.descricao = client.condicao_pagamento_descricao;
-      cond_pag.id = client.condicao_pagamento_id;
-    }
-
-
-    const columns = [
-      { label: 'ID', key: 'id', class: 'w-[50px]' },
-      { label: 'Descrição', key: 'descricao' },
-      ];
 
     const cityColumns = [
       { label: 'ID', key: 'id', class: 'w-[50px]' },
@@ -92,12 +61,6 @@
       return condRows;
     }
 
-
-    $effect(() => {
-      cond_pag.id;
-
-      $formData.cond_pag_id = cond_pag.id;
-	});
 
     $effect(() => {
       cidade.id;
@@ -191,24 +154,18 @@
     <Separator class="my-4" />
     <div class="flex gap-4">
         <FormInput form={form} label={labelRg} classes="w-36 flex flex-col" name="rg" bind:userInput={$formData.rg}/>
+        <FormInput form={form} label="IE ST" classes="w-36 flex flex-col" name="inscricao_estadual_substituto_tributario" bind:userInput={$formData.inscricao_estadual_substituto_tributario}/>
         <FormInput form={form} label={labelCpf} classes="w-36 flex flex-col" name="cpf" bind:userInput={$formData.cpf}/>
         <Form.Field {form} name="data_nascimento" class="flex flex-col">
-
                 <DatePicker label={labelDataNasc} bind:date={date} />
-
         </Form.Field>
+
+    </div>
+    <div class="flex gap-4">
         <FormInput form={form} label="Email" classes="w-1/5 flex flex-col" name="email" bind:userInput={$formData.email}/>
         <FormInput form={form} label="Telefone" classes="w-1/5 flex flex-col" name="telefone" bind:userInput={$formData.telefone}/>
     </div>
-    <div class="flex gap-4">
-        <FormInput form={form} label="Limite de Crédito" classes="w-1/5" name="telefone" bind:userInput={$formData.limite_credito}/>
-        <FormInput form={form} label="Condição de Pagamento" readonly={true} classes="w-1/5" name="cond_pag_nome" bind:userInput={cond_pag.descricao}/>
-        <div class="mt-8 ml-0">
-            <PickerDialog title="Escolher condição de pagamento" columns={columns} bind:pickedItem={cond_pag} getData={getPayconditions} uri="condicao-pagamento"/>
-        </div>
-    </div>
     <input type="hidden" readonly name="cidade_id" bind:value={cidade.id}>
-    <input type="hidden" readonly name="cond_pag_id" bind:value={cond_pag.id}>
     <input type="hidden" readonly name="data_nascimento" bind:value={date}>
     <Form.Button style="float: right; margin-right: 1em;">Salvar</Form.Button>
 </form>
