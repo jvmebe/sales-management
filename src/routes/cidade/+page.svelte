@@ -13,7 +13,7 @@
 
 </script>
 
-<h1 class="text-3xl">Cidades</h1>
+<h1 class="font-semibold text-3xl mb-10">Cidades</h1>
 <Button style="float: right; margin-bottom: 1em" href="/cidade/novo">Nova Cidade</Button>
 
 <DynamicTable {columns} rows={data.cities}>

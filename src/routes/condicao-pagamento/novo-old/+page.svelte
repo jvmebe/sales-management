@@ -86,7 +86,7 @@
   <div>
     <label>
       Descrição:
-      <input type="text" name="descricao" bind:value={descricao} required />
+      <input type="text" name="descricao" bind:value={descricao} />
     </label>
   </div>
 

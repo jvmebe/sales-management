@@ -5,6 +5,7 @@
  import AutoBreadcrumb from '$lib/components/breadcrumb.svelte';
 
  let { children } = $props();
+
 </script>
 
 <style>
@@ -34,6 +35,6 @@
    <div class="child-body">
       {@render children?.()}
    </div>
-    
+
  </main>
 </Sidebar.Provider>

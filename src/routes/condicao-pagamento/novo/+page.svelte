@@ -4,10 +4,9 @@
 
   let { data } = $props();
 
-
 </script>
 
-<h1>Criar Nova Condição de Pagamento</h1>
+<h1 class="font-semibold text-3xl mb-10" >Criar Nova Condição de Pagamento</h1>
 
 <CondPagForm {data} />
 

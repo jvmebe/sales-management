@@ -4,6 +4,7 @@ import { redirect, error } from '@sveltejs/kit';
 import { formSchema } from '$lib/validation/citySchema';
 import { zod } from 'sveltekit-superforms/adapters';
 import { superValidate } from 'sveltekit-superforms';
+import { fail } from 'sveltekit-superforms';
 
 export const load: PageServerLoad = async ({ params }) => {
   const { id } = params;
@@ -31,23 +32,27 @@ export const load: PageServerLoad = async ({ params }) => {
 };
 
 export const actions: Actions = {
-  default: async ({ request, params }) => {
-    const formData = await request.formData();
-    const actionType = formData.get('action')?.toString();
-    const { id } = params;
+  default: async (event) => {
 
-    console.log(formData);
+    console.log("PARAM:", event.params.id)
 
-    if (actionType === 'update') {
-      const nome = formData.get('nome')?.toString();
-      const state_id = formData.get('state_id')?.toString();
-      if (!nome || !state_id) {
-        return { error: 'Nome e Estado são obrigatórios' };
-      }
-      await query('UPDATE city SET nome = ?, state_id = ? WHERE id = ?', [nome, state_id, id]);
-    } else if (actionType === 'delete') {
-      await query('DELETE FROM city WHERE id = ?', [id]);
+    const form = await superValidate(event, zod(formSchema));
+    if (!form.valid) {
+      //console.log(form.errors);
+      return fail(400, {
+        form,
+      });
     }
-    throw redirect(303, '/cidade');
+
+    await query(
+      `UPDATE city set nome = ?, state_id = ? WHERE id = ?`,
+      [
+        form.data.nome,
+        form.data.state_id,
+        event.params.id,
+      ]
+    );
+
+    redirect(303, '/cidade');
   }
-};
+}

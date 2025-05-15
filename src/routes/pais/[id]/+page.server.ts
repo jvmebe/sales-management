@@ -1,6 +1,10 @@
 import type { PageServerLoad, Actions } from './$types';
 import { query } from '$lib/db';
 import { redirect, error } from '@sveltejs/kit';
+import { formSchema } from "$lib/validation/countrySchema";
+import { zod } from "sveltekit-superforms/adapters";
+import { superValidate } from "sveltekit-superforms";
+import { fail } from "@sveltejs/kit";
 
 export const load: PageServerLoad = async ({ params }) => {
   const { id } = params;
@@ -11,25 +15,27 @@ export const load: PageServerLoad = async ({ params }) => {
     throw error(404, 'País não encontrado');
   }
 
-  return { country };
+  const form = await superValidate(country, zod(formSchema));
+
+  return { form, country };
 };
 
 export const actions: Actions = {
-  default: async ({ request, params }) => {
-    const formData = await request.formData();
-    const actionType = formData.get('action')?.toString();
-    const { id } = params;
-
-    if (actionType === 'update') {
-      const nome = formData.get('nome')?.toString();
-      const sigla = formData.get('sigla')?.toString().toUpperCase();
-      if (!nome || !sigla || sigla.length !== 2) {
-        return { error: 'Nome e sigla (2 letras) são obrigatórios' };
-      }
-      await query('UPDATE country SET nome = ?, sigla = ? WHERE id = ?', [nome, sigla, id]);
-    } else if (actionType === 'delete') {
-      await query('DELETE FROM country WHERE id = ?', [id]);
+  default: async (event) => {
+    const form = await superValidate(event, zod(formSchema));
+    if (!form.valid) {
+      return fail(400, {
+        form,
+      });
     }
-    throw redirect(303, '/pais');
+
+    console.log(form.data);
+
+    await query(
+      `UPDATE country SET nome = ?, sigla = ? WHERE id = ?`,
+      [form.data.nome, form.data.sigla, event.params.id],
+    );
+
+    redirect(303, '/pais');
   }
 };

@@ -3,10 +3,10 @@
     import Button from "$lib/components/ui/button/button.svelte";
     import * as Table from "$lib/components/ui/table/index.js";
   </script>
-  
-  <h1 class="text-3xl">Estados</h1>
+
+  <h1 class="font-semibold text-3xl mb-10">Estados</h1>
   <Button style="float: right; margin-bottom: 1em" href="/estado/novo">Novo Estado</Button>
-  
+
   <div style="margin: 10px;">
     <Table.Root>
       <Table.Header>

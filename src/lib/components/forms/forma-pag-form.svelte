@@ -31,8 +31,4 @@
     <input type="hidden" readonly name="state_id" bind:value={$formData.state_id} />
     <Form.Button style="float: right; margin-right: 1em;">Salvar</Form.Button>
 </form>
-<Button type="button" class="float-start" href="/cidade">Voltar</Button>
-
-{#if browser}
-    <SuperDebug data={$formData} />
-{/if}
+<Button type="button" class="float-start" href="/forma-pagamento">Voltar</Button>
