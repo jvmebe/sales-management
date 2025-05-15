@@ -1,16 +1,12 @@
 // src/routes/condicao-de-pagamento/novo/+page.server.ts
-import type { Actions, PageServerLoad } from './$types';
+import type { PageServerLoad, Actions } from './$types';
 import { query } from '$lib/db';
 import { redirect } from '@sveltejs/kit';
-import { superValidate } from 'sveltekit-superforms';
-import { formSchema } from '$lib/validation/paycondSchema';
-import {zod} from "sveltekit-superforms/adapters"
-import { fail } from 'sveltekit-superforms';
 
 export const load: PageServerLoad = async () => {
+  // Carrega as formas de pagamento para o dropdown
   const paymentMethods = await query('SELECT * FROM payment_method');
-
-  return { paymentMethods, form: await superValidate(zod(formSchema)) };
+  return { paymentMethods };
 };
 
 export const actions: Actions = {
