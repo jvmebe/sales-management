@@ -15,9 +15,11 @@
     import * as Select from "$lib/components/ui/select/index.js";
     import Input from "../ui/input/input.svelte";
     import Label from "../ui/label/label.svelte";
+    import Trash from "@lucide/svelte/icons/trash";
 
     let { data } = $props();
 
+    let installmentNumber:number|undefined = $state();
     let percent = $state('');
     let days = $state('');
     let payColumns = [];
@@ -37,7 +39,7 @@
        { label: 'Descrição', key: 'descricao' },
    ]
 
-    let errors = $state({ percent: '', days: '', paymMethod: '' })
+    let errors = $state({ percent: '', days: '', paymMethod: '', installmentNumber: '' })
 
     const form = superForm(data.form, {
         validators: zodClient(formSchema),
@@ -49,8 +51,6 @@
 
     console.log($formData);
 
-    let numParcelas = 0;
-
     type Installment = {
       parcela_numero: number;
       forma_pagamento: number;
@@ -60,13 +60,18 @@
     let installments: Installment[] = $state($formData.parcelas);
 
     function addInstallment() {
-      errors = { percent: '', days: '', paymMethod: '' }
+      errors = { percent: '', days: '', paymMethod: '', installmentNumber: '' }
 
       const p = parseFloat(percent)
       const d = parseInt(days, 10)
 
 
       let valid = true
+
+      if (installments.some(p => p.parcela_numero === installmentNumber)) {
+            errors.installmentNumber = `Parcela ${installmentNumber} já existe.`;
+            valid = false;
+        }
 
       if (percent === '' || isNaN(p)) {
         errors.percent = 'Porcentagem precisa ser um número'
@@ -87,22 +92,34 @@
       installments = [
         ...installments,
         {
-          parcela_numero: installments.length + 1,
+          parcela_numero: installmentNumber,
           forma_pagamento: pickedPayMethod.id,
           valor_porcentagem: p,
           dias_vencimento: d
         }
       ];
-      numParcelas = installments.length;
+
+      organizeInstallments()
     }
+
+    function removeInstallment(i: number) {
+      installments = installments.filter((_, idx) => idx !== i);
+    }
+
+
+    function organizeInstallments() {
+        installments = [...installments]
+          .sort((a, b) => a.parcela_numero - b.parcela_numero);
+      }
 
     $effect(() => {
       installments;
 
       $formData.parcelas = installments;
+      $formData.num_parcelas = installments.length;
     })
 
-    numParcelas = installments.length;
+
 
 </script>
 
@@ -112,7 +129,13 @@
     </div>
 
 
+
     <div class="flex flex-row gap-4">
+        <div class="flex w-32 max-w-sm flex-col gap-1.5">
+            <Label for="porcentagem">Número da Parcela</Label>
+            <Input type="number" id="porcentagem" bind:value={installmentNumber}/>
+            <p class="text-red-500 text-sm">{errors.installmentNumber}</p>
+        </div>
         <div class="flex w-full max-w-sm flex-col gap-1.5">
             <Label for="forma-pagamento">Forma de Pagamento</Label>
             <Input readonly type="text" id="forma-pagamento" bind:value={pickedPayMethod.descricao}/>
@@ -205,8 +228,11 @@
                   required
                 />
               </Table.Cell>
-              <td>
-              </td>
+              <Table.Cell>
+                  <Button onclick={() => removeInstallment(i)}>
+                    <Trash />
+                  </Button>
+              </Table.Cell>
             </Table.Row>
           {/each}
         </Table.Body>
@@ -215,7 +241,8 @@
     {/if}
 
     <Form.Button style="float: right; margin-right: 1em;">Salvar</Form.Button>
-    <input type="hidden" name="parcelas" value={$formData.parcelas}/>
+    <input type="hidden" name="parcelas" bind:value={$formData.parcelas}/>
+    <input type="hidden" name="num_parcelas" bind:value={$formData.num_parcelas}/>
 </form>
 <Button type="button" class="float-start" href="/condicao-pagamento">Voltar</Button>
 

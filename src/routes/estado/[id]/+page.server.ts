@@ -41,8 +41,6 @@ export const actions: Actions = {
       `UPDATE state SET nome = ?, sigla = ?, country_id = ? WHERE id = ?`,
       [form.data.nome, form.data.sigla, form.data.country_id, event.params.id],
     );
-    return {
-      form,
-    };
+    redirect(303, '/estado');
   }
 };

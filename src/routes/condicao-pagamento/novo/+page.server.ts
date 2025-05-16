@@ -15,16 +15,40 @@ export const load: PageServerLoad = async () => {
 
 export const actions: Actions = {
   default: async (event) => {
-    console.log("WHYYYYYYYYYYYYYYYYY");
     const form = await superValidate(event, zod(formSchema));
     console.log("error:", form.errors);
+    console.log(form.data);
     if (!form.valid) {
       return fail(400, {
         form,
       });
     }
 
+    let condicao = form.data;
 
-      throw redirect(303, '/condicao-de-pagamento');
+    let parcelas = form.data.parcelas;
+
+    const result:any = await query(
+      `INSERT INTO payment_condition (descricao, num_parcelas) VALUES (?, ?)`,
+    [condicao.descricao, condicao.num_parcelas]
+    )
+
+    for (let i = 0; i < parcelas.length; i++) {
+      await query(
+        `INSERT INTO payment_installment
+         (condicao_id, numero, forma_pagamento_id, valor_porcentagem, dias_vencimento)
+         VALUES (?, ?, ?, ?, ?)`,
+        [
+          result.insertId,
+          parcelas[i].parcela_numero,
+          parcelas[i].forma_pagamento,
+          parcelas[i].valor_porcentagem,
+          parcelas[i].dias_vencimento
+        ]
+      );
+    }
+
+
+      throw redirect(303, '/condicao-pagamento');
     }
 };
