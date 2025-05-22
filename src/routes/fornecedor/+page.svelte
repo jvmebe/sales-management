@@ -14,7 +14,7 @@
     ];
 </script>
 
-<h1 class="text-3xl">Fornecedores</h1>
+<h1 class="font-semibold text-3xl mb-10">Fornecedores</h1>
 <Button style="float: right; margin-bottom: 1em" href="/fornecedor/novo">Novo Fornecedor</Button>
 
 <DynamicTable {columns} rows={data.suppliers}>

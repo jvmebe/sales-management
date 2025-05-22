@@ -1,9 +1,15 @@
 import type { Actions, PageServerLoad } from './$types';
 import { query } from '$lib/db';
 import { redirect } from '@sveltejs/kit';
+import { superValidate } from 'sveltekit-superforms';
+import { formSchema } from '$lib/validation/employeeSchema';
+import {zod} from "sveltekit-superforms/adapters"
+import { fail } from 'sveltekit-superforms';
 
 export const load: PageServerLoad = async () => {
-  return {};
+  return {
+    form: await superValidate(zod(formSchema)),
+  };
 };
 
 export const actions: Actions = {

@@ -88,7 +88,3 @@
     <Form.Button style="float: right; margin-right: 1em;">Salvar</Form.Button>
 </form>
 <Button type="button" class="float-start" href="/estado">Voltar</Button>
-
-{#if browser}
-    <SuperDebug data={$formData} />
-{/if}

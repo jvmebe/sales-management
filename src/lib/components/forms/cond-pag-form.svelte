@@ -19,10 +19,10 @@
 
     let { data } = $props();
 
+    let paymentMethods = data.paymentMethods;
     let installmentNumber:number|undefined = $state();
     let percent = $state('');
     let days = $state('');
-    let payColumns = [];
     let pickedPayMethod = $state({
       id: 0,
       descricao: ''
@@ -43,21 +43,21 @@
 
     const form = superForm(data.form, {
         validators: zodClient(formSchema),
+        dataType: 'json'
     });
 
-    const { form:formData, enhance } = superForm(data.form, {
-        dataType: 'json'
-      });
+    const { form:formData, enhance } = form;
 
     console.log($formData);
 
     type Installment = {
-      parcela_numero: number;
-      forma_pagamento: number;
+      numero: number;
+      forma_pagamento_id: number;
       valor_porcentagem: number;
       dias_vencimento: number;
     };
     let installments: Installment[] = $state($formData.parcelas);
+    console.log($formData.parcelas);
 
     function addInstallment() {
       errors = { percent: '', days: '', paymMethod: '', installmentNumber: '' }
@@ -68,7 +68,7 @@
 
       let valid = true
 
-      if (installments.some(p => p.parcela_numero === installmentNumber)) {
+      if (installments.some(p => p.numero === installmentNumber)) {
             errors.installmentNumber = `Parcela ${installmentNumber} já existe.`;
             valid = false;
         }
@@ -92,8 +92,8 @@
       installments = [
         ...installments,
         {
-          parcela_numero: installmentNumber,
-          forma_pagamento: pickedPayMethod.id,
+          numero: installmentNumber,
+          forma_pagamento_id: pickedPayMethod.id,
           valor_porcentagem: p,
           dias_vencimento: d
         }
@@ -109,7 +109,7 @@
 
     function organizeInstallments() {
         installments = [...installments]
-          .sort((a, b) => a.parcela_numero - b.parcela_numero);
+          .sort((a, b) => a.numero - b.numero);
       }
 
     $effect(() => {
@@ -119,6 +119,7 @@
       $formData.num_parcelas = installments.length;
     })
 
+    console.log(data.paymentMethods);
 
 
 </script>
@@ -160,6 +161,11 @@
     </div>
 
 
+    {#if installments.length <= 0}
+
+    <center><p class="m-10">Adicione uma parcela</p></center>
+
+    {/if}
 
 
     {#if installments.length > 0}
@@ -180,20 +186,20 @@
                 <input
                   type="number"
                   name="parcela_numero"
-                  value={inst.parcela_numero}
+                  value={inst.numero}
                   readonly
                 />
               </Table.Cell>
               <Table.Cell>
                 <Select.Root
                   type="single"
-                  bind:value={inst.forma_pagamento}
+                  bind:value={inst.forma_pagamento_id}
                 >
                   <Select.Trigger class="w-72">
-                    {#if inst.forma_pagamento}
+                    {#if inst.forma_pagamento_id}
                       {#if data.paymentMethods}
-                        {#each data.paymentMethods as m}
-                          {#if m.id === inst.forma_pagamento}
+                        {#each paymentMethods as m}
+                          {#if m.id === inst.forma_pagamento_id}
                             {m.descricao}
                           {/if}
                         {/each}
@@ -237,7 +243,6 @@
           {/each}
         </Table.Body>
       </Table.Root>
-      <p>Total:%</p>
     {/if}
 
     <Form.Button style="float: right; margin-right: 1em;">Salvar</Form.Button>
@@ -245,8 +250,3 @@
     <input type="hidden" name="num_parcelas" bind:value={$formData.num_parcelas}/>
 </form>
 <Button type="button" class="float-start" href="/condicao-pagamento">Voltar</Button>
-
-
-{#if browser}
-    <SuperDebug data={$formData} />
-{/if}

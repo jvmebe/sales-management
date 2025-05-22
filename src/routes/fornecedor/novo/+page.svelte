@@ -4,7 +4,6 @@
   let { data } = $props();
 </script>
 
-<h1 class="text-3xl mb-5">Novo Fornecedor</h1>
+<h1 class="font-semibold text-3xl mb-5">Novo Fornecedor</h1>
 
 <FornecedorForm {data}></FornecedorForm>
-<a href="/fornecedor">Voltar</a>

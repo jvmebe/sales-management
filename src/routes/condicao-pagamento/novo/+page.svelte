@@ -9,6 +9,3 @@
 <h1 class="font-semibold text-3xl mb-10" >Criar Nova Condição de Pagamento</h1>
 
 <CondPagForm {data} />
-
-
-<a href="/condicao-de-pagamento">Voltar</a>

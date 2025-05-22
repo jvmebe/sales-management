@@ -12,7 +12,7 @@
 
   </script>
 
-<h1 class="text-3xl">Países</h1>
+<h1 class="font-semibold text-3xl mb-10">Países</h1>
 <Button style="float: right; margin-bottom: 1em" href="/pais/novo">Novo País</Button>
 
 <DynamicTable {columns} rows={data.countries}>

@@ -13,7 +13,7 @@
     ];
 </script>
 
-<h1 class="text-3xl">Clientes</h1>
+<h1 class="font-semibold text-3xl mb-10">Clientes</h1>
 <Button style="float: right; margin-bottom: 1em" href="/cliente/novo">Novo Cliente</Button>
 
 <DynamicTable {columns} rows={data.clients}>

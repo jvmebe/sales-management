@@ -1,35 +1,41 @@
-import type { PageServerLoad, Actions } from './$types';
-import { query } from '$lib/db';
-import { redirect, error } from '@sveltejs/kit';
+import type { PageServerLoad, Actions } from "./$types";
+import { query } from "$lib/db";
+import { redirect, error } from "@sveltejs/kit";
+import { formSchema } from "$lib/validation/paymentSchema";
+import { zod } from "sveltekit-superforms/adapters";
+import { superValidate } from "sveltekit-superforms";
+import { fail } from "@sveltejs/kit";
 
 export const load: PageServerLoad = async ({ params }) => {
   const { id } = params;
-  const results = await query('SELECT * FROM payment_method WHERE id = ?', [id]);
+  const results:any = await query("SELECT * FROM payment_method WHERE id = ?", [
+    id,
+  ]);
   const paymentMethod = results[0];
 
   if (!paymentMethod) {
-    throw error(404, 'Forma de pagamento não encontrada');
+    throw error(404, "Forma de pagamento não encontrada");
   }
 
-  return { paymentMethod };
+  const form = await superValidate(paymentMethod, zod(formSchema));
+
+  return { paymentMethod, form };
 };
 
 export const actions: Actions = {
-  default: async ({ request, params }) => {
-    const formData = await request.formData();
-    const actionType = formData.get('action')?.toString();
-    const { id } = params;
-
-    if (actionType === 'update') {
-      const descricao = formData.get('descricao')?.toString();
-      if (!descricao) {
-        return { error: 'Descrição é obrigatória' };
-      }
-      await query('UPDATE payment_method SET descricao = ? WHERE id = ?', [descricao, id]);
-    } else if (actionType === 'delete') {
-      await query('DELETE FROM payment_method WHERE id = ?', [id]);
+  default: async (event) => {
+    const form = await superValidate(event, zod(formSchema));
+    if (!form.valid) {
+      return fail(400, {
+        form,
+      });
     }
 
-    throw redirect(303, '/forma-pagamento');
-  }
+    await query("UPDATE payment_method SET descricao = ? WHERE id = ?", [
+      form.data.descricao,
+      event.params.id,
+    ]);
+
+    throw redirect(303, "/forma-pagamento");
+  },
 };

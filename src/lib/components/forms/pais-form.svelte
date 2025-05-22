@@ -10,6 +10,7 @@
         type Infer,
         superForm,
     } from "sveltekit-superforms";
+    import Button from "$lib/components/ui/button/button.svelte";
     import { Separator } from "$lib/components/ui/separator/index.js";
     import { zodClient } from "sveltekit-superforms/adapters";
     import { browser } from "$app/environment";
@@ -34,8 +35,4 @@
     </div>
     <Form.Button style="float: right; margin-right: 1em;">Salvar</Form.Button>
 </form>
-<br />
-<br />
-{#if browser}
-    <SuperDebug data={$formData} />
-{/if}
+<Button type="button" class="float-start" href="/pais">Voltar</Button>

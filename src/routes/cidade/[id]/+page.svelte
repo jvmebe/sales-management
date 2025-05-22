@@ -7,5 +7,5 @@
 
 </script>
 
-<h1>Detalhes da Cidade</h1>
+<h1 class="font-semibold text-3xl mb-10">{data.form.data.nome}</h1>
 <CidadeForm {data}></CidadeForm>

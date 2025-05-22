@@ -10,7 +10,7 @@
     ]
   </script>
 
-  <h1 class="text-3xl">Condições de Pagamento</h1>
+<h1 class="font-semibold text-3xl mb-10">Condições de Pagamento</h1>
   <Button style="float: right; margin-bottom: 1em" href="/condicao-pagamento/novo">Nova Forma</Button>
 
   <DynamicTable {columns} rows={data.conditions}>

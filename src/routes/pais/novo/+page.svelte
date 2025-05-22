@@ -3,6 +3,5 @@
   let { data } = $props();
 </script>
 
-<h1>Novo País</h1>
+<h1 class="font-semibold text-3xl mb-5">Novo País</h1>
 <PaisForm {data} />
-<a href="/pais">Voltar</a>

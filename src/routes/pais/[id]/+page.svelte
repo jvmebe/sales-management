@@ -3,6 +3,6 @@
     let { data } = $props();
 </script>
 
-<h1>Detalhes do País</h1>
+<h1 class="font-semibold text-3xl mb-5">{data.form.data.nome}</h1>
 
 <PaisForm {data} />

@@ -40,8 +40,8 @@ export const actions: Actions = {
          VALUES (?, ?, ?, ?, ?)`,
         [
           result.insertId,
-          parcelas[i].parcela_numero,
-          parcelas[i].forma_pagamento,
+          parcelas[i].numero,
+          parcelas[i].forma_pagamento_id,
           parcelas[i].valor_porcentagem,
           parcelas[i].dias_vencimento
         ]

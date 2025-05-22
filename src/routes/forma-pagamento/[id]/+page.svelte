@@ -1,26 +1,8 @@
 <script lang="ts">
-    export let data: { paymentMethod: { id: number; descricao: string } };
-    import { enhance } from '$app/forms';
-  </script>
-  
-  <h1>Detalhes da Forma de Pagamento</h1>
-  <form method="post" use:enhance>
-    <label>
-      Descrição:
-      <input type="text" name="descricao" value="{data.paymentMethod.descricao}" required />
-    </label>
-    <button type="submit" name="action" value="update">Atualizar</button>
-    <button type="submit" name="action" value="delete" on:click|preventDefault={() => {
-      if (confirm('Confirma a exclusão?')) {
+  let { data } = $props();
+  import FormaPagForm from "$lib/components/forms/forma-pag-form.svelte";
+</script>
 
-        (document.getElementById('deleteForm') as HTMLFormElement).submit();
-      }
-    }}>Excluir</button>
-  </form>
+<h1 class="font-semibold text-3xl mb-5">{data.form.data.descricao}</h1>
 
-  <form id="deleteForm" method="post" style="display: none;">
-    <input type="hidden" name="action" value="delete" />
-  </form>
-  
-  <a href="/forma-pagamento">Voltar</a>
-  
+<FormaPagForm {data} />

@@ -159,7 +159,6 @@
         <Form.Field {form} name="data_nascimento" class="flex flex-col">
                 <DatePicker label={labelDataNasc} bind:date={date} />
         </Form.Field>
-
     </div>
     <div class="flex gap-4">
         <FormInput form={form} label="Email" classes="w-1/5 flex flex-col" name="email" bind:userInput={$formData.email}/>

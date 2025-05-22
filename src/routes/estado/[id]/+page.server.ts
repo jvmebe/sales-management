@@ -8,7 +8,7 @@ import { fail } from "@sveltejs/kit";
 
 export const load: PageServerLoad = async ({ params }) => {
   const { id } = params;
-  const results = await query(
+  const results:any = await query(
     `SELECT s.id, s.nome, s.sigla, s.country_id, c.nome AS country_nome
      FROM state s
      JOIN country c ON s.country_id = c.id
