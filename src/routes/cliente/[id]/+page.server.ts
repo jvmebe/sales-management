@@ -3,7 +3,7 @@ import { query } from '$lib/db';
 import { redirect, error } from '@sveltejs/kit';
 import { zod } from 'sveltekit-superforms/adapters';
 import { superValidate, fail } from 'sveltekit-superforms';
-import { formSchema } from '$lib/validation/clientSchema';
+import { clientSchema } from '$lib/validation/clientSchema';
 
 
 export const load: PageServerLoad = async ({ params }) => {
@@ -31,7 +31,7 @@ export const load: PageServerLoad = async ({ params }) => {
   client.data_nascimento = client.data_nascimento.toISOString().split('T')[0];
 
   console.log(client);
-  let form = await superValidate(client, zod(formSchema));
+  let form = await superValidate(client, zod(clientSchema));
 
   return {
     client, form
@@ -40,7 +40,7 @@ export const load: PageServerLoad = async ({ params }) => {
 
 export const actions: Actions = {
   default: async (event) => {
-    const form = await superValidate(event, zod(formSchema));
+    const form = await superValidate(event, zod(clientSchema));
     console.log(form.data)
     if (!form.valid) {
       console.log(form.errors)

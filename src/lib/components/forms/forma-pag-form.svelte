@@ -1,6 +1,6 @@
 <script lang="ts">
     import * as Form from "$lib/components/ui/form/index.js";
-    import { formSchema, type FormSchema } from "$lib/validation/clientSchema";
+    import { clientSchema, type FormSchema } from "$lib/validation/clientSchema";
     import SuperDebug, {
      type SuperValidated,
      type Infer,
@@ -15,7 +15,7 @@
     let { data } = $props();
 
     const form = superForm(data.form, {
-        validators: zodClient(formSchema),
+        validators: zodClient(clientSchema),
     });
 
     const { form: formData, enhance } = form;

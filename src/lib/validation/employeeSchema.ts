@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const formSchema = z.object({
+export const employeeSchema = z.object({
   id: z.number().int().nonnegative(),
 
   nome: z.string().min(1).max(150),
@@ -37,4 +37,4 @@ export const formSchema = z.object({
   carga_horaria: z.number().int().nonnegative(),
 });
 
-export type FormSchema = typeof formSchema;
+export type FormSchema = typeof employeeSchema;

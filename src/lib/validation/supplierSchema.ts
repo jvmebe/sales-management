@@ -1,6 +1,6 @@
 import {z} from 'zod';
 
-export const formSchema = z.object({
+export const supplierSchema = z.object({
     id: z.number().int().positive().optional(),
     is_juridica: z.boolean(),
     ativo: z.boolean().default(true),
@@ -20,4 +20,4 @@ export const formSchema = z.object({
     inscricao_estadual_substituto_tributario: z.string().max(50),
 })
 
-export type FormSchema = typeof formSchema;
+export type FormSchema = typeof supplierSchema;

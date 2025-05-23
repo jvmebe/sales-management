@@ -2,7 +2,7 @@
     import { onMount } from "svelte";
     import * as Form from "$lib/components/ui/form/index.js";
     import FormInput from "$lib/components/form-input.svelte";
-    import { formSchema, type FormSchema } from "$lib/validation/employeeSchema";
+    import { employeeSchema, type FormSchema } from "$lib/validation/employeeSchema";
     import * as RadioGroup from "$lib/components/ui/radio-group/index.js";
     import SuperDebug, {
         type SuperValidated,
@@ -17,12 +17,18 @@
     import { Checkbox } from "$lib/components/ui/checkbox/index.js";
     import { Label } from "$lib/components/ui/label/index.js";
     import Button from "$lib/components/ui/button/button.svelte";
+    import CityCreateDialog from "../modals/city-create-dialog.svelte";
+  import CityListDialog from "../modals/city-list-dialog.svelte";
 
 
     let { data } = $props();
 
     const form = superForm(data.form, {
-        validators: zodClient(formSchema),
+        validators: zodClient(employeeSchema),
+        invalidateAll: false,
+        onResult({result}) {
+            
+        }
     });
 
     const { form: formData, enhance } = form;
@@ -41,13 +47,6 @@
       { label: 'Estado', key: 'state_nome'},
       ];
 
-    async function getCities():Promise<any> {
-      const response = await fetch('/cidade');
-      let cityRows = await response.json();
-      console.log(cityRows);
-      return cityRows;
-    }
-
 
     $effect(() => {
       cidade.id;
@@ -62,7 +61,7 @@
 
 </script>
 
-<form method="POST" use:enhance>
+<form method="POST" action="?/create" use:enhance>
         <div class="items-top flex space-x-2 mt-10 ml-end float-right">
             <Checkbox bind:checked={$formData.ativo} />
             <div class="grid gap-1.5 leading-none">
@@ -83,7 +82,7 @@
         <FormInput form={form} label="Estado" readonly={true} classes="w-48" name="estado_nome" bind:userInput={cidade.state_nome}/>
         <FormInput form={form} label="Cidade" readonly={true} classes="w-96" name="cidade_nome" bind:userInput={cidade.nome}/>
         <div class="mt-8 ml-0">
-            <PickerDialog title="Escolher cidade" columns={cityColumns} bind:pickedItem={cidade} getData={getCities} uri="cidade"/>
+            <CityListDialog {data} bind:pickedItem={cidade} />
         </div>
         <FormInput form={form} label="Endereço" classes="w-72" name="endereco" bind:userInput={$formData.endereco}/>
         <FormInput form={form} label="Número" classes="w-24" name="numero" bind:userInput={$formData.numero}/>

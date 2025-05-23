@@ -3,6 +3,7 @@
  import * as Sidebar from "$lib/components/ui/sidebar/index.js";
  import AppSidebar from "$lib/components/app-sidebar.svelte";
  import AutoBreadcrumb from '$lib/components/breadcrumb.svelte';
+ import { Toaster } from "$lib/components/ui/sonner/index.js";
 
  let { children } = $props();
 
@@ -25,7 +26,7 @@
 
 </style>
 
-
+<Toaster />
 <Sidebar.Provider>
  <AppSidebar />
  <main style="width: 100%">

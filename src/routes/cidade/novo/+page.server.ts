@@ -1,22 +1,23 @@
 import type { Actions, PageServerLoad } from './$types';
 import { query } from '$lib/db';
 import { redirect } from '@sveltejs/kit';
-import { superValidate } from 'sveltekit-superforms';
-import { formSchema } from '$lib/validation/citySchema';
+import { message, superValidate } from 'sveltekit-superforms';
+import { citySchema } from '$lib/validation/citySchema';
 import {zod} from "sveltekit-superforms/adapters"
 import { fail } from 'sveltekit-superforms';
 
 export const load: PageServerLoad = async () => {
   return {
-    form: await superValidate(zod(formSchema)),
+    form: await superValidate(zod(citySchema)),
    }
 };
 
 export const actions: Actions = {
   default: async (event) => {
-    const form = await superValidate(event, zod(formSchema));
+    const form = await superValidate(event, zod(citySchema));
+    console.log("PLEASE")
     if (!form.valid) {
-      //console.log(form.errors);
+      console.log(form.errors)
       return fail(400, {
         form,
       });
@@ -31,8 +32,5 @@ export const actions: Actions = {
         form.data.state_id,
       ]
     );
-    return {
-      form,
-    };
   },
 };

@@ -8,7 +8,7 @@ const installmentSchema = z.object({
 });
 
 
-export const formSchema = z.object({
+export const payCondSchema = z.object({
   descricao: z.string().min(1, 'Descrição é obrigatória'),
   num_parcelas: z.coerce.number().int().min(1),
   parcelas: z
@@ -16,4 +16,4 @@ export const formSchema = z.object({
     .min(1, 'Deve haver pelo menos uma parcela')
 });
 
-export type FormSchema = typeof formSchema;
+export type FormSchema = typeof payCondSchema;

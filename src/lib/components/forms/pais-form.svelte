@@ -1,27 +1,15 @@
 <script lang="ts">
-    import { onMount } from "svelte";
     import * as Form from "$lib/components/ui/form/index.js";
-    import { Input } from "$lib/components/ui/input/index.js";
     import FormInput from "$lib/components/form-input.svelte";
-    import { formSchema, type FormSchema } from "$lib/validation/countrySchema";
-    import * as RadioGroup from "$lib/components/ui/radio-group/index.js";
-    import SuperDebug, {
-        type SuperValidated,
-        type Infer,
-        superForm,
-    } from "sveltekit-superforms";
+    import { countrySchema, type FormSchema } from "$lib/validation/countrySchema";
+    import { superForm } from "sveltekit-superforms";
     import Button from "$lib/components/ui/button/button.svelte";
-    import { Separator } from "$lib/components/ui/separator/index.js";
     import { zodClient } from "sveltekit-superforms/adapters";
-    import { browser } from "$app/environment";
-    import DatePicker from "$lib/components/date-picker.svelte";
-    import PickerDialog from "$lib/components/picker-dialog.svelte"
-    import Label from "$lib/components/ui/label/label.svelte";
 
     let { data } = $props();
 
     const form = superForm(data.form, {
-        validators: zodClient(formSchema),
+        validators: zodClient(countrySchema),
     });
 
     const { form: formData, enhance } = form;

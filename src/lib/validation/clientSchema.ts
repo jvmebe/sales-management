@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const formSchema = z.object({
+export const clientSchema = z.object({
   id: z.number().int(), // normalmente omitido em criação, mas incluso se necessário
   is_juridica: z.boolean(),
   is_ativo: z.boolean(),
@@ -26,4 +26,4 @@ export const formSchema = z.object({
 
 
 
-  export type FormSchema = typeof formSchema;
+  export type FormSchema = typeof clientSchema;

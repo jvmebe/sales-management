@@ -2,7 +2,7 @@
     import { onMount } from "svelte";
     import * as Form from "$lib/components/ui/form/index.js";
     import FormInput from "$lib/components/form-input.svelte";
-    import { formSchema, type FormSchema } from "$lib/validation/supplierSchema";
+    import { supplierSchema, type FormSchema } from "$lib/validation/supplierSchema";
     import * as RadioGroup from "$lib/components/ui/radio-group/index.js";
     import SuperDebug, {
         type SuperValidated,
@@ -19,7 +19,7 @@
     export const ssr = false;
 
     const form = superForm(data.form, {
-        validators: zodClient(formSchema),
+        validators: zodClient(supplierSchema),
     });
 
     const { form: formData, enhance } = form;

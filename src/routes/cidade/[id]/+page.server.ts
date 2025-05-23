@@ -1,7 +1,7 @@
 import type { PageServerLoad, Actions } from './$types';
 import { query } from '$lib/db';
 import { redirect, error } from '@sveltejs/kit';
-import { formSchema } from '$lib/validation/citySchema';
+import { citySchema } from '$lib/validation/citySchema';
 import { zod } from 'sveltekit-superforms/adapters';
 import { superValidate } from 'sveltekit-superforms';
 import { fail } from 'sveltekit-superforms';
@@ -24,7 +24,7 @@ export const load: PageServerLoad = async ({ params }) => {
 
   console.log(city);
 
-  const form = await superValidate(city, zod(formSchema))
+  const form = await superValidate(city, zod(citySchema))
 
   console.log(form)
 
@@ -36,7 +36,7 @@ export const actions: Actions = {
 
     console.log("PARAM:", event.params.id)
 
-    const form = await superValidate(event, zod(formSchema));
+    const form = await superValidate(event, zod(citySchema));
     if (!form.valid) {
       //console.log(form.errors);
       return fail(400, {

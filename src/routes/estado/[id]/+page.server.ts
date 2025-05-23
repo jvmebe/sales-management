@@ -1,7 +1,7 @@
 import type { PageServerLoad, Actions } from "./$types";
 import { query } from "$lib/db";
 import { redirect, error } from "@sveltejs/kit";
-import { formSchema } from "$lib/validation/stateSchema";
+import { stateSchema } from "$lib/validation/stateSchema";
 import { zod } from "sveltekit-superforms/adapters";
 import { superValidate } from "sveltekit-superforms";
 import { fail } from "@sveltejs/kit";
@@ -21,14 +21,14 @@ export const load: PageServerLoad = async ({ params }) => {
     throw error(404, "Estado não encontrado");
   }
 
-  const form = await superValidate(state, zod(formSchema));
+  const form = await superValidate(state, zod(stateSchema));
 
   return { form, state };
 };
 
 export const actions: Actions = {
   default: async (event) => {
-    const form = await superValidate(event, zod(formSchema));
+    const form = await superValidate(event, zod(stateSchema));
     if (!form.valid) {
       return fail(400, {
         form,

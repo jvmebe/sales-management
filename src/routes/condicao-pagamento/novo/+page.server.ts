@@ -3,19 +3,19 @@ import type { Actions, PageServerLoad } from './$types';
 import { query } from '$lib/db';
 import { redirect } from '@sveltejs/kit';
 import { superValidate } from 'sveltekit-superforms';
-import { formSchema } from '$lib/validation/paycondSchema';
+import { payCondSchema } from '$lib/validation/paycondSchema';
 import {zod} from "sveltekit-superforms/adapters"
 import { fail } from 'sveltekit-superforms';
 
 export const load: PageServerLoad = async () => {
   const paymentMethods = await query('SELECT * FROM payment_method');
 
-  return { paymentMethods, form: await superValidate(zod(formSchema)) };
+  return { paymentMethods, form: await superValidate(zod(payCondSchema)) };
 };
 
 export const actions: Actions = {
   default: async (event) => {
-    const form = await superValidate(event, zod(formSchema));
+    const form = await superValidate(event, zod(payCondSchema));
     console.log("error:", form.errors);
     console.log(form.data);
     if (!form.valid) {

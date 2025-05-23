@@ -1,7 +1,7 @@
 import type { PageServerLoad, Actions } from "./$types";
 import { query } from "$lib/db";
 import { redirect, error } from "@sveltejs/kit";
-import { formSchema } from "$lib/validation/paymentSchema";
+import { payMethodSchema } from "$lib/validation/paymentSchema";
 import { zod } from "sveltekit-superforms/adapters";
 import { superValidate } from "sveltekit-superforms";
 import { fail } from "@sveltejs/kit";
@@ -17,14 +17,14 @@ export const load: PageServerLoad = async ({ params }) => {
     throw error(404, "Forma de pagamento não encontrada");
   }
 
-  const form = await superValidate(paymentMethod, zod(formSchema));
+  const form = await superValidate(paymentMethod, zod(payMethodSchema));
 
   return { paymentMethod, form };
 };
 
 export const actions: Actions = {
   default: async (event) => {
-    const form = await superValidate(event, zod(formSchema));
+    const form = await superValidate(event, zod(payMethodSchema));
     if (!form.valid) {
       return fail(400, {
         form,
