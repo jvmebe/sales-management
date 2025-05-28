@@ -6,21 +6,24 @@
   import { stateSchema } from "$lib/validation/stateSchema";
   import { superForm } from "sveltekit-superforms";
   import { zodClient } from "sveltekit-superforms/adapters";
+  import CountryListDialog from "../modals/country-list-dialog.svelte";
+  import { toast } from "svelte-sonner";
+  import { goto } from "$app/navigation";
 
   let { data } = $props();
 
   const form = superForm(data.form, {
     validators: zodClient(stateSchema),
+    applyAction: true,
+    onResult({ result }) {
+      if (result.type === "success") {
+        toast.success("Cidade criada com sucesso.");
+        setTimeout(() => goto('/cidade'), 0);
+      }
+    },
   });
 
   const { form: formData, enhance } = form;
-
-  console.log($formData);
-
-  const columns = [
-    { label: "ID", key: "id", class: "w-[100px]" },
-    { label: "Nome", key: "nome" },
-  ];
 
   let country = $state({
     id: $formData.country_id,
@@ -32,15 +35,9 @@
 
     $formData.country_id = country.id;
   });
-
-  async function getCountries(): Promise<any> {
-    const response = await fetch("/pais");
-    let countryRows = await response.json();
-    return countryRows;
-  }
 </script>
 
-<form use:enhance method="POST">
+<form use:enhance action="?/create" method="POST">
   <div class="flex gap-4">
     <FormInput
       {form}
@@ -65,13 +62,7 @@
       bind:userInput={country.nome}
     />
     <div class="mt-8 ml-0">
-      <PickerDialog
-        title="Escolher país"
-        {columns}
-        bind:pickedItem={country}
-        getData={getCountries}
-        uri="estado"
-      />
+      <CountryListDialog {data} bind:pickedItem={country} />
     </div>
   </div>
   <input

@@ -1,21 +1,26 @@
-import type { Actions, PageServerLoad } from './$types';
+import { createCountry, createState } from '$lib/actions/locationActions';
 import { query } from '$lib/db';
-import { redirect } from '@sveltejs/kit';
-import { message, superValidate } from 'sveltekit-superforms';
 import { citySchema } from '$lib/validation/citySchema';
-import {zod} from "sveltekit-superforms/adapters"
-import { fail } from 'sveltekit-superforms';
+import { countrySchema } from '$lib/validation/countrySchema';
+import { stateSchema } from '$lib/validation/stateSchema';
+import { fail, superValidate } from 'sveltekit-superforms';
+import { zod } from "sveltekit-superforms/adapters";
+import type { Actions, PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async () => {
-  return {
-    form: await superValidate(zod(citySchema)),
-   }
+
+    const form = await superValidate(zod(citySchema));
+    const stateForm = await superValidate(zod(stateSchema));
+    const countryForm = await superValidate(zod(countrySchema));
+  
+    return {
+      form, stateForm, countryForm
+    };
 };
 
 export const actions: Actions = {
-  default: async (event) => {
+  create: async (event) => {
     const form = await superValidate(event, zod(citySchema));
-    console.log("PLEASE")
     if (!form.valid) {
       console.log(form.errors)
       return fail(400, {
@@ -33,4 +38,6 @@ export const actions: Actions = {
       ]
     );
   },
+  state: createState,
+  country: createCountry,
 };

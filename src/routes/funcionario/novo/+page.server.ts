@@ -8,7 +8,7 @@ import { fail } from "sveltekit-superforms";
 import { citySchema } from '$lib/validation/citySchema';
 import { stateSchema } from '$lib/validation/stateSchema';
 import { countrySchema } from '$lib/validation/countrySchema';
-import { saveCity } from "$lib/actions/cityActions";
+import { createCity, createCountry, createState } from "$lib/actions/locationActions";
 
 export const load: PageServerLoad = async () => {
 
@@ -76,5 +76,7 @@ export const actions: Actions = {
     );
     throw redirect(303, "/funcionario");
   },
-  city: saveCity,
+  city: createCity,
+  state: createState,
+  country: createCountry,
 };

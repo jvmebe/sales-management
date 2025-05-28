@@ -7,6 +7,7 @@
   import Search from "@lucide/svelte/icons/search";
   import RefreshCcw from "@lucide/svelte/icons/refresh-ccw";
   import CountryCreateDialog from "./country-create-dialog.svelte";
+  import ScrollArea from "../ui/scroll-area/scroll-area.svelte";
 
   let { data, pickedItem = $bindable() } = $props();
 
@@ -20,7 +21,7 @@
   let rowData: any = $state();
 
   async function refresh() {
-    const response = await fetch("/estado");
+    const response = await fetch("/pais");
     let countryRows = await response.json();
     rowData = await countryRows;
   }
@@ -44,9 +45,10 @@
           await refresh();
         }}><RefreshCcw /></Button
       >
-      <CountryCreateDialog {data} />
+      <CountryCreateDialog {data} updateList={refresh()}/>
     </div>
     <div class="grid gap-4 py-4">
+      <ScrollArea class="h-[500px]">
       <DynamicTable {columns} rows={rowData} showPicker={true}>
         <svelte:fragment slot="picker" let:row let:handlePick>
           <Dialog.Close
@@ -73,6 +75,7 @@
           </Table.Cell>
         </svelte:fragment>
       </DynamicTable>
+      </ScrollArea>
     </div>
     <Dialog.Footer></Dialog.Footer>
   </Dialog.Content>

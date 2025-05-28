@@ -26,7 +26,6 @@
         const response = await fetch("/cidade");
         let countryRows = await response.json();
         rowData = await countryRows;
-        console.log("woah")
     }
 
     onMount(() => {

@@ -1,31 +1,30 @@
 <script lang="ts">
-  import * as Form from "$lib/components/ui/form/index.js";
-  import { clientSchema, type FormSchema } from "$lib/validation/clientSchema";
-  import SuperDebug, {
-    type SuperValidated,
-    type Infer,
-    superForm,
-  } from "sveltekit-superforms";
-  import { zodClient } from "sveltekit-superforms/adapters";
-  import Button from "$lib/components/ui/button/button.svelte";
+  import { goto } from "$app/navigation";
   import FormInput from "$lib/components/form-input.svelte";
-  import PickerDialog from "$lib/components/picker-dialog.svelte";
-  import { browser } from "$app/environment";
+  import Button from "$lib/components/ui/button/button.svelte";
+  import * as Form from "$lib/components/ui/form/index.js";
+  import { citySchema } from "$lib/validation/citySchema";
+  import { toast } from "svelte-sonner";
+  import { superForm } from "sveltekit-superforms";
+  import { zodClient } from "sveltekit-superforms/adapters";
+  import StateListDialog from "../modals/state-list-dialog.svelte";
 
   let { data } = $props();
 
   const form = superForm(data.form, {
-    validators: zodClient(clientSchema),
+    validators: zodClient(citySchema),
+    applyAction: true,
+    onResult({ result }) {
+      if (result.type === "success") {
+        toast.success("Cidade criada com sucesso.");
+        setTimeout(() => goto('/cidade'), 0);
+      }
+    },
   });
 
   const { form: formData, enhance } = form;
 
   console.log($formData);
-
-  const columns = [
-    { label: "ID", key: "id", class: "w-[100px]" },
-    { label: "Nome", key: "nome" },
-  ];
 
   let state = $state({
     id: $formData.state_id,
@@ -37,15 +36,9 @@
 
     $formData.state_id = state.id;
   });
-
-  async function getStates(): Promise<any> {
-    const response = await fetch("/estado");
-    let cityRows = await response.json();
-    return cityRows;
-  }
 </script>
 
-<form method="POST">
+<form method="POST" action="?/create" use:enhance>
   <div class="flex gap-4">
     <FormInput
       {form}
@@ -63,13 +56,7 @@
       bind:userInput={state.nome}
     />
     <div class="mt-8 ml-0">
-      <PickerDialog
-        title="Escolher condição de pagamento"
-        {columns}
-        bind:pickedItem={state}
-        getData={getStates}
-        uri="estado"
-      />
+      <StateListDialog {data} bind:pickedItem={state} />
     </div>
   </div>
   <input

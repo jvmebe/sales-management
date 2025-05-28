@@ -1,15 +1,15 @@
 <script lang="ts">
+  import { browser } from "$app/environment";
   import FormInput from "$lib/components/form-input.svelte";
   import { buttonVariants } from "$lib/components/ui/button/index.js";
   import * as Dialog from "$lib/components/ui/dialog/index.js";
   import * as Form from "$lib/components/ui/form/index.js";
   import { citySchema } from "$lib/validation/citySchema";
   import Plus from "@lucide/svelte/icons/plus";
+  import { toast } from "svelte-sonner";
   import SuperDebug, { superForm } from "sveltekit-superforms";
   import { zodClient } from "sveltekit-superforms/adapters";
   import StateListDialog from "./state-list-dialog.svelte";
-  import { browser } from "$app/environment";
-  import { toast } from "svelte-sonner";
 
   let { data, updateList } = $props();
 
@@ -30,14 +30,7 @@
 
   const { form: formData, enhance } = form;
 
-  console.log($formData);
-
   let open = $state(false);
-
-  const columns = [
-    { label: "ID", key: "id", class: "w-[100px]" },
-    { label: "Nome", key: "nome" },
-  ];
 
   let state = $state({
     id: $formData.state_id,
