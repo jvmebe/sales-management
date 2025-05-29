@@ -65,12 +65,6 @@
          "Select a month"
      );
 
-   $effect(() => {
-       value = date
-           ? parseDate(date)
-           : undefined;
-   });
-
 
    $effect(() => {
      value;

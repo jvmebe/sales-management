@@ -154,7 +154,6 @@
     <Separator class="my-4" />
     <div class="flex gap-4">
         <FormInput form={form} label={labelRg} classes="w-36 flex flex-col" name="rg" bind:userInput={$formData.rg}/>
-        <FormInput form={form} label="IE ST" classes="w-36 flex flex-col" name="inscricao_estadual_substituto_tributario" bind:userInput={$formData.inscricao_estadual_substituto_tributario}/>
         <FormInput form={form} label={labelCpf} classes="w-36 flex flex-col" name="cpf" bind:userInput={$formData.cpf}/>
         <Form.Field {form} name="data_nascimento" class="flex flex-col">
                 <DatePicker label={labelDataNasc} bind:date={date} />

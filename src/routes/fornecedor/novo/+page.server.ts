@@ -30,8 +30,8 @@ export const actions: Actions = {
 
     await query(
       `INSERT INTO sale_system.supplier
-      (is_juridica, ativo, nome, apelido, cpf, rg, data_nascimento, email, telefone, endereco, numero, complemento, bairro, cep, cidade_id, inscricao_estadual_substituto_tributario)
-      VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      (is_juridico, ativo, nome, apelido, cpf, rg, data_nascimento, email, telefone, endereco, numero, complemento, bairro, cep, cidade_id)
+      VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [
         form.data.is_juridica,
         form.data.ativo,
@@ -48,7 +48,6 @@ export const actions: Actions = {
         form.data.bairro,
         form.data.cep,
         form.data.cidade_id,
-        form.data.inscricao_estadual_substituto_tributario,
       ]
     );
     return {

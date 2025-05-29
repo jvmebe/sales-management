@@ -60,9 +60,6 @@
             <FormInput form={form} label="Nome" classes="w-96" name="nome" bind:userInput={$formData.nome}/>
             <FormInput form={form} label={"Sigla"} classes="w-24" name="sigla" bind:userInput={$formData.sigla}/>
         </div>
-        {#if browser}
-        <SuperDebug data={$formData} />
-        {/if}
         <Dialog.Footer class="mt-5">
           <Form.Button style="float: right; margin-right: 1em;">Salvar</Form.Button>
         </Dialog.Footer>

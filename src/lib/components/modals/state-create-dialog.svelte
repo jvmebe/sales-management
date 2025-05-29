@@ -86,9 +86,6 @@
           <CountryListDialog {data} bind:pickedItem={country} />
         </div>
       </div>
-      {#if browser}
-        <SuperDebug data={$formData} />
-      {/if}
       <Dialog.Footer class="mt-5">
         <Form.Button style="float: right; margin-right: 1em;"
           >Salvar</Form.Button

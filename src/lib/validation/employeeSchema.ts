@@ -15,26 +15,26 @@ export const employeeSchema = z.object({
   telefone: z.string().max(15),
 
   endereco: z.string().max(120),
-  numero: z.number().int(),
+  numero: z.coerce.number().int(),
   complemento: z.string().max(100),
   bairro: z.string().max(100),
 
-  cidade_id: z.number().int().nonnegative(),
+  cidade_id: z.coerce.number().int().nonnegative(),
 
-  cep: z.string().max(9), // e.g., "12345-678"
+  cep: z.string().max(9),
 
   ativo: z.boolean().default(true),
 
   matricula: z.string().max(10),
   cargo: z.string().max(100),
-  salario: z.number().nonnegative(),
+  salario: z.coerce.number().nonnegative(),
 
   data_admissao: z.string(),
   
   data_demissao: z.string().optional(),
 
   turno: z.string().max(30),
-  carga_horaria: z.number().int().nonnegative(),
+  carga_horaria: z.coerce.number().int().nonnegative(),
 });
 
 export type FormSchema = typeof employeeSchema;
