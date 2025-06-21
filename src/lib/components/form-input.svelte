@@ -4,7 +4,7 @@
   import * as Form from "$lib/components/ui/form/index.js";
   import { Input } from "$lib/components/ui/input/index.js";
 
-  let {form, label, classes="", readonly=false, name, userInput = $bindable()} = $props();
+  let {form, label, classes="", readonly=false, name, type="text", userInput = $bindable()} = $props();
 
 </script>
 

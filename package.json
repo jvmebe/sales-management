@@ -40,6 +40,7 @@
 	},
 	"dependencies": {
 		"@sveltestrap/sveltestrap": "^7.1.0",
+		"lucide-svelte": "^0.522.0",
 		"mysql2": "^3.13.0",
 		"svelte-dnd-action": "^0.9.61"
 	}
