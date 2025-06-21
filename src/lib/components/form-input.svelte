@@ -15,5 +15,6 @@
             <Input {readonly} {...props} bind:value={userInput} />
         {/snippet}
     </Form.Control>
+    {#if form.$errors}<span class="invalid">{form.$errors}</span>{/if}
     <Form.FieldErrors />
 </Form.Field>

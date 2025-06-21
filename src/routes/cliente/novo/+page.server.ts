@@ -1,23 +1,34 @@
-import type { Actions, PageServerLoad } from './$types';
-import { query } from '$lib/db';
-import { redirect } from '@sveltejs/kit';
-import { superValidate } from 'sveltekit-superforms';
-import { clientSchema } from '$lib/validation/clientSchema';
-import {zod} from "sveltekit-superforms/adapters"
-import { fail } from 'sveltekit-superforms';
+import type { Actions, PageServerLoad } from "./$types";
+import { query } from "$lib/db";
+import { redirect } from "@sveltejs/kit";
+import { superValidate } from "sveltekit-superforms";
+import { clientSchema } from "$lib/validation/clientSchema";
+import { zod } from "sveltekit-superforms/adapters";
+import { fail } from "sveltekit-superforms";
+import { citySchema } from "$lib/validation/citySchema";
+import { stateSchema } from "$lib/validation/stateSchema";
+import { countrySchema } from "$lib/validation/countrySchema";
 
 export const load: PageServerLoad = async () => {
+  const form = await superValidate(zod(clientSchema));
+  const cityForm = await superValidate(zod(citySchema));
+  const stateForm = await superValidate(zod(stateSchema));
+  const countryForm = await superValidate(zod(countrySchema));
+
   return {
-    form: await superValidate(zod(clientSchema)),
+    form,
+    cityForm,
+    stateForm,
+    countryForm,
   };
 };
 
 export const actions: Actions = {
   default: async (event) => {
     const form = await superValidate(event, zod(clientSchema));
-    console.log(form.data)
+    console.log(form.data);
     if (!form.valid) {
-      console.log(form.errors)
+      console.log(form.errors);
       return fail(400, {
         form,
       });
@@ -25,7 +36,7 @@ export const actions: Actions = {
 
     const date = new Date(form.data.data_nascimento);
     console.log(date);
-    form.data.data_nascimento = date.toISOString().split("T")[0];;
+    form.data.data_nascimento = date.toISOString().split("T")[0];
 
     await query(
       `INSERT INTO client (
@@ -49,7 +60,7 @@ export const actions: Actions = {
         form.data.cep,
         form.data.limite_credito,
         form.data.cidade_id,
-        form.data.cond_pag_id
+        form.data.cond_pag_id,
       ]
     );
     return {

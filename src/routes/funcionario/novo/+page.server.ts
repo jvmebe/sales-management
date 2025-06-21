@@ -36,8 +36,7 @@ export const actions: Actions = {
 
     const birthDate = new Date(form.data.data_nascimento);
     form.data.data_nascimento = birthDate.toISOString().split("T")[0];
-    const hireDate = new Date(form.data.data_nascimento);
-    form.data.data_admissao = hireDate.toISOString().split("T")[0];
+    
 
     await query(
       `INSERT INTO employee (nome, apelido, data_nascimento, cpf, rg, email, telefone, endereco, bairro, cep, cidade_id, ativo, matricula, cargo, salario, data_admissao, turno, carga_horaria)
@@ -58,7 +57,7 @@ export const actions: Actions = {
         form.data.matricula,
         form.data.cargo,
         form.data.salario,
-        hireDate,
+        form.data.data_admissao,
         form.data.turno,
         form.data.carga_horaria,
       ]

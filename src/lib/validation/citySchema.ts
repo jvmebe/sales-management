@@ -7,3 +7,4 @@ export const citySchema = z.object({
 })
 
 export type FormSchema = typeof citySchema;
+export type City = z.infer<typeof citySchema>;

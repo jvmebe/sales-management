@@ -170,6 +170,7 @@
         label="Data de Nascimento"
         bind:date={$formData.data_nascimento}
       />
+      <input type="hidden" name="data_nascimento" bind:value={$formData.data_nascimento}> 
     </Form.Field>
     <FormInput
       {form}

@@ -12,6 +12,7 @@
       superForm
     } from "sveltekit-superforms";
     import { zodClient } from "sveltekit-superforms/adapters";
+    import CityListDialog from "../modals/city-list-dialog.svelte";
 
     let { data } = $props();
     export const ssr = false;
@@ -22,7 +23,7 @@
 
     const { form: formData, enhance } = form;
 
-
+    
 
     let date = $state($formData.data_nascimento);
     let cond_pag = $state({
@@ -176,7 +177,7 @@
         <FormInput form={form} label="Estado" readonly={true} classes="w-48" name="estado_nome" bind:userInput={cidade.state_nome}/>
         <FormInput form={form} label="Cidade" readonly={true} classes="w-96" name="cidade_nome" bind:userInput={cidade.nome}/>
         <div class="mt-8 ml-0">
-            <PickerDialog title="Escolher cidade" columns={cityColumns} bind:pickedItem={cidade} getData={getCities} uri="cidade"/>
+            <CityListDialog data={data} bind:pickedItem={cidade} />
         </div>
         <FormInput form={form} label="Endereço" classes="w-72" name="endereco" bind:userInput={$formData.endereco}/>
         <FormInput form={form} label="Número" classes="w-24" name="numero" bind:userInput={$formData.numero}/>
@@ -191,9 +192,7 @@
         <FormInput form={form} label={labelRg} classes="w-36 flex flex-col" name="rg" bind:userInput={$formData.rg}/>
         <FormInput form={form} label={labelCpf} classes="w-36 flex flex-col" name="cpf" bind:userInput={$formData.cpf}/>
         <Form.Field {form} name="data_nascimento" class="flex flex-col">
-
                 <DatePicker label={labelDataNasc} bind:date={date} />
-
         </Form.Field>
         <FormInput form={form} label="Email" classes="w-1/5 flex flex-col" name="email" bind:userInput={$formData.email}/>
         <FormInput form={form} label="Telefone" classes="w-1/5 flex flex-col" name="telefone" bind:userInput={$formData.telefone}/>
