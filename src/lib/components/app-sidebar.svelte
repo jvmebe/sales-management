@@ -7,6 +7,9 @@
 	import Frame from "@lucide/svelte/icons/frame";
 	import GalleryVerticalEnd from "@lucide/svelte/icons/gallery-vertical-end";
 	import ClipboardPen from "@lucide/svelte/icons/clipboard-pen"
+	import Boxes from "@lucide/svelte/icons/boxes";
+	import MapPin from "@lucide/svelte/icons/map-pin";
+	import CircleDollarSign from "@lucide/svelte/icons/circle-dollar-sign";
 	import Map from "@lucide/svelte/icons/map";
 	import Settings2 from "@lucide/svelte/icons/settings-2";
 	import SquareTerminal from "@lucide/svelte/icons/square-terminal";
@@ -31,20 +34,6 @@
 				icon: ClipboardPen,
 				isActive: true,
 				items: [
-					{   id: 'sub1',
-						title: "Cidade",
-						url: "/cidade",
-					},
-					{
-					    id: 'sub2',
-						title: "Estado",
-						url: "/estado",
-					},
-					{
-					    id: 'sub3',
-						title: "País",
-						url: "/pais",
-					},
 					{
 					    id: 'sub4',
 						title: "Cliente",
@@ -60,6 +49,65 @@
 						title: "Funcionário",
 						url: "/funcionario",
 					},
+					{
+					    id: 'sub8',
+						title: "Transportadora",
+						url: "/transportadora",
+					},
+				],
+			},
+			{
+				title: "Produtos",
+				url: "#",
+				icon: Boxes,
+				isActive: true,
+				items: [
+					{   id: 'sub9',
+						title: "Produtos",
+						url: "/produto",
+					},
+					{   id: 'sub10',
+						title: "Categorias",
+						url: "/produto/categoria",
+					},
+					{   id: 'sub11',
+						title: "Marcas",
+						url: "/produto/marca",
+					},
+					{   id: 'sub12',
+						title: "Unidades de Medida",
+						url: "/produto/unidade-medida",
+					},
+				],
+			},
+			{
+				title: "Locais",
+				url: "#",
+				icon: MapPin,
+				isActive: true,
+				items: [
+					{   id: 'sub1',
+						title: "Cidade",
+						url: "/cidade",
+					},
+					{
+					    id: 'sub2',
+						title: "Estado",
+						url: "/estado",
+					},
+					{
+					    id: 'sub3',
+						title: "País",
+						url: "/pais",
+					},
+				],
+			},
+			{
+				title: "Financeiro",
+				url: "#",
+				icon: CircleDollarSign,
+				isActive: true,
+				items: [
 					{
 					    id: 'sub7',
 						title: "Forma de Pagamento",

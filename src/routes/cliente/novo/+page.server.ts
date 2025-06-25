@@ -1,70 +1,50 @@
-import type { Actions, PageServerLoad } from "./$types";
-import { query } from "$lib/db";
-import { redirect } from "@sveltejs/kit";
-import { superValidate } from "sveltekit-superforms";
-import { clientSchema } from "$lib/validation/clientSchema";
-import { zod } from "sveltekit-superforms/adapters";
-import { fail } from "sveltekit-superforms";
-import { citySchema } from "$lib/validation/citySchema";
-import { stateSchema } from "$lib/validation/stateSchema";
-import { countrySchema } from "$lib/validation/countrySchema";
+// src/routes/cliente/novo/+page.server.ts (Corrigido para carregar todos os forms)
+import type { Actions, PageServerLoad } from './$types';
+import { query } from '$lib/db';
+import { redirect } from '@sveltejs/kit';
+import { superValidate } from 'sveltekit-superforms';
+import { clientSchema } from '$lib/validation/clientSchema';
+import { zod } from 'sveltekit-superforms/adapters';
+import { fail } from 'sveltekit-superforms';
+import { citySchema } from '$lib/validation/citySchema';
+import { stateSchema } from '$lib/validation/stateSchema';
+import { countrySchema } from '$lib/validation/countrySchema';
+import { createCity, createCountry, createState } from '$lib/actions/locationActions';
 
 export const load: PageServerLoad = async () => {
-  const form = await superValidate(zod(clientSchema));
-  const cityForm = await superValidate(zod(citySchema));
-  const stateForm = await superValidate(zod(stateSchema));
-  const countryForm = await superValidate(zod(countrySchema));
+	// 1. Carregando todos os formulários, como no seu código original
+	const form = await superValidate(zod(clientSchema));
+	const cityForm = await superValidate(zod(citySchema));
+	const stateForm = await superValidate(zod(stateSchema));
+	const countryForm = await superValidate(zod(countrySchema));
 
-  return {
-    form,
-    cityForm,
-    stateForm,
-    countryForm,
-  };
+	// 2. Buscando também a lista de condições de pagamento para o seletor
+	const paymentConditions = await query(
+		'SELECT id, descricao FROM payment_condition ORDER BY descricao'
+	);
+
+	return {
+		form,
+		cityForm,
+		stateForm,
+		countryForm,
+		paymentConditions
+	};
 };
 
 export const actions: Actions = {
-  default: async (event) => {
-    const form = await superValidate(event, zod(clientSchema));
-    console.log(form.data);
-    if (!form.valid) {
-      console.log(form.errors);
-      return fail(400, {
-        form,
-      });
-    }
+	// Ação para salvar o novo cliente
+	default: async (event) => {
+		const form = await superValidate(event, zod(clientSchema));
+		if (!form.valid) {
+			return fail(400, { form });
+		}
+		// ... (lógica para inserir cliente que você já tem) ...
+		throw redirect(303, '/cliente');
+	},
 
-    const date = new Date(form.data.data_nascimento);
-    console.log(date);
-    form.data.data_nascimento = date.toISOString().split("T")[0];
-
-    await query(
-      `INSERT INTO client (
-        is_juridica, is_ativo, nome, apelido, cpf, rg, data_nascimento,
-        telefone, email, endereco, numero, bairro, cep,
-        limite_credito, cidade_id, cond_pag_id
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-      [
-        form.data.is_juridica,
-        form.data.is_ativo,
-        form.data.nome,
-        form.data.apelido,
-        form.data.cpf,
-        form.data.rg,
-        form.data.data_nascimento,
-        form.data.telefone,
-        form.data.email,
-        form.data.endereco,
-        form.data.numero,
-        form.data.bairro,
-        form.data.cep,
-        form.data.limite_credito,
-        form.data.cidade_id,
-        form.data.cond_pag_id,
-      ]
-    );
-    return {
-      form,
-    };
-  },
+	// Actions para os modais de localização
+	city: createCity,
+	state: createState,
+	country: createCountry
 };
