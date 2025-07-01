@@ -11,9 +11,9 @@ export type Country = {
 
 export const CountrySchema = z.object({
   id: z.number().optional(),
-  nome: z.string().min(3, { message: 'O nome do país deve ter no mínimo 3 caracteres.' }),
+  nome: z.string().min(3, { message: 'O nome do país deve ter no mínimo 3 caracteres.' }).max(50, { message: "O nome do país não pode ter mais que 50 caracteres." }),
   sigla: z.string().length(2, { message: 'A sigla deve ter exatamente 2 caracteres.' }).toUpperCase(),
-  ativo: z.boolean(),
+  ativo: z.coerce.boolean(),
 });
 
 export type CountryForm = z.infer<typeof CountrySchema>;
@@ -34,10 +34,10 @@ export type State = {
 
 export const StateSchema = z.object({
   id: z.number().optional(),
-  nome: z.string().min(2, { message: "O nome do estado deve ter no mínimo 2 caracteres." }),
+  nome: z.string().min(2, { message: "O nome do estado deve ter no mínimo 2 caracteres." }).max(50, { message: 'O nome do estado não pode ter mais que 50 caracteres.' }),
   sigla: z.string().length(2, { message: "A sigla deve ter exatamente 2 caracteres." }).toUpperCase(),
   country_id: z.coerce.number({ required_error: "Selecione um país." }).gt(0, { message: "Selecione um país." }),
-  ativo: z.boolean(),
+  ativo: z.coerce.boolean(),
 });
 
 export type StateForm = z.infer<typeof StateSchema>;
@@ -59,8 +59,8 @@ export type City = {
 
 export const CitySchema = z.object({
   id: z.number().optional(),
-  nome: z.string().min(2, { message: "O nome da cidade é obrigatório." }),
-  state_id: z.coerce.number({ required_error: "Selecione um estado." }).gt(0, { message: "Selecione um estado." }),
+  nome: z.string().min(2, { message: "O nome da cidade é obrigatório." }).max(50, {message: "Nome da cidade não pode ter mais que 50 caracteres."}),
+  state_id: z.coerce.number({ message: "Selecione um estado.", invalid_type_error:"Selecione um estado." }).gt(0, { message: "Selecione um estado." }),
   ativo: z.coerce.boolean(),
 });
 
@@ -77,7 +77,7 @@ export type PaymentMethod = {
 export const PaymentMethodSchema = z.object({
   id: z.number().optional(),
   descricao: z.string().min(2, { message: "A descrição deve ter no mínimo 2 caracteres." }).max(50),
-  ativo: z.boolean(),
+  ativo: z.coerce.boolean(),
 });
 
 export type PaymentMethodForm = z.infer<typeof PaymentMethodSchema>;
@@ -112,11 +112,11 @@ const PaymentInstallmentSchema = z.object({
 
 export const PaymentConditionSchema = z.object({
   id: z.number().optional(),
-  descricao: z.string().min(3, "A descrição é obrigatória."),
+  descricao: z.string().min(3, "A descrição é obrigatória.").max(50, { message: "A descrição não pode ter mais que 50 caracteres." }),
   juros: z.coerce.number().min(0).optional(),
   multa: z.coerce.number().min(0).optional(),
   desconto: z.coerce.number().min(0).optional(),
-  ativo: z.boolean(),
+  ativo: z.coerce.boolean(),
   parcelas: z.array(PaymentInstallmentSchema).min(1, "Adicione pelo menos uma parcela."),
 }).refine(data => {
     const totalPercent = data.parcelas.reduce((sum, p) => sum + p.percentual_valor, 0);
@@ -141,9 +141,9 @@ export type ProductUnit = {
 
 export const ProductUnitSchema = z.object({
   id: z.number().optional(),
-  nome: z.string().min(2, { message: "O nome deve ter no mínimo 2 caracteres." }),
+  nome: z.string().min(2, { message: "O nome deve ter no mínimo 2 caracteres." }).max(80, { message: "O nome não pode ter mais que 80 caracteres." }),
   sigla: z.string().min(1, { message: "A sigla é obrigatória." }).max(10),
-  ativo: z.boolean(),
+  ativo: z.coerce.boolean(),
 });
 
 export type ProductUnitForm = z.infer<typeof ProductUnitSchema>;
@@ -158,8 +158,8 @@ export type ProductBrand = {
 
 export const ProductBrandSchema = z.object({
   id: z.number().optional(),
-  nome: z.string().min(2, { message: "O nome da marca deve ter no mínimo 2 caracteres." }),
-  ativo: z.boolean(),
+  nome: z.string().min(2, { message: "O nome da marca deve ter no mínimo 2 caracteres." }).max(80, { message: "O nome da marca não pode ter mais que 80 caracteres." }),
+  ativo: z.coerce.boolean(),
 });
 
 export type ProductBrandForm = z.infer<typeof ProductBrandSchema>;
@@ -175,9 +175,9 @@ export type ProductCategory = {
 
 export const ProductCategorySchema = z.object({
   id: z.number().optional(),
-  nome: z.string().min(2, { message: "O nome da categoria deve ter no mínimo 2 caracteres." }),
+  nome: z.string().min(2, { message: "O nome da categoria deve ter no mínimo 2 caracteres." }).max(80, { message: "O nome da categoria não pode ter mais que 80 caracteres." }),
   descricao: z.string().optional().nullable(),
-  ativo: z.boolean(),
+  ativo: z.coerce.boolean(),
 });
 
 export type ProductCategoryForm = z.infer<typeof ProductCategorySchema>;
@@ -198,7 +198,6 @@ export type Supplier = {
   bairro: string | null;
   cep: string | null;
   cidade_id: number | null;
-  inscricao_estadual: string | null;
   ativo: boolean;
   data_criacao: string;
   data_modificacao: string;
@@ -209,22 +208,21 @@ export type Supplier = {
 
 export const SupplierSchema = z.object({
   id: z.number().optional(),
-  is_juridica: z.boolean(),
-  nome: z.string().min(3, "O nome/razão social é obrigatório."),
-  apelido: z.string().optional().nullable(),
-  cpf: z.string().optional().nullable(),
-  rg: z.string().optional().nullable(),
+  is_juridica: z.coerce.boolean(),
+  nome: z.string().min(3, "O nome/razão social é obrigatório.").max(80, "O nome/razão social não pode ter mais que 80 caracteres."),
+  apelido: z.string().max(80, "O apelido/nome fantasia não pode ter mais que 80 caracteres.").optional().nullable(),
+  cpf: z.string().max(14, "O CPF/CNPJ não pode ter mais que 14 caracteres.").optional().nullable(),
+  rg: z.string().max(15, "O RG/IE não pode ter mais que 15 caracteres.").optional().nullable(),
   data_nascimento: z.date().optional().nullable(),
-  email: z.string().email("Email inválido.").optional().nullable(),
-  telefone: z.string().optional().nullable(),
-  endereco: z.string().optional().nullable(),
-  numero: z.string().optional().nullable(),
-  complemento: z.string().optional().nullable(),
-  bairro: z.string().optional().nullable(),
-  cep: z.string().optional().nullable(),
-  cidade_id: z.coerce.number().optional().nullable(),
-  inscricao_estadual: z.string().optional().nullable(),
-  ativo: z.boolean(),
+  email: z.string().email("Email inválido.").max(100, "O email não pode ter mais que 100 caracteres."),
+  telefone: z.string().min(1, "O telefone é obrigatório.").max(15, "O telefone não pode ter mais que 15 caracteres."),
+  endereco: z.string().min(1, "O endereço é obrigatório.").max(80, "O endereço não pode ter mais que 80 caracteres."),
+  numero: z.string().min(1, "O número é obrigatório.").max(6, "O número não pode ter mais que 6 caracteres."),
+  complemento: z.string().max(80, "O complemento não pode ter mais que 80 caracteres."),
+  bairro: z.string().min(1, "O bairro é obrigatório.").max(80, "O bairro não pode ter mais que 80 caracteres."),
+  cep: z.string().min(1, "O CEP é obrigatório.").max(8, "O CEP não pode ter mais que 8 caracteres."),
+  cidade_id: z.coerce.number(),
+  ativo: z.coerce.boolean(),
 });
 
 export type SupplierForm = z.infer<typeof SupplierSchema>;
@@ -254,9 +252,9 @@ export type Product = {
 
 export const ProductSchema = z.object({
   id: z.number().optional(),
-  nome: z.string().min(3, "O nome do produto é obrigatório."),
+  nome: z.string().min(3, "O nome do produto é obrigatório.").max(80, "O nome do produto não pode ter mais que 80 caracteres."),
   descricao: z.string().optional().nullable(),
-  codigo_barras: z.string().optional().nullable(),
+  codigo_barras: z.string().max(20, "O código de barras não pode ter mais que 20 caracteres.").optional().nullable(),
   valor_compra: z.coerce.number().min(0, "O valor não pode ser negativo."),
   valor_venda: z.coerce.number().min(0, "O valor não pode ser negativo."),
   estoque: z.coerce.number().int("O estoque deve ser um número inteiro.").min(0),
@@ -264,7 +262,7 @@ export const ProductSchema = z.object({
   category_id: z.coerce.number().optional().nullable(),
   unit_id: z.coerce.number().min(1, "A unidade de medida é obrigatória."),
   supplier_id: z.coerce.number().optional().nullable(),
-  ativo: z.boolean().default(true),
+  ativo: z.coerce.boolean().default(true),
 });
 
 export type ProductForm = z.infer<typeof ProductSchema>;
@@ -307,7 +305,7 @@ export const TransportadoraSchema = z.object({
   bairro: z.string().optional().nullable(),
   cep: z.string().optional().nullable(),
   cidade_id: z.coerce.number().optional().nullable(),
-  ativo: z.boolean(),
+  ativo: z.coerce.boolean(),
 });
 
 export type TransportadoraForm = z.infer<typeof TransportadoraSchema>;
@@ -341,25 +339,30 @@ export type Employee = {
 
 export const EmployeeSchema = z.object({
   id: z.number().optional(),
-  nome: z.string().min(3, "O nome é obrigatório."),
-  apelido: z.string().optional().nullable(),
+  nome: z.string().min(3, "O nome é obrigatório.")
+    .max(80, "O nome não pode ter mais que 80 caracteres."),
+  apelido: z.string()
+    .max(80, "O apelido não pode ter mais que 80 caracteres.").optional().nullable(),
   data_nascimento: z.date({ invalid_type_error: "Data inválida." }).optional().nullable(),
-  cpf: z.string().optional().nullable(),
-  rg: z.string().optional().nullable(),
-  email: z.string().email("Email inválido.").optional().nullable(),
-  telefone: z.string().optional().nullable(),
-  endereco: z.string().optional().nullable(),
-  numero: z.string().optional().nullable(),
-  complemento: z.string().optional().nullable(),
-  bairro: z.string().optional().nullable(),
-  cidade_id: z.coerce.number().optional().nullable(),
-  cep: z.string().optional().nullable(),
-  ativo: z.boolean().default(true),
-  matricula: z.string().optional().nullable(),
-  cargo: z.string().optional().nullable(),
-  salario: z.coerce.number().min(0).optional().nullable(),
-  data_admissao: z.date({ invalid_type_error: "Data inválida." }).optional().nullable(),
-  turno: z.string().optional().nullable(),
+  cpf: z.string()
+    .max(14, "O CPF não pode ter mais que 14 caracteres.").optional().nullable(),
+  rg: z.string()
+    .max(15, "O RG não pode ter mais que 15 caracteres.").optional().nullable(),
+  email: z.string().email("Email inválido.").max(100, "O email não pode ter mais que 100 caracteres."),
+  telefone: z.string().min(1, "O telefone é obrigatório.").max(15, "O telefone não pode ter mais que 15 caracteres."),
+  endereco: z.string().min(1, "O endereço é obrigatório.").max(80, "O endereço não pode ter mais que 80 caracteres."),
+  numero: z.string().min(1, "O número é obrigatório.").max(6, "O número não pode ter mais que 6 caracteres."),
+  complemento: z.string().max(80, "O complemento não pode ter mais que 80 caracteres."),
+  bairro: z.string().min(1, "O bairro é obrigatório.").max(80, "O bairro não pode ter mais que 80 caracteres."),
+  cidade_id: z.coerce.number().min(1, "A cidade é obrigatória."),
+  cep: z.string().min(1, "O CEP é obrigatório.").max(9, "O CEP não pode ter mais que 9 caracteres."),
+  ativo: z.coerce.boolean().default(true),
+  matricula: z.string().min(1, "A matrícula é obrigatória.").max(15, "A matrícula não pode ter mais que 15 caracteres."),
+  cargo: z.string().min(1, "O cargo é obrigatório.").max(50, "O cargo não pode ter mais que 50 caracteres."),
+  salario: z.coerce.number().min(0, "O salário não pode ser negativo."),
+  data_admissao: z.date({ required_error: "A data de admissão é obrigatória.", invalid_type_error: "Data inválida." }),
+  turno: z.string()
+    .max(20, "O turno não pode ter mais que 20 caracteres.").optional().nullable(),
   carga_horaria: z.coerce.number().int().min(0).optional().nullable(),
 });
 
@@ -393,22 +396,28 @@ export type Client = {
 
 export const ClientSchema = z.object({
   id: z.number().optional(),
-  is_juridica: z.boolean(),
-  nome: z.string().min(3, "O nome/razão social é obrigatório."),
-  apelido: z.string().optional().nullable(),
-  cpf: z.string().min(11, "CPF/CNPJ inválido.").optional().nullable(),
-  rg: z.string().optional().nullable(),
-  data_nascimento: z.date({ invalid_type_error: "Data inválida." }).optional().nullable(),
-  telefone: z.string().optional().nullable(),
-  email: z.string().email("Email inválido.").optional().nullable(),
-  endereco: z.string().optional().nullable(),
-  numero: z.string().optional().nullable(),
-  bairro: z.string().optional().nullable(),
-  cep: z.string().optional().nullable(),
+  is_juridica: z.coerce.boolean(),
+  nome: z.string().min(3, "O nome/razão social é obrigatório.")
+    .max(80, "O nome/razão social não pode ter mais que 80 caracteres."),
+  apelido: z.string()
+    .max(80, "O apelido/nome fantasia não pode ter mais que 80 caracteres.").optional().nullable(),
+  cpf: z.string().min(11, "CPF/CNPJ inválido.")
+    .max(14, "CPF/CNPJ não pode ter mais que 14 caracteres.").optional().nullable(),
+  rg: z.string()
+    .max(15, "O RG/IE não pode ter mais que 15 caracteres.").optional().nullable(),
+  data_nascimento: z.date({ required_error: "A data de nascimento é obrigatória.", invalid_type_error: "Data inválida." }),
+  telefone: z.string()
+    .max(15, "O telefone não pode ter mais que 15 caracteres.").optional().nullable(),
+  email: z.string().email("Email inválido.")
+    .max(100, "O email não pode ter mais que 100 caracteres.").optional().nullable(),
+  endereco: z.string().min(1, "O endereço é obrigatório.").max(80, "O endereço não pode ter mais que 80 caracteres."),
+  numero: z.string().min(1, "O número é obrigatório.").max(6, "O número não pode ter mais que 6 caracteres."),
+  bairro: z.string().min(1, "O bairro é obrigatório.").max(80, "O bairro não pode ter mais que 80 caracteres."),
+  cep: z.string().min(1, "O CEP é obrigatório.").max(8, "O CEP não pode ter mais que 8 caracteres."),
   limite_credito: z.coerce.number().min(0),
-  cidade_id: z.coerce.number().optional().nullable(),
+  cidade_id: z.coerce.number().min(1, "A cidade é obrigatória."),
   cond_pag_id: z.coerce.number().min(1, "A condição de pagamento é obrigatória."),
-  ativo: z.boolean(),
+  ativo: z.coerce.boolean(),
 });
 
 export type ClientForm = z.infer<typeof ClientSchema>;
