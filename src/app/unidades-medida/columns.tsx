@@ -14,6 +14,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { DeleteProductUnitButton } from "./delete-button";
+import { SquarePen } from "lucide-react";
 
 export const columns: ColumnDef<ProductUnit>[] = [
   { accessorKey: "nome", header: "Nome" },
@@ -30,16 +31,11 @@ export const columns: ColumnDef<ProductUnit>[] = [
   {
     id: "actions",
     cell: ({ row }) => (
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild><Button variant="ghost" className="h-8 w-8 p-0"><MoreHorizontal className="h-4 w-4" /></Button></DropdownMenuTrigger>
-        <DropdownMenuContent align="end">
-          <DropdownMenuLabel>Ações</DropdownMenuLabel>
-          <DropdownMenuItem asChild><Link href={`/unidades-medida/${row.original.id}/editar`}>Editar</Link></DropdownMenuItem>
-          <DeleteProductUnitButton id={row.original.id}>
-             <div className="relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50 text-red-600 w-full">Excluir</div>
-          </DeleteProductUnitButton>
-        </DropdownMenuContent>
-      </DropdownMenu>
+      <a href={`/unidades-medida/${row.original.id}/editar`}>
+      <Button variant="outline">
+        <SquarePen /> Editar
+      </Button>
+      </a>
     ),
   },
 ];

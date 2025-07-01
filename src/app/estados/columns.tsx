@@ -32,9 +32,11 @@ export const columns: ColumnDef<State>[] = [
     id: "actions",
     cell: ({ row }) => (
       
+      <a href={`/estados/${row.original.id}/editar`}>
       <Button variant="outline">
-        <SquarePen /> <Link href={`/estados/${row.original.id}/editar`}>Editar</Link>
+        <SquarePen /> Editar
       </Button>
+      </a>
 
       
     ),

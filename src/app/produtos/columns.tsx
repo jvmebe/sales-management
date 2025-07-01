@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { DeleteProductButton } from "./delete-button";
+import { SquarePen } from "lucide-react";
 
 export const columns: ColumnDef<Product>[] = [
   { accessorKey: "nome", header: "Produto" },
@@ -23,13 +24,11 @@ export const columns: ColumnDef<Product>[] = [
   {
     id: "actions",
     cell: ({ row }) => (
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild><Button variant="ghost" className="h-8 w-8 p-0"><MoreHorizontal className="h-4 w-4" /></Button></DropdownMenuTrigger>
-        <DropdownMenuContent align="end">
-          <DropdownMenuLabel>Ações</DropdownMenuLabel>
-          <DropdownMenuItem asChild><Link href={`/produtos/${row.original.id}/edit`}>Editar</Link></DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
+      <a href={`/produtos/${row.original.id}/editar`}>
+      <Button variant="outline">
+        <SquarePen /> Editar
+      </Button>
+      </a>
     ),
   },
 ];

@@ -6,13 +6,7 @@ import { PaymentCondition } from "@/lib/definitions";
 import { MoreHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { SquarePen } from "lucide-react";
 
 export const columns: ColumnDef<PaymentCondition>[] = [
   { accessorKey: "descricao", header: "Descrição" },
@@ -25,13 +19,11 @@ export const columns: ColumnDef<PaymentCondition>[] = [
   {
     id: "actions",
     cell: ({ row }) => (
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild><Button variant="ghost" className="h-8 w-8 p-0"><MoreHorizontal className="h-4 w-4" /></Button></DropdownMenuTrigger>
-        <DropdownMenuContent align="end">
-          <DropdownMenuLabel>Ações</DropdownMenuLabel>
-          <DropdownMenuItem asChild><Link href={`/condicoes-pagamento/${row.original.id}/editar`}>Editar</Link></DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
+      <a href={`/condicoes-pagamento/${row.original.id}/editar`}>
+      <Button variant="outline">
+        <SquarePen /> Editar
+      </Button>
+      </a>
     ),
   },
 ];

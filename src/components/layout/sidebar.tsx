@@ -54,11 +54,6 @@ const menuConfig = [
         label: "Funcionários",
         icon: Building2,
       },
-      {
-        href: "/transportadoras",
-        label: "Transportadoras",
-        icon: Building2,
-      },
     ],
   },
   {
