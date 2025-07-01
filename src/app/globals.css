@@ -112,6 +112,13 @@
   --sidebar-ring: oklch(0.551 0.027 264.364);
 }
 
+
+@layer components {
+  .form-container {
+    @apply mx-auto min-w-4xl max-w-4xl px-4 py-10
+  }
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;

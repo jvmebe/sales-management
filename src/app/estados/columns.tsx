@@ -13,7 +13,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-// import { DeleteStateButton } from "./delete-button";
+import { SquarePen } from "lucide-react";
 
 export const columns: ColumnDef<State>[] = [
   { accessorKey: "nome", header: "Nome" },
@@ -31,24 +31,12 @@ export const columns: ColumnDef<State>[] = [
   {
     id: "actions",
     cell: ({ row }) => (
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant="ghost" className="h-8 w-8 p-0">
-            <MoreHorizontal className="h-4 w-4" />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end">
-          <DropdownMenuLabel>Ações</DropdownMenuLabel>
-          <DropdownMenuItem asChild>
-            <Link href={`/estados/${row.original.id}/edit`}>Editar</Link>
-          </DropdownMenuItem>
-          {/* <DeleteStateButton id={row.original.id}>
-            <div className="relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm text-red-600 ...">
-              Excluir
-            </div>
-          </DeleteStateButton> */}
-        </DropdownMenuContent>
-      </DropdownMenu>
+      
+      <Button variant="outline">
+        <SquarePen /> <Link href={`/estados/${row.original.id}/editar`}>Editar</Link>
+      </Button>
+
+      
     ),
   },
 ];

@@ -41,7 +41,6 @@ export async function updateState(id: number, data: StateForm) {
 }
 
 export async function deleteState(id: number) {
-  // Adicionar verificação de dependência (cidades)
   const cities = await query(`SELECT id FROM city WHERE state_id = ?`, [id]);
   if (cities.length > 0) {
     return {

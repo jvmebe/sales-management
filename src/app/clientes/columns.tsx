@@ -31,7 +31,7 @@ export const columns: ColumnDef<Client>[] = [
         <DropdownMenuTrigger asChild><Button variant="ghost" className="h-8 w-8 p-0"><MoreHorizontal className="h-4 w-4" /></Button></DropdownMenuTrigger>
         <DropdownMenuContent align="end">
           <DropdownMenuLabel>Ações</DropdownMenuLabel>
-          <DropdownMenuItem asChild><Link href={`/clientes/${row.original.id}/edit`}>Editar</Link></DropdownMenuItem>
+          <DropdownMenuItem asChild><Link href={`/clientes/${row.original.id}/editar`}>Editar</Link></DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
     ),

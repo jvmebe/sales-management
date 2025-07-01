@@ -18,7 +18,7 @@ export default async function EditCityPage({ params }: { params: { id: string } 
   if (!city) notFound();
 
   return (
-    <div className="mx-auto min-w-4xl max-w-4xl px-4 py-10">
+    <div className="form-container">
       <div>
         <h1 className="text-2xl font-bold">Editar Cidade</h1>
       </div>

@@ -134,7 +134,7 @@ export function Sidebar() {
   };
 
   return (
-    <aside className="hidden md:block sticky overflow-y-auto top-0 h-screen border-r bg-muted/40">
+    <aside className="hidden md:block sticky overflow-y-auto top-0 h-screen border-r bg-[#f9fbfd] z-20">
       <div className="flex h-full max-h-screen flex-col gap-2">
         <div className="flex h-14 items-center border-b px-4 lg:h-[60px] lg:px-6">
           <Link href="/" className="flex items-center gap-2 h-20 font-semibold">

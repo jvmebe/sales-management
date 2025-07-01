@@ -18,6 +18,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { StateSelectionDialog } from "@/components/dialogs/state-selection-dialog";
 import { DeleteCityButton } from "./delete-button";
+import { FormFooter } from "@/components/ui/form-footer";
 
 interface CityFormProps {
   initialData?: City;
@@ -42,7 +43,14 @@ export default function CityForm({ initialData, states, countries }: CityFormPro
     },
   });
 
-  console.log(initialData)
+  const FORM_ID = "city-form";
+  
+    const deleteButton = isEditMode ? (
+    <DeleteCityButton id={initialData.id}>
+      <Button variant="destructive" type="button">Excluir</Button>
+    </DeleteCityButton>
+  ) : undefined;
+  
 
   const onSubmit = async (data: CityFormType) => {
     const action = isEditMode
@@ -67,7 +75,7 @@ export default function CityForm({ initialData, states, countries }: CityFormPro
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8" id={FORM_ID}>
         <FormField
           control={form.control}
           name="ativo"
@@ -99,7 +107,7 @@ export default function CityForm({ initialData, states, countries }: CityFormPro
           control={form.control}
           name="state_id"
           render={() => (
-            <FormItem className="flex flex-col w-[300px]">
+            <FormItem className="flex flex-col w-3/5">
               <FormLabel>Estado</FormLabel>
               <Dialog open={isDialogOpen} onOpenChange={setDialogOpen}>
                 <DialogTrigger asChild>
@@ -135,23 +143,12 @@ export default function CityForm({ initialData, states, countries }: CityFormPro
           </div>
         )}
         
-        <div className="flex justify-between items-center">
-          <div>
-            {isEditMode && (
-              <DeleteCityButton id={initialData.id}>
-                <Button variant="destructive" type="button">Excluir</Button>
-              </DeleteCityButton>
-            )}
-          </div>
-          <div className="flex space-x-4">
-            <Button variant="outline" type="button" asChild>
-              <Link href="/cidades">Cancelar</Link>
-            </Button>
-            <Button type="submit" disabled={form.formState.isSubmitting}>
-              {form.formState.isSubmitting ? "Salvando..." : "Salvar"}
-            </Button>
-          </div>
-        </div>
+        <FormFooter
+              formId={FORM_ID}
+              cancelHref="/cidades"
+              isSubmitting={form.formState.isSubmitting}
+              deleteButton={deleteButton}
+            />
       </form>
     </Form>
   );

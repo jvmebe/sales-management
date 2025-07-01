@@ -32,7 +32,8 @@ import {
   FormMessage,
   FormDescription,
 } from "@/components/ui/form";
-//import { DeleteStateButton } from "./delete-button";
+import { FormFooter } from "@/components/ui/form-footer";
+import { DeleteStateButton } from "./delete-button";
 
 interface StateFormProps {
   initialData?: State;
@@ -47,6 +48,15 @@ export default function StateForm({ initialData, countries }: StateFormProps) {
       ? countries.find(c => c.id === initialData.country_id)?.nome
       : ""
   );
+
+  const FORM_ID = "state-form";
+
+  const deleteButton = isEditMode ? (
+  <DeleteStateButton id={initialData.id}>
+    <Button variant="destructive" type="button">Excluir</Button>
+  </DeleteStateButton>
+) : undefined;
+
 
   const form = useForm<StateFormType>({
     resolver: zodResolver(StateSchema),
@@ -84,7 +94,7 @@ export default function StateForm({ initialData, countries }: StateFormProps) {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8" id={FORM_ID}>
         <FormField
           control={form.control}
           name="ativo"
@@ -99,11 +109,12 @@ export default function StateForm({ initialData, countries }: StateFormProps) {
             </FormItem>
           )}
         />
-        <FormField
+        <div className="flex items-start flex-col md:flex-row md:space-x-5 space-y-5 md:space-y-0">
+          <FormField
           control={form.control}
           name="nome"
           render={({ field }) => (
-            <FormItem>
+            <FormItem className="w-3/5">
               <FormLabel>Nome do Estado</FormLabel>
               <FormControl><Input placeholder="Ex: Paraná" {...field} /></FormControl>
               <FormMessage />
@@ -114,7 +125,7 @@ export default function StateForm({ initialData, countries }: StateFormProps) {
           control={form.control}
           name="sigla"
           render={({ field }) => (
-            <FormItem>
+            <FormItem className="w-1/5">
               <FormLabel>Sigla (UF)</FormLabel>
               <FormControl><Input placeholder="Ex: PR" maxLength={2} {...field} /></FormControl>
               <FormMessage />
@@ -125,7 +136,7 @@ export default function StateForm({ initialData, countries }: StateFormProps) {
           control={form.control}
           name="country_id"
           render={({ field }) => (
-            <FormItem className="flex flex-col">
+            <FormItem className="flex flex-col w-2/5">
               <FormLabel>País</FormLabel>
               <Dialog open={isDialogOpen} onOpenChange={setDialogOpen}>
                 <DialogTrigger asChild>
@@ -144,6 +155,8 @@ export default function StateForm({ initialData, countries }: StateFormProps) {
             </FormItem>
           )}
         />
+        </div>
+        
 
         {isEditMode && (
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 rounded-lg border p-4">
@@ -157,25 +170,13 @@ export default function StateForm({ initialData, countries }: StateFormProps) {
             </div>
           </div>
         )}
-
-        <div className="flex justify-between items-center">
-          <div>
-            {/* isEditMode && 
-              <DeleteStateButton id={initialData.id}>
-                <Button variant="destructive" type="button">Excluir</Button>
-              </DeleteStateButton>
-            */}
-          </div>
-          <div className="flex space-x-4">
-            <Button variant="outline" type="button" asChild>
-              <Link href="/estados">Cancelar</Link>
-            </Button>
-            <Button type="submit" disabled={form.formState.isSubmitting}>
-              {form.formState.isSubmitting ? "Salvando..." : "Salvar"}
-            </Button>
-          </div>
-        </div>
       </form>
+      <FormFooter
+        formId={FORM_ID}
+        cancelHref="/estados"
+        isSubmitting={form.formState.isSubmitting}
+        deleteButton={deleteButton}
+      />
     </Form>
   );
 }

@@ -6,7 +6,7 @@ export default async function NewStatePage() {
   const countries = await fetchActiveCountries();
 
   return (
-    <div className="mx-auto min-w-4xl max-w-4xl px-4 py-10">
+    <div className="form-container">
       <div>
         <h1 className="text-2xl font-bold">Novo Estado</h1>
         <p className="text-muted-foreground">

@@ -16,7 +16,7 @@ export default async function NewClientPage() {
   ]);
 
   return (
-    <div className="mx-auto max-w-4xl px-4 py-10">
+    <div className="form-container">
       <div>
         <h1 className="text-2xl font-bold">Novo Cliente</h1>
       </div>
