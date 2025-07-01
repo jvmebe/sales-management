@@ -44,11 +44,10 @@ export async function updateCity(id: number, data: CityForm) {
 
 export async function deleteCity(id: number) {
   try {
-    // No futuro, podemos adicionar uma verificação de dependências aqui
     await query(`DELETE FROM city WHERE id = ?`, [id]);
     revalidatePath("/cidades");
     return { success: true, message: "Cidade excluída com sucesso." };
   } catch (error) {
-    return { success: false, message: "Erro no banco de dados: Falha ao excluir a cidade." };
+    return { success: false, message: "Existem cadastros associados a esta cidade." };
   }
 }

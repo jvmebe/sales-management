@@ -49,7 +49,7 @@ export const columns: ColumnDef<City>[] = [
         <DropdownMenuContent align="end">
           <DropdownMenuLabel>Ações</DropdownMenuLabel>
           <DropdownMenuItem asChild>
-            <Link href={`/cidades/${row.original.id}/edit`}>Editar</Link>
+            <Link href={`/cidades/${row.original.id}/editar`}>Editar</Link>
           </DropdownMenuItem>
           <DeleteCityButton id={row.original.id}>
              <div className="relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50 text-red-600 w-full">

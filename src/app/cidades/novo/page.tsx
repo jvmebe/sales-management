@@ -4,14 +4,13 @@ import { fetchActiveCountries } from "@/lib/data/paises";
 import { fetchActiveStates } from "@/lib/data/estados";
 
 export default async function NewCityPage() {
-  // Busca todos os dados necessários para a cascata de diálogos
   const [countries, states] = await Promise.all([
     fetchActiveCountries(),
     fetchActiveStates(),
   ]);
 
   return (
-    <div className="mx-auto max-w-2xl px-4 py-10">
+    <div className="mx-auto min-w-4xl max-w-4xl px-4 py-10">
       <div>
         <h1 className="text-2xl font-bold">Nova Cidade</h1>
         <p className="text-muted-foreground">

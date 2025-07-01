@@ -41,16 +41,12 @@ export function StateSelectionDialog({ states, countries, onSelect }: StateSelec
     <>
       <DialogHeader>
         <DialogTitle>Selecione um Estado</DialogTitle>
-      </DialogHeader>
-      <div className="py-4">
-        <DataTable columns={columns} data={states} />
-      </div>
-
-      <Dialog open={isCreateOpen} onOpenChange={setCreateOpen}>
+        <div className="float-right">
+            <Dialog open={isCreateOpen} onOpenChange={setCreateOpen}>
         <DialogTrigger asChild>
-          <Button variant="ghost">
+          <Button className="w-[100px]">
             <PlusCircle className="mr-2 h-4 w-4" />
-            Criar novo estado
+            Novo
           </Button>
         </DialogTrigger>
         <DialogContent className="max-w-2xl">
@@ -60,6 +56,14 @@ export function StateSelectionDialog({ states, countries, onSelect }: StateSelec
           <StateCreationForm countries={countries} onSuccess={handleCreateSuccess} />
         </DialogContent>
       </Dialog>
+        </div>
+        
+      </DialogHeader>
+      <div className="py-4">
+        <DataTable columns={columns} data={states} filterColumn="nome"/>
+      </div>
+
+      
     </>
   );
 }

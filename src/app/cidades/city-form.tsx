@@ -42,6 +42,8 @@ export default function CityForm({ initialData, states, countries }: CityFormPro
     },
   });
 
+  console.log(initialData)
+
   const onSubmit = async (data: CityFormType) => {
     const action = isEditMode
       ? updateCity(initialData.id, data)
@@ -68,10 +70,23 @@ export default function CityForm({ initialData, states, countries }: CityFormPro
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
         <FormField
           control={form.control}
+          name="ativo"
+          render={({ field }) => (
+            <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+              <FormLabel>Ativo</FormLabel>
+              <FormControl>
+                <Switch checked={field.value} onCheckedChange={field.onChange} />
+              </FormControl>
+            </FormItem>
+          )}
+        />
+        <div className="flex items-start flex-col md:flex-row md:space-x-5 space-y-5 md:space-y-0">
+          <FormField
+          control={form.control}
           name="nome"
           render={({ field }) => (
-            <FormItem>
-              <FormLabel>Nome da Cidade</FormLabel>
+            <FormItem className="w-[500px]">
+              <FormLabel>Cidade</FormLabel>
               <FormControl>
                 <Input placeholder="Ex: Foz do Iguaçu" {...field} />
               </FormControl>
@@ -84,7 +99,7 @@ export default function CityForm({ initialData, states, countries }: CityFormPro
           control={form.control}
           name="state_id"
           render={() => (
-            <FormItem className="flex flex-col">
+            <FormItem className="flex flex-col w-[300px]">
               <FormLabel>Estado</FormLabel>
               <Dialog open={isDialogOpen} onOpenChange={setDialogOpen}>
                 <DialogTrigger asChild>
@@ -104,19 +119,8 @@ export default function CityForm({ initialData, states, countries }: CityFormPro
             </FormItem>
           )}
         />
-
-        <FormField
-          control={form.control}
-          name="ativo"
-          render={({ field }) => (
-            <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
-              <FormLabel>Ativo</FormLabel>
-              <FormControl>
-                <Switch checked={field.value} onCheckedChange={field.onChange} />
-              </FormControl>
-            </FormItem>
-          )}
-        />
+        </div>
+        
 
         {isEditMode && (
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 rounded-lg border p-4">

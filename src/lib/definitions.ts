@@ -61,7 +61,7 @@ export const CitySchema = z.object({
   id: z.number().optional(),
   nome: z.string().min(2, { message: "O nome da cidade é obrigatório." }),
   state_id: z.coerce.number({ required_error: "Selecione um estado." }).gt(0, { message: "Selecione um estado." }),
-  ativo: z.boolean(),
+  ativo: z.coerce.boolean(),
 });
 
 export type CityForm = z.infer<typeof CitySchema>;

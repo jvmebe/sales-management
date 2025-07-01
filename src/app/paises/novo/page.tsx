@@ -29,23 +29,19 @@ export default function NewCountryPage() {
       sigla: "",
       ativo: true,
     },
-    // opcional, para mostrar erros ao “tocar” no campo
     mode: "onTouched",
   });
 
-  // dispara validação e só cai aqui se tudo estiver válido
   const onSubmit = form.handleSubmit(async (data) => {
     try {
       await createCountry(data);
-      // redireciona, show toast, etc.
     } catch (err: any) {
-      // lidar com erro do server action (mensagem genérica, por ex)
       console.error(err);
     }
   });
 
   return (
-    <div className="mx-auto max-w-2xl px-4 py-10">
+    <div className="mx-auto min-w-4xl max-w-4xl px-4 py-10">
       <div>
         <h1 className="text-2xl font-bold">Novo País</h1>
         <p className="text-muted-foreground">
@@ -55,7 +51,6 @@ export default function NewCountryPage() {
       <Separator className="my-6" />
 
       <Form {...form}>
-        {/* aqui substituímos `action={dispatch}` por onSubmit que chama handleSubmit */}
         <form onSubmit={onSubmit} className="space-y-8">
             <FormField
             control={form.control}
@@ -64,9 +59,6 @@ export default function NewCountryPage() {
               <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
                 <div className="space-y-0.5">
                   <FormLabel className="text-base">Ativo</FormLabel>
-                  <FormDescription>
-                    Se o país estará ativo e disponível para uso no sistema.
-                  </FormDescription>
                 </div>
                 <FormControl>
                   <Switch
@@ -77,16 +69,16 @@ export default function NewCountryPage() {
               </FormItem>
             )}
           />
-          <FormField
+          <div className="flex items-start flex-col md:flex-row md:space-x-5 space-y-5 md:space-y-0">
+                      <FormField
             control={form.control}
             name="nome"
             render={({ field }) => (
-              <FormItem>
+              <FormItem className="w-[500px]">
                 <FormLabel>Nome do País</FormLabel>
                 <FormControl>
                   <Input placeholder="Ex: Brasil" {...field} />
                 </FormControl>
-                <FormDescription>O nome completo do país.</FormDescription>
                 <FormMessage />
               </FormItem>
             )}
@@ -96,18 +88,17 @@ export default function NewCountryPage() {
             control={form.control}
             name="sigla"
             render={({ field }) => (
-              <FormItem>
+              <FormItem className="w-[200px]">
                 <FormLabel>Sigla</FormLabel>
                 <FormControl>
                   <Input placeholder="Ex: BR" maxLength={2} {...field} />
                 </FormControl>
-                <FormDescription>
-                  A sigla de duas letras do país.
-                </FormDescription>
-                <FormMessage />
+                <FormMessage className="align-text-bottom justify-items-end justify-self-end" />
               </FormItem>
             )}
           />
+
+          </div>
 
           <div className="flex justify-end space-x-4">
             <Button variant="outline" asChild>

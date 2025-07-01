@@ -18,7 +18,6 @@ import { Settings } from "lucide-react";
                 <CardTitle className="text-sm font-medium">
                   Vendas Hoje
                 </CardTitle>
-                {/* Ícone de vendas aqui */}
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">R$ 1,250.00</div>
@@ -32,7 +31,6 @@ import { Settings } from "lucide-react";
                 <CardTitle className="text-sm font-medium">
                   Novos Clientes
                 </CardTitle>
-                {/* Ícone de clientes aqui */}
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">+12</div>
@@ -41,7 +39,6 @@ import { Settings } from "lucide-react";
                 </p>
               </CardContent>
             </Card>
-             {/* Você pode adicionar mais cards de resumo aqui */}
           </div>
           <div className="mt-8">
              <Card>
