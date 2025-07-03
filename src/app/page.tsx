@@ -7,38 +7,13 @@ import {
       CardTitle,
     } from "@/components/ui/card";
 import { Settings } from "lucide-react";
+import { ModeToggle } from "@/components/ui/dark-mode-toggle";
 
     export default function HomePage() {
       return (
         <div>
-          <h1 className="text-3xl font-bold tracking-tight mb-4">Página Inicial</h1>
+          <h1 className="text-3xl font-bold tracking-tight mb-4">Página Inicial <span className="float-end"> <ModeToggle /> </span></h1>
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">
-                  Vendas Hoje
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">R$ 1,250.00</div>
-                <p className="text-xs text-muted-foreground">
-                  +20.1% em relação a ontem
-                </p>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">
-                  Novos Clientes
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">+12</div>
-                <p className="text-xs text-muted-foreground">
-                  +5 na última hora
-                </p>
-              </CardContent>
-            </Card>
           </div>
           <div className="mt-8">
              <Card>
