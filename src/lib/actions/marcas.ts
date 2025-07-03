@@ -33,11 +33,10 @@ export async function updateProductBrand(id: number, data: ProductBrandForm) {
 
 export async function deleteProductBrand(id: number) {
     try {
-        // Adicionar verificação de dependência (produtos) no futuro
         await query(`DELETE FROM product_brand WHERE id = ?`, [id]);
         revalidatePath("/marcas");
         return { success: true, message: "Marca excluída com sucesso." };
     } catch (error) {
-        return { success: false, message: "Erro no banco: Falha ao excluir marca." };
+        return { success: false, message: "Existem produtos associados a esta marca!" };
     }
 }

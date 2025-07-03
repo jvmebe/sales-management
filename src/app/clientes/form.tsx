@@ -173,7 +173,7 @@ export default function ClientForm({
               render={({ field }) => (
                 <FormItem className="w-2/4">
                   <FormLabel>
-                    {isJuridica ? "Razão Social" : "Nome Completo"}
+                    {isJuridica ? "Razão Social*" : "Nome*"}
                   </FormLabel>
                   <FormControl>
                     <Input {...field} />
@@ -203,7 +203,7 @@ export default function ClientForm({
               name="cpf"
               render={({ field }) => (
                 <FormItem className="w-1/3">
-                  <FormLabel>{isJuridica ? "CNPJ" : "CPF"}</FormLabel>
+                  <FormLabel>{isJuridica ? "CNPJ*" : "CPF*"}</FormLabel>
                   <FormControl>
                     <Input {...field} />
                   </FormControl>
@@ -307,7 +307,7 @@ export default function ClientForm({
                         {selectedNames.city || "Selecione uma cidade"}
                       </Button>
                     </DialogTrigger>
-                    <DialogContent className="max-w-4xl h-5/6 flex flex-col">
+                    <DialogContent className="max-w-6xl flex flex-col">
                       <CitySelectionDialog
                         cities={cities}
                         states={states}
@@ -402,7 +402,7 @@ export default function ClientForm({
                           "Selecione uma condição"}
                       </Button>
                     </DialogTrigger>
-                    <DialogContent className="max-w-4xl h-5/6 flex flex-col">
+                    <DialogContent className="max-w-6xl flex flex-col overflow-auto">
                       <PaymentConditionSelectionDialog
                         paymentConditions={paymentConditions}
                         paymentMethods={paymentMethods}

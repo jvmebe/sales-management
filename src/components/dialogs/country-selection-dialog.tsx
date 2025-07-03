@@ -42,14 +42,14 @@ export function CountrySelectionDialog({ countries, onSelect }: CountrySelection
         <DialogTitle>Selecione um País</DialogTitle>
       </DialogHeader>
       <div className="py-4">
-        <DataTable columns={columns} data={countries} />
+        <DataTable columns={columns} data={countries} filterColumn="nome"/>
       </div>
 
       <Dialog open={isCreateOpen} onOpenChange={setCreateOpen}>
         <DialogTrigger asChild>
           <Button variant="ghost">
             <PlusCircle className="mr-2 h-4 w-4" />
-            Não encontrou o país? Crie um novo.
+            Criar novo país
           </Button>
         </DialogTrigger>
         <DialogContent>

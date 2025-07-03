@@ -45,6 +45,6 @@ export async function deletePaymentMethod(id: number) {
         revalidatePath("/formas-pagamento");
         return { success: true, message: "Forma de pagamento excluída com sucesso." };
     } catch (error) {
-        return { success: false, message: "Erro no banco: Falha ao excluir." };
+        return { success: false, message: "Esta forma de pagamento está em uso por um ou mais condições!" };
     }
 }

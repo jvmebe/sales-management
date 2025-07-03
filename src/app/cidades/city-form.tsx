@@ -123,7 +123,7 @@ export default function CityForm({
             name="nome"
             render={({ field }) => (
               <FormItem className="w-[500px]">
-                <FormLabel>Cidade</FormLabel>
+                <FormLabel>Cidade*</FormLabel>
                 <FormControl>
                   <Input placeholder="Ex: Foz do Iguaçu" {...field} />
                 </FormControl>
@@ -137,7 +137,7 @@ export default function CityForm({
             name="state_id"
             render={() => (
               <FormItem className="flex flex-col w-3/5">
-                <FormLabel>Estado</FormLabel>
+                <FormLabel>Estado*</FormLabel>
                 <Dialog open={isDialogOpen} onOpenChange={setDialogOpen}>
                   <DialogTrigger asChild>
                     <Button
@@ -147,7 +147,7 @@ export default function CityForm({
                       {selectedStateName || "Selecione um estado"}
                     </Button>
                   </DialogTrigger>
-                  <DialogContent className="max-w-4xl h-5/6 flex flex-col">
+                  <DialogContent className="max-w-6xl flex flex-col">
                     <StateSelectionDialog
                       states={states}
                       countries={countries}

@@ -48,6 +48,6 @@ export async function deleteSupplier(id: number) {
         revalidatePath("/fornecedores");
         return { success: true, message: "Fornecedor excluído com sucesso." };
     } catch (error) {
-        return { success: false, message: "Erro no banco: Falha ao excluir." };
+        return { success: false, message: "Existem dados associados a este fornecedor!" };
     }
 }

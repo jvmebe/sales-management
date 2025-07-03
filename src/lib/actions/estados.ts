@@ -53,6 +53,6 @@ export async function deleteState(id: number) {
     revalidatePath("/estados");
     return { success: true, message: "Estado excluído com sucesso." };
   } catch (error) {
-    return { success: false, message: "Erro no banco: Falha ao excluir estado." };
+    return { success: false, message: "Este estado está associado a uma ou mais cidades!" };
   }
 }

@@ -14,7 +14,7 @@ export default async function NewCityPage() {
       <div>
         <h1 className="text-2xl font-bold">Nova Cidade</h1>
         <p className="text-muted-foreground">
-          Preencha os campos para adicionar uma nova cidade.
+          Preencha os campos para adicionar uma nova cidade. Campos com * são obrigatórios.
         </p>
       </div>
       <Separator className="my-6" />

@@ -48,9 +48,6 @@ export function CountryCreationForm({ onSuccess }: CountryCreationFormProps) {
             <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
               <div className="space-y-0.5">
                 <FormLabel className="text-base">Ativo</FormLabel>
-                <FormDescription>
-                  Se o país estará ativo e disponível para uso no sistema.
-                </FormDescription>
               </div>
               <FormControl>
                 <Switch
@@ -70,7 +67,6 @@ export function CountryCreationForm({ onSuccess }: CountryCreationFormProps) {
               <FormControl>
                 <Input placeholder="Ex: Brasil" {...field} />
               </FormControl>
-              <FormDescription>O nome completo do país.</FormDescription>
               <FormMessage />
             </FormItem>
           )}
@@ -85,7 +81,6 @@ export function CountryCreationForm({ onSuccess }: CountryCreationFormProps) {
               <FormControl>
                 <Input placeholder="Ex: BR" maxLength={2} {...field} />
               </FormControl>
-              <FormDescription>A sigla de duas letras do país.</FormDescription>
               <FormMessage />
             </FormItem>
           )}

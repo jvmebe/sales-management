@@ -20,6 +20,7 @@ export async function createClient(data: ClientForm) {
   }
 
   const fields = formatData(result.data);
+  console.log(fields);
   
   try {
     await query(`INSERT INTO client (${CLIENT_FIELDS}) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`, 
@@ -28,6 +29,7 @@ export async function createClient(data: ClientForm) {
     revalidatePath("/clientes");
     return { success: true, message: "Cliente criado com sucesso!" };
   } catch (error) {
+    console.log(error);
     return { success: false, message: "Erro no banco: Falha ao criar cliente." };
   }
 }
@@ -60,6 +62,6 @@ export async function deleteClient(id: number) {
         revalidatePath("/clientes");
         return { success: true, message: "Cliente excluído com sucesso." };
     } catch (error) {
-        return { success: false, message: "Erro no banco: Falha ao excluir cliente." };
+        return { success: false, message: "Existem cadastros associados a este cliente!" };
     }
 }

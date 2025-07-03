@@ -59,7 +59,7 @@ export function CityCreationForm({ states, countries, onSuccess }: CityCreationF
                   {selectedStateName || "Selecione um estado"}
                 </Button>
               </DialogTrigger>
-              <DialogContent className="max-w-4xl h-5/6 flex flex-col">
+              <DialogContent className="max-w-6xl flex flex-col">
                 <StateSelectionDialog
                   states={states}
                   countries={countries}

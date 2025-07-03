@@ -99,7 +99,7 @@ export function StateCreationForm({ countries, onSuccess }: StateCreationFormPro
                     {selectedCountryName || "Selecione um país"}
                   </Button>
                 </DialogTrigger>
-                <DialogContent className="max-w-4xl h-5/6 flex flex-col">
+                <DialogContent className="max-w-6xl flex flex-col">
                   <CountrySelectionDialog
                     countries={countries}
                     onSelect={handleCountrySelect}

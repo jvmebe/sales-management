@@ -5,7 +5,13 @@ import { State, Country } from "@/lib/definitions";
 import { DataTable } from "@/components/ui/data-table";
 import { ColumnDef } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { StateCreationForm } from "@/components/forms/state-form";
 import { PlusCircle } from "lucide-react";
 
@@ -15,7 +21,11 @@ interface StateSelectionDialogProps {
   onSelect: (state: State) => void;
 }
 
-export function StateSelectionDialog({ states, countries, onSelect }: StateSelectionDialogProps) {
+export function StateSelectionDialog({
+  states,
+  countries,
+  onSelect,
+}: StateSelectionDialogProps) {
   const router = useRouter();
   const [isCreateOpen, setCreateOpen] = useState(false);
 
@@ -25,7 +35,11 @@ export function StateSelectionDialog({ states, countries, onSelect }: StateSelec
     {
       id: "actions",
       cell: ({ row }) => (
-        <Button variant="outline" size="sm" onClick={() => onSelect(row.original)}>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => onSelect(row.original)}
+        >
           Selecionar
         </Button>
       ),
@@ -41,29 +55,27 @@ export function StateSelectionDialog({ states, countries, onSelect }: StateSelec
     <>
       <DialogHeader>
         <DialogTitle>Selecione um Estado</DialogTitle>
-        <div className="float-right">
-            <Dialog open={isCreateOpen} onOpenChange={setCreateOpen}>
-        <DialogTrigger asChild>
-          <Button className="w-[100px]">
-            <PlusCircle className="mr-2 h-4 w-4" />
-            Novo
-          </Button>
-        </DialogTrigger>
-        <DialogContent className="max-w-2xl">
-          <DialogHeader>
-            <DialogTitle>Criar Novo Estado</DialogTitle>
-          </DialogHeader>
-          <StateCreationForm countries={countries} onSuccess={handleCreateSuccess} />
-        </DialogContent>
-      </Dialog>
-        </div>
-        
       </DialogHeader>
       <div className="py-4">
-        <DataTable columns={columns} data={states} filterColumn="nome"/>
+        <DataTable columns={columns} data={states} filterColumn="nome" />
       </div>
-
-      
+      <Dialog open={isCreateOpen} onOpenChange={setCreateOpen}>
+        <DialogTrigger asChild>
+          <Button variant="ghost">
+            <PlusCircle className="mr-2 h-4 w-4" />
+            Criar nova cidade
+          </Button>
+        </DialogTrigger>
+        <DialogContent className="max-w-3xl">
+          <DialogHeader>
+            <DialogTitle>Criar novo estado</DialogTitle>
+          </DialogHeader>
+          <StateCreationForm
+            countries={countries}
+            onSuccess={handleCreateSuccess}
+          />
+        </DialogContent>
+      </Dialog>
     </>
   );
 }

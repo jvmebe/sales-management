@@ -76,12 +76,10 @@ export async function updateProduct(id: number, data: ProductForm) {
 
 export async function deleteProduct(id: number) {
     try {
-        // No futuro, podemos adicionar uma verificação aqui para ver se o produto
-        // está em alguma venda antes de permitir a exclusão.
         await query(`DELETE FROM product WHERE id = ?`, [id]);
         revalidatePath("/produtos");
         return { success: true, message: "Produto excluído com sucesso." };
     } catch (error) {
-        return { success: false, message: "Erro no banco: Falha ao excluir o produto." };
+        return { success: false, message: "Existem cadastros associados a este produto!" };
     }
 }

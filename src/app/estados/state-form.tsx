@@ -120,7 +120,7 @@ export default function StateForm({ initialData, countries }: StateFormProps) {
           name="nome"
           render={({ field }) => (
             <FormItem className="w-3/5">
-              <FormLabel>Nome do Estado</FormLabel>
+              <FormLabel>Estado*</FormLabel>
               <FormControl><Input placeholder="Ex: Paraná" {...field} /></FormControl>
               <FormMessage />
             </FormItem>
@@ -131,7 +131,7 @@ export default function StateForm({ initialData, countries }: StateFormProps) {
           name="sigla"
           render={({ field }) => (
             <FormItem className="w-1/5">
-              <FormLabel>Sigla (UF)</FormLabel>
+              <FormLabel>Sigla (UF)*</FormLabel>
               <FormControl><Input placeholder="Ex: PR" maxLength={2} {...field} /></FormControl>
               <FormMessage />
             </FormItem>
@@ -142,14 +142,14 @@ export default function StateForm({ initialData, countries }: StateFormProps) {
           name="country_id"
           render={({ field }) => (
             <FormItem className="flex flex-col w-2/5">
-              <FormLabel>País</FormLabel>
+              <FormLabel>País*</FormLabel>
               <Dialog open={isDialogOpen} onOpenChange={setDialogOpen}>
                 <DialogTrigger asChild>
                   <Button variant="outline" className="justify-start">
                     {selectedCountryName || "Selecione um país"}
                   </Button>
                 </DialogTrigger>
-                <DialogContent className="max-w-3xl">
+                <DialogContent className="max-w-6xl flex flex-col">
                   <CountrySelectionDialog
                     countries={countries}
                     onSelect={handleCountrySelect}

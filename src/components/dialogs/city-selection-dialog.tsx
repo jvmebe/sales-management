@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/dialog";
 import { CityCreationForm } from "@/components/forms/city-form";
 import { PlusCircle } from "lucide-react";
+import { ScrollArea } from "@/components/ui/scroll-area"
 
 interface CitySelectionDialogProps {
   cities: City[];
@@ -58,7 +59,7 @@ export function CitySelectionDialog({
       <DialogHeader>
         <DialogTitle>Selecione uma Cidade</DialogTitle>
       </DialogHeader>
-      <div className="py-4">
+      <div className="py-4 max-h-4/5">
         <DataTable
           columns={columns}
           data={cities}

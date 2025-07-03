@@ -92,7 +92,7 @@ export async function deletePaymentCondition(id: number) {
     if (Array.isArray(clients) && clients.length > 0) {
       return {
         success: false,
-        message: "Não é possível excluir: esta condição está em uso por um ou mais clientes.",
+        message: "Esta condição está em uso por um ou mais clientes!",
       };
     }
 
@@ -105,7 +105,7 @@ export async function deletePaymentCondition(id: number) {
 
   } catch (error) {
     await connection.rollback();
-    return { success: false, message: "Erro no banco de dados: Falha ao excluir condição." };
+    return { success: false, message: "Esta condição está em uso por um ou mais clientes!" };
   } finally {
     connection.release();
   }

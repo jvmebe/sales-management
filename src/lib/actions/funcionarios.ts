@@ -53,6 +53,6 @@ export async function deleteEmployee(id: number) {
         revalidatePath("/funcionarios");
         return { success: true, message: "Funcionário excluído com sucesso." };
     } catch (error) {
-        return { success: false, message: "Erro no banco: Falha ao excluir." };
+        return { success: false, message: "Existem dados associados a este funcionário!" };
     }
 }

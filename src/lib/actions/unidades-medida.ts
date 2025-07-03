@@ -33,11 +33,10 @@ export async function updateProductUnit(id: number, data: ProductUnitForm) {
 
 export async function deleteProductUnit(id: number) {
     try {
-        // Adicionar verificação de dependência (produtos) no futuro
         await query(`DELETE FROM product_unit WHERE id = ?`, [id]);
         revalidatePath("/unidades-medida");
         return { success: true, message: "Unidade de medida excluída com sucesso." };
     } catch (error) {
-        return { success: false, message: "Erro no banco: Falha ao excluir." };
+        return { success: false, message: "Unidade de medida associada a um ou mais produtos!" };
     }
 }
