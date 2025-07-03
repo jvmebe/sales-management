@@ -32,6 +32,7 @@ import { Separator } from "@/components/ui/separator";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { CitySelectionDialog } from "@/components/dialogs/city-selection-dialog";
 import { DatePicker } from "@/components/ui/date-picker";
+import { FormFooter } from "@/components/ui/form-footer";
 
 interface SupplierFormProps {
   initialData?: Supplier;
@@ -61,12 +62,27 @@ export default function SupplierForm({
     defaultValues: initialData
       ? {
           ...initialData,
-          data_nascimento: initialData.data_nascimento?.split("T")[0],
+          data_nascimento: initialData.data_nascimento
+            ? new Date(initialData.data_nascimento)
+            : undefined,
         }
       : { is_juridica: false, ativo: true },
   });
 
   const isJuridica = form.watch("is_juridica");
+
+  const {
+    formState: { errors, isDirty, isSubmitting },
+  } = form;
+
+  const FORM_ID = "supplier-form"
+
+  const deleteButton = isEditMode ? (
+    <DeleteSupplierButton id={initialData.id}>
+      <Button variant="destructive" type="button">Excluir</Button>
+    </DeleteSupplierButton>
+  ) : undefined;
+  
 
   const onSubmit = async (data: SupplierFormType) => {
     const action = isEditMode
@@ -82,7 +98,7 @@ export default function SupplierForm({
   };
 
   const handleCitySelect = (city: City) => {
-    form.setValue("cidade_id", city.id, { shouldValidate: true });
+    form.setValue("cidade_id", city.id, { shouldValidate: true, shouldDirty: true });
     setSelectedCityName(city.nome);
     setCityDialogOpen(false);
   };
@@ -90,7 +106,7 @@ export default function SupplierForm({
   return (
     <div className="">
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6" id={FORM_ID}>
             <FormField
             control={form.control}
             name="ativo"
@@ -333,29 +349,21 @@ export default function SupplierForm({
               </FormItem>
             )}
           />
+          {isEditMode && (
+            <><Separator /><div className="grid grid-cols-1 sm:grid-cols-2 gap-4 rounded-lg border p-4">
+              <div><p className="text-sm font-medium text-muted-foreground">Data de Criação</p><p className="text-sm">{formatDate(initialData.data_criacao)}</p></div>
+              <div><p className="text-sm font-medium text-muted-foreground">Última Modificação</p><p className="text-sm">{formatDate(initialData.data_modificacao)}</p></div>
+            </div></>
+          )}
+          <FormFooter
+        formId={FORM_ID}
+        cancelHref="/fornecedores"
+        isEditMode={isEditMode}
+        isSubmitting={isSubmitting}
+        isDirty={isDirty}
+        deleteButton={deleteButton}
+      />
 
-          <Separator />
-          
-
-          <div className="flex justify-between items-center">
-            <div>
-              {isEditMode && (
-                <DeleteSupplierButton id={initialData!.id}>
-                  <Button variant="destructive" type="button">
-                    Excluir
-                  </Button>
-                </DeleteSupplierButton>
-              )}
-            </div>
-            <div className="flex space-x-4 ml-auto">
-              <Button variant="outline" type="button" asChild>
-                <Link href="/fornecedores">Cancelar</Link>
-              </Button>
-              <Button type="submit" disabled={form.formState.isSubmitting}>
-                {form.formState.isSubmitting ? "Salvando..." : "Salvar"}
-              </Button>
-            </div>
-          </div>
         </form>
       </Form>
     </div>

@@ -58,6 +58,7 @@ export default function StateForm({ initialData, countries }: StateFormProps) {
 ) : undefined;
 
 
+
   const form = useForm<StateFormType>({
     resolver: zodResolver(StateSchema),
     defaultValues: {
@@ -67,6 +68,10 @@ export default function StateForm({ initialData, countries }: StateFormProps) {
       ativo: initialData?.ativo ?? true,
     },
   });
+
+  const {
+    formState: { errors, isDirty, isSubmitting },
+  } = form;
 
   const onSubmit = async (data: StateFormType) => {
     const action = isEditMode
@@ -86,7 +91,7 @@ export default function StateForm({ initialData, countries }: StateFormProps) {
   const [isDialogOpen, setDialogOpen] = useState(false);
 
   const handleCountrySelect = (country: Country) => {
-    form.setValue("country_id", country.id, { shouldValidate: true });
+    form.setValue("country_id", country.id, { shouldValidate: true, shouldDirty: true });
     setSelectedCountryName(country.nome);
     setDialogOpen(false);
   };
@@ -174,7 +179,9 @@ export default function StateForm({ initialData, countries }: StateFormProps) {
       <FormFooter
         formId={FORM_ID}
         cancelHref="/estados"
-        isSubmitting={form.formState.isSubmitting}
+        isEditMode={isEditMode}
+        isSubmitting={isSubmitting}
+        isDirty={isDirty}
         deleteButton={deleteButton}
       />
     </Form>

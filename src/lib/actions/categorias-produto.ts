@@ -37,6 +37,6 @@ export async function deleteProductCategory(id: number) {
         revalidatePath("/categorias-produto");
         return { success: true, message: "Categoria excluída com sucesso." };
     } catch (error) {
-        return { success: false, message: "Erro no banco: Falha ao excluir." };
+        return { success: false, message: "Existem produtos associados a esta categoria!" };
     }
 }

@@ -6,7 +6,7 @@ export default async function NewPaymentConditionPage() {
   const paymentMethods = await fetchActivePaymentMethods();
 
   return (
-    <div className="mx-auto max-w-4xl px-4 py-10">
+    <div className="form-container">
       <div>
         <h1 className="text-2xl font-bold">Nova Condição de Pagamento</h1>
       </div>

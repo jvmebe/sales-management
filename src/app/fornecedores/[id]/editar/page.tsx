@@ -10,7 +10,6 @@ export default async function EditSupplierPage({ params }: { params: { id: strin
   const id = Number(params.id);
   if (isNaN(id)) notFound();
 
-  // Busca todos os dados necessários em paralelo
   const [supplier, countries, states, cities] = await Promise.all([
     fetchSupplierById(id),
     fetchActiveCountries(),
@@ -21,7 +20,7 @@ export default async function EditSupplierPage({ params }: { params: { id: strin
   if (!supplier) notFound();
 
   return (
-    <div className="mx-auto max-w-4xl px-4 py-10">
+    <div className="form-container">
       <div>
         <h1 className="text-2xl font-bold">Editar Fornecedor</h1>
       </div>

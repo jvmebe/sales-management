@@ -15,6 +15,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { DeleteProductCategoryButton } from "./delete-button";
 import { Separator } from "@/components/ui/separator";
+import { FormFooter } from "@/components/ui/form-footer";
 
 interface ProductCategoryFormProps {
   initialData?: ProductCategory;
@@ -33,6 +34,19 @@ export default function ProductCategoryForm({ initialData }: ProductCategoryForm
     },
   });
 
+  const FORM_ID = "category-form";
+
+   const {
+    formState: { errors, isDirty, isSubmitting },
+  } = form;
+
+    const deleteButton = isEditMode ? (
+    <DeleteProductCategoryButton id={initialData.id}>
+      <Button variant="destructive" type="button">Excluir</Button>
+    </DeleteProductCategoryButton>
+  ) : undefined;
+
+
   const onSubmit = async (data: ProductCategoryFormType) => {
     const action = isEditMode ? updateProductCategory(initialData.id, data) : createProductCategory(data);
     const result = await action;
@@ -47,18 +61,18 @@ export default function ProductCategoryForm({ initialData }: ProductCategoryForm
   return (
     <div className="mx-auto max-w-2xl">
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-          <FormField control={form.control} name="nome" render={({ field }) => (
-            <FormItem><FormLabel>Nome da Categoria</FormLabel><FormControl><Input placeholder="Ex: Bebidas, Limpeza..." {...field} /></FormControl><FormMessage /></FormItem>
-          )} />
-          <FormField control={form.control} name="descricao" render={({ field }) => (
-            <FormItem><FormLabel>Descrição</FormLabel><FormControl><Textarea placeholder="Detalhes sobre a categoria (opcional)" {...field} /></FormControl><FormMessage /></FormItem>
-          )} />
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8" id={FORM_ID}>
           <FormField control={form.control} name="ativo" render={({ field }) => (
             <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
               <FormLabel>Ativo</FormLabel>
               <FormControl><Switch checked={field.value} onCheckedChange={field.onChange} /></FormControl>
             </FormItem>
+          )} />
+          <FormField control={form.control} name="nome" render={({ field }) => (
+            <FormItem><FormLabel>Nome da Categoria</FormLabel><FormControl><Input placeholder="Ex: Bebidas, Limpeza..." {...field} /></FormControl><FormMessage /></FormItem>
+          )} />
+          <FormField control={form.control} name="descricao" render={({ field }) => (
+            <FormItem><FormLabel>Descrição</FormLabel><FormControl><Textarea placeholder="Detalhes sobre a categoria (opcional)" {...field} /></FormControl><FormMessage /></FormItem>
           )} />
           
           {isEditMode && (
@@ -67,14 +81,15 @@ export default function ProductCategoryForm({ initialData }: ProductCategoryForm
               <div><p className="text-sm font-medium text-muted-foreground">Última Modificação</p><p className="text-sm">{formatDate(initialData.data_modificacao)}</p></div>
             </div></>
           )}
+        <FormFooter
+        formId={FORM_ID}
+        cancelHref="/categorias"
+        isEditMode={isEditMode}
+        isSubmitting={isSubmitting}
+        isDirty={isDirty}
+        deleteButton={deleteButton}
+      />
 
-          <div className="flex justify-between items-center">
-            <div>{isEditMode && (<DeleteProductCategoryButton id={initialData.id}><Button variant="destructive" type="button">Excluir</Button></DeleteProductCategoryButton>)}</div>
-            <div className="flex space-x-4 ml-auto">
-              <Button variant="outline" type="button" asChild><Link href="/categorias">Cancelar</Link></Button>
-              <Button type="submit" disabled={form.formState.isSubmitting}>{form.formState.isSubmitting ? "Salvando..." : "Salvar"}</Button>
-            </div>
-          </div>
         </form>
       </Form>
     </div>

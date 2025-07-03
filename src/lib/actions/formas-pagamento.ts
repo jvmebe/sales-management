@@ -41,7 +41,6 @@ export async function updatePaymentMethod(id: number, data: PaymentMethodForm) {
 
 export async function deletePaymentMethod(id: number) {
     try {
-        // Lembre-se de adicionar uma verificação de dependência no futuro
         await query(`DELETE FROM payment_method WHERE id = ?`, [id]);
         revalidatePath("/formas-pagamento");
         return { success: true, message: "Forma de pagamento excluída com sucesso." };

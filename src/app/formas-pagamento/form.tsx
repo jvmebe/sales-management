@@ -6,14 +6,14 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import {
-  ProductUnit,
-  ProductUnitForm as ProductUnitFormType,
-  ProductUnitSchema,
+  PaymentMethod,
+  PaymentMethodForm as PaymentMethodFormType,
+  PaymentMethodSchema,
 } from "@/lib/definitions";
 import {
-  createProductUnit,
-  updateProductUnit,
-} from "@/lib/actions/unidades-medida";
+  createPaymentMethod,
+  updatePaymentMethod,
+} from "@/lib/actions/formas-pagamento";
 import { formatDate } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -26,49 +26,52 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { DeleteProductUnitButton } from "./delete-button";
+import { DeletePaymentMethodButton } from "./delete-button";
 import { Separator } from "@/components/ui/separator";
 import { FormFooter } from "@/components/ui/form-footer";
 
-interface ProductUnitFormProps {
-  initialData?: ProductUnit;
+interface PaymentMethodFormProps {
+  initialData?: PaymentMethod;
 }
 
-export default function ProductUnitForm({ initialData }: ProductUnitFormProps) {
+export default function PaymentMethodForm({
+  initialData,
+}: PaymentMethodFormProps) {
   const router = useRouter();
   const isEditMode = !!initialData;
 
-  const form = useForm<ProductUnitFormType>({
-    resolver: zodResolver(ProductUnitSchema),
+  const FORM_ID = "pay-form";
+
+  const deleteButton = isEditMode ? (
+    <DeletePaymentMethodButton id={initialData.id}>
+      <Button variant="destructive" type="button">
+        Excluir
+      </Button>
+    </DeletePaymentMethodButton>
+  ) : undefined;
+
+  const form = useForm<PaymentMethodFormType>({
+    resolver: zodResolver(PaymentMethodSchema),
     defaultValues: {
-      nome: initialData?.nome || "",
-      sigla: initialData?.sigla || "",
+      descricao: initialData?.descricao || "",
       ativo: initialData?.ativo ?? true,
     },
   });
 
- const FORM_ID = "city-form";
-  
- const {
+  const {
     formState: { errors, isDirty, isSubmitting },
   } = form;
 
-
-  const deleteButton = isEditMode ? (
-    <DeleteProductUnitButton id={initialData.id}>
-      <Button variant="destructive" type="button">Excluir</Button>
-    </DeleteProductUnitButton>
-  ) : undefined;
-  
-
-  const onSubmit = async (data: ProductUnitFormType) => {
+  const onSubmit = async (data: PaymentMethodFormType) => {
     const action = isEditMode
-      ? updateProductUnit(initialData.id, data)
-      : createProductUnit(data);
+      ? updatePaymentMethod(initialData.id, data)
+      : createPaymentMethod(data);
+
     const result = await action;
+
     if (result.success) {
       toast.success(result.message);
-      router.push("/unidades-medida");
+      router.push("/formas-pagamento");
     } else {
       toast.error("Erro ao salvar", { description: result.message });
     }
@@ -77,7 +80,11 @@ export default function ProductUnitForm({ initialData }: ProductUnitFormProps) {
   return (
     <div className="mx-auto max-w-2xl">
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          className="space-y-8"
+          id={FORM_ID}
+        >
           <FormField
             control={form.control}
             name="ativo"
@@ -93,34 +100,22 @@ export default function ProductUnitForm({ initialData }: ProductUnitFormProps) {
               </FormItem>
             )}
           />
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <FormField
-              control={form.control}
-              name="nome"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Nome</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Ex: Quilograma" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="sigla"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Sigla</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Ex: KG" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
+          <FormField
+            control={form.control}
+            name="descricao"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Descrição</FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder="Ex: Dinheiro, Cartão de Crédito"
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
           {isEditMode && (
             <>
@@ -145,17 +140,14 @@ export default function ProductUnitForm({ initialData }: ProductUnitFormProps) {
               </div>
             </>
           )}
-
-            
-      <FormFooter
-        formId={FORM_ID}
-        cancelHref="/unidades-medida"
-        isEditMode={isEditMode}
-        isSubmitting={isSubmitting}
-        isDirty={isDirty}
-        deleteButton={deleteButton}
-      />
-
+          <FormFooter
+            formId={FORM_ID}
+            cancelHref="/formas-pagamento"
+            isEditMode={isEditMode}
+            isSubmitting={isSubmitting}
+            isDirty={isDirty}
+            deleteButton={deleteButton}
+          />
         </form>
       </Form>
     </div>

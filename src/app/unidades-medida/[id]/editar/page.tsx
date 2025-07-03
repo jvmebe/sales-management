@@ -11,7 +11,7 @@ export default async function EditProductUnitPage({ params }: { params: { id: st
   if (!data) notFound();
 
   return (
-    <div className="mx-auto max-w-2xl px-4 py-10">
+    <div className="form-container">
       <div>
         <h1 className="text-2xl font-bold">Editar Unidade de Medida</h1>
       </div>

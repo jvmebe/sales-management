@@ -22,7 +22,7 @@ export const columns: ColumnDef<Employee>[] = [
   {
     id: "actions",
     cell: ({ row }) => (
-      <a href={`/funcionarios-pagamento/${row.original.id}/editar`}>
+      <a href={`/funcionarios/${row.original.id}/editar`}>
       <Button variant="outline">
         <SquarePen /> Editar
       </Button>

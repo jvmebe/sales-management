@@ -1,6 +1,6 @@
 "use server";
 
-import pool from "@/lib/db"; // Importa o pool para usar transações
+import pool from "@/lib/db";
 import { PaymentConditionForm, PaymentConditionSchema } from "@/lib/definitions";
 import { revalidatePath } from "next/cache";
 
@@ -75,6 +75,37 @@ export async function updatePaymentCondition(id: number, data: PaymentConditionF
   } catch (error) {
     await connection.rollback();
     return { success: false, message: "Erro no banco: Falha ao atualizar condição." };
+  } finally {
+    connection.release();
+  }
+}
+
+export async function deletePaymentCondition(id: number) {
+  const connection = await pool.getConnection();
+  try {
+    // Verifica se algum cliente esta usando a condicao. Adicionar vendas e outras categorias dependentes no futuro
+    const [clients] = await connection.execute(
+      'SELECT id FROM client WHERE cond_pag_id = ? LIMIT 1',
+      [id]
+    );
+
+    if (Array.isArray(clients) && clients.length > 0) {
+      return {
+        success: false,
+        message: "Não é possível excluir: esta condição está em uso por um ou mais clientes.",
+      };
+    }
+
+    await connection.beginTransaction();
+    await connection.execute('DELETE FROM payment_condition WHERE id = ?', [id]);
+    await connection.commit();
+
+    revalidatePath("/condicoes-pagamento");
+    return { success: true, message: "Condição de pagamento excluída com sucesso!" };
+
+  } catch (error) {
+    await connection.rollback();
+    return { success: false, message: "Erro no banco de dados: Falha ao excluir condição." };
   } finally {
     connection.release();
   }

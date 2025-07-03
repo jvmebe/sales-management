@@ -12,7 +12,7 @@ export default async function NewSupplierPage() {
   ]);
 
   return (
-    <div className="mx-auto w-[1300px] px-4 py-10">
+    <div className="form-container">
       <div>
         <h1 className="text-2xl font-bold">Novo Fornecedor</h1>
         <p className="text-muted-foreground">

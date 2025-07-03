@@ -18,9 +18,17 @@ interface DatePickerProps {
   value?: Date;
   onChange: (date?: Date) => void;
   disabled?: boolean;
+  disableFutureDates?: boolean
 }
 
-export function DatePicker({ value, onChange, disabled }: DatePickerProps) {
+export function DatePicker({ value, onChange, disabled, disableFutureDates }: DatePickerProps) {
+
+  const disableDate = (date: Date) => {
+    const tooEarly = date < new Date("1900-01-01");
+    const inFuture = date > new Date();
+    return disableFutureDates ? tooEarly || inFuture : tooEarly;
+  };
+
   return (
     <Popover>
       <PopoverTrigger asChild>
@@ -37,13 +45,14 @@ export function DatePicker({ value, onChange, disabled }: DatePickerProps) {
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-auto p-0">
-        <Calendar
-          mode="single"
-          selected={value}
-          onSelect={onChange}
-          initialFocus
-          locale={ptBR}
-        />
+         <Calendar
+                    mode="single"
+                    selected={value}
+                    onSelect={onChange}
+                    disabled={disableDate}
+                    captionLayout="dropdown"
+                    locale={ptBR}
+                  />
       </PopoverContent>
     </Popover>
   );

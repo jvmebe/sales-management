@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { deletePaymentMethod } from "@/lib/actions/formas-pagamento";
 import { toast } from "sonner";
+import { useRouter } from "next/router";
 
 export function DeletePaymentMethodButton({ id, children }: { id: number, children: React.ReactNode }) {
   const [isPending, startTransition] = useTransition();
@@ -23,6 +24,7 @@ export function DeletePaymentMethodButton({ id, children }: { id: number, childr
       const result = await deletePaymentMethod(id);
       if (result?.success) {
         toast.success(result.message);
+        useRouter().replace('/formas-pagamento')
       } else {
         toast.error("Erro ao excluir", { description: result.message });
       }

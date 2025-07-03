@@ -86,13 +86,18 @@ export default function ClientForm({
   const isJuridica = form.watch("is_juridica");
 
   const FORM_ID = "city-form";
-  
+
+  const {
+    formState: { errors, isDirty, isSubmitting },
+  } = form;
+
   const deleteButton = isEditMode ? (
     <DeleteClientButton id={initialData.id}>
-      <Button variant="destructive" type="button">Excluir</Button>
+      <Button variant="destructive" type="button">
+        Excluir
+      </Button>
     </DeleteClientButton>
   ) : undefined;
-  
 
   const onSubmit = async (data: ClientForm) => {
     const action = isEditMode
@@ -108,13 +113,13 @@ export default function ClientForm({
   };
 
   const handleCitySelect = (city: City) => {
-    form.setValue("cidade_id", city.id, { shouldValidate: true });
+    form.setValue("cidade_id", city.id, { shouldValidate: true, shouldDirty: true });
     setSelectedNames((p) => ({ ...p, city: city.nome }));
     setDialogsOpen((p) => ({ ...p, city: false }));
   };
 
   const handlePaymentConditionSelect = (pc: PaymentCondition) => {
-    form.setValue("cond_pag_id", pc.id, { shouldValidate: true });
+    form.setValue("cond_pag_id", pc.id, { shouldValidate: true, shouldDirty: true });
     setSelectedNames((p) => ({ ...p, paymentCondition: pc.descricao }));
     setDialogsOpen((p) => ({ ...p, paymentCondition: false }));
   };
@@ -122,7 +127,11 @@ export default function ClientForm({
   return (
     <div className="mx-auto max-w-4xl">
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6" id={FORM_ID}>
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          className="space-y-6"
+          id={FORM_ID}
+        >
           <FormField
             control={form.control}
             name="ativo"
@@ -159,20 +168,20 @@ export default function ClientForm({
           <h3 className="text-lg font-medium">Dados Principais</h3>
           <div className="flex items-start flex-col md:flex-row md:space-x-5 space-y-5 md:space-y-0">
             <FormField
-            control={form.control}
-            name="nome"
-            render={({ field }) => (
-              <FormItem className="w-2/4">
-                <FormLabel>
-                  {isJuridica ? "Razão Social" : "Nome Completo"}
-                </FormLabel>
-                <FormControl>
-                  <Input {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+              control={form.control}
+              name="nome"
+              render={({ field }) => (
+                <FormItem className="w-2/4">
+                  <FormLabel>
+                    {isJuridica ? "Razão Social" : "Nome Completo"}
+                  </FormLabel>
+                  <FormControl>
+                    <Input {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
             <FormField
               control={form.control}
               name="apelido"
@@ -187,10 +196,9 @@ export default function ClientForm({
                 </FormItem>
               )}
             />
-          
           </div>
           <div className="flex items-start flex-col md:flex-row md:space-x-5 space-y-5 md:space-y-0">
-              <FormField
+            <FormField
               control={form.control}
               name="cpf"
               render={({ field }) => (
@@ -228,13 +236,13 @@ export default function ClientForm({
                   <DatePicker
                     value={field.value ?? undefined}
                     onChange={field.onChange}
+                    disableFutureDates={true}
                   />
                   <FormMessage />
                 </FormItem>
               )}
             />
           </div>
-
 
           <Separator />
           <h3 className="text-lg font-medium">Contato e Endereço</h3>
@@ -312,19 +320,19 @@ export default function ClientForm({
                 </FormItem>
               )}
             />
-          <FormField
-            control={form.control}
-            name="endereco"
-            render={({ field }) => (
-              <FormItem className="w-3/7">
-                <FormLabel>Endereço</FormLabel>
-                <FormControl>
-                  <Input {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+            <FormField
+              control={form.control}
+              name="endereco"
+              render={({ field }) => (
+                <FormItem className="w-3/7">
+                  <FormLabel>Endereço</FormLabel>
+                  <FormControl>
+                    <Input {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
             <FormField
               control={form.control}
               name="numero"
@@ -340,7 +348,7 @@ export default function ClientForm({
             />
           </div>
           <div className="flex items-start md:grid-cols-2 gap-4">
-              <FormField
+            <FormField
               control={form.control}
               name="bairro"
               render={({ field }) => (
@@ -353,19 +361,19 @@ export default function ClientForm({
                 </FormItem>
               )}
             />
-          <FormField
-            control={form.control}
-            name="complemento"
-            render={({ field }) => (
-              <FormItem className="w-2/4">
-                <FormLabel>Complemento</FormLabel>
-                <FormControl>
-                  <Input {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+            <FormField
+              control={form.control}
+              name="complemento"
+              render={({ field }) => (
+                <FormItem className="w-2/4">
+                  <FormLabel>Complemento</FormLabel>
+                  <FormControl>
+                    <Input {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
           </div>
           <Separator />
           <h3 className="text-lg font-medium">Financeiro</h3>
@@ -420,13 +428,20 @@ export default function ClientForm({
               )}
             />
           </div>
-
+          {isEditMode && (
+            <><Separator /><div className="grid grid-cols-1 sm:grid-cols-2 gap-4 rounded-lg border p-4">
+              <div><p className="text-sm font-medium text-muted-foreground">Data de Criação</p><p className="text-sm">{formatDate(initialData.data_criacao)}</p></div>
+              <div><p className="text-sm font-medium text-muted-foreground">Última Modificação</p><p className="text-sm">{formatDate(initialData.data_modificacao)}</p></div>
+            </div></>
+          )}
           <FormFooter
-                  formId={FORM_ID}
-                  cancelHref="/clientes"
-                  isSubmitting={form.formState.isSubmitting}
-                  deleteButton={deleteButton}
-                />
+            formId={FORM_ID}
+            cancelHref="/clientes"
+            isEditMode={isEditMode}
+            isSubmitting={isSubmitting}
+            isDirty={isDirty}
+            deleteButton={deleteButton}
+          />
         </form>
       </Form>
     </div>
