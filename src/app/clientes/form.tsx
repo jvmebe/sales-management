@@ -11,7 +11,7 @@ import {
   Country,
   State,
   Client,
-  ClientForm,
+  ClientForm as ClientFormType,
   ClientSchema,
   PaymentCondition,
   PaymentMethod,
@@ -71,8 +71,9 @@ export default function ClientForm({
       : undefined,
   });
 
-  const form = useForm<ClientForm>({
+  const form = useForm<ClientFormType>({
     resolver: zodResolver(ClientSchema),
+    mode: 'onChange',
     defaultValues: initialData
       ? {
           ...initialData,
@@ -99,7 +100,7 @@ export default function ClientForm({
     </DeleteClientButton>
   ) : undefined;
 
-  const onSubmit = async (data: ClientForm) => {
+  const onSubmit = async (data: ClientFormType) => {
     const action = isEditMode
       ? updateClient(initialData!.id, data)
       : createClient(data);
@@ -205,7 +206,7 @@ export default function ClientForm({
                 <FormItem className="w-1/3">
                   <FormLabel>{isJuridica ? "CNPJ*" : "CPF*"}</FormLabel>
                   <FormControl>
-                    <Input {...field} />
+                    <Input {...field} type="number" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -231,7 +232,7 @@ export default function ClientForm({
               render={({ field }) => (
                 <FormItem className="flex flex-col w-1/3">
                   <FormLabel>
-                    {isJuridica ? "Data de Abertura" : "Data de Nascimento"}
+                    {isJuridica ? "Data de Abertura*" : "Data de Nascimento*"}
                   </FormLabel>
                   <DatePicker
                     value={field.value ?? undefined}
@@ -267,7 +268,7 @@ export default function ClientForm({
                 <FormItem className="w-2/4">
                   <FormLabel>Telefone</FormLabel>
                   <FormControl>
-                    <Input {...field} />
+                    <Input {...field} type="number" />
                   </FormControl>
                 </FormItem>
               )}
@@ -279,9 +280,9 @@ export default function ClientForm({
               name="cep"
               render={({ field }) => (
                 <FormItem className="w-1/7">
-                  <FormLabel>CEP</FormLabel>
+                  <FormLabel>CEP*</FormLabel>
                   <FormControl>
-                    <Input {...field} />
+                    <Input {...field} type="number" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -292,7 +293,7 @@ export default function ClientForm({
               name="cidade_id"
               render={() => (
                 <FormItem className="flex flex-col md:col-span-2 w-2/7">
-                  <FormLabel>Cidade</FormLabel>
+                  <FormLabel>Cidade*</FormLabel>
                   <Dialog
                     open={dialogsOpen.city}
                     onOpenChange={(isOpen) =>
@@ -325,7 +326,7 @@ export default function ClientForm({
               name="endereco"
               render={({ field }) => (
                 <FormItem className="w-3/7">
-                  <FormLabel>Endereço</FormLabel>
+                  <FormLabel>Endereço*</FormLabel>
                   <FormControl>
                     <Input {...field} />
                   </FormControl>
@@ -338,9 +339,9 @@ export default function ClientForm({
               name="numero"
               render={({ field }) => (
                 <FormItem className="w-1/7">
-                  <FormLabel>Número</FormLabel>
+                  <FormLabel>Número*</FormLabel>
                   <FormControl>
-                    <Input {...field} />
+                    <Input {...field} type="number" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -353,7 +354,7 @@ export default function ClientForm({
               name="bairro"
               render={({ field }) => (
                 <FormItem className="md:col-span-2 w-2/4">
-                  <FormLabel>Bairro</FormLabel>
+                  <FormLabel>Bairro*</FormLabel>
                   <FormControl>
                     <Input {...field} />
                   </FormControl>

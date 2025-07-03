@@ -16,6 +16,7 @@ import {
 import { SquarePen } from "lucide-react";
 
 export const columns: ColumnDef<State>[] = [
+  { accessorKey: "id", header: "Cód."},
   { accessorKey: "nome", header: "Nome" },
   { accessorKey: "sigla", header: "UF" },
   { accessorKey: "country_nome", header: "País" },
@@ -31,14 +32,11 @@ export const columns: ColumnDef<State>[] = [
   {
     id: "actions",
     cell: ({ row }) => (
-      
       <a href={`/estados/${row.original.id}/editar`}>
-      <Button variant="outline">
-        <SquarePen /> Editar
-      </Button>
+        <Button variant="outline">
+          <SquarePen /> Editar
+        </Button>
       </a>
-
-      
     ),
   },
 ];

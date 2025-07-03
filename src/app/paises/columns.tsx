@@ -18,6 +18,7 @@ const formatDate = (dateStr: string) => {
 };
 
 export const columns: ColumnDef<Country>[] = [
+  { accessorKey: "id", header: "Cód."},
   {
     accessorKey: "nome",
     header: ({ column }) => {

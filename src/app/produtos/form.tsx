@@ -155,7 +155,7 @@ export default function ProductForm({
             control={form.control}
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Nome do Produto</FormLabel>
+                <FormLabel>Nome do Produto*</FormLabel>
                 <FormControl>
                   <Input {...field} />
                 </FormControl>
@@ -186,7 +186,7 @@ export default function ProductForm({
               control={form.control}
               render={({ field }) => (
                 <FormItem className="flex flex-col">
-                  <FormLabel>Unidade de Medida</FormLabel>
+                  <FormLabel>Unidade de Medida*</FormLabel>
                   <Dialog
                     open={dialogsOpen.unit}
                     onOpenChange={(isOpen) =>
@@ -221,7 +221,7 @@ export default function ProductForm({
               control={form.control}
               render={({ field }) => (
                 <FormItem className="flex flex-col">
-                  <FormLabel>Marca</FormLabel>
+                  <FormLabel>Marca*</FormLabel>
                   <Dialog
                     open={dialogsOpen.brand}
                     onOpenChange={(isOpen) =>
@@ -247,6 +247,7 @@ export default function ProductForm({
                       />
                     </DialogContent>
                   </Dialog>
+                  <FormMessage />
                 </FormItem>
               )}
             />
@@ -255,7 +256,7 @@ export default function ProductForm({
               control={form.control}
               render={({ field }) => (
                 <FormItem className="flex flex-col">
-                  <FormLabel>Categoria</FormLabel>
+                  <FormLabel>Categoria*</FormLabel>
                   <Dialog
                     open={dialogsOpen.category}
                     onOpenChange={(isOpen) =>
@@ -284,6 +285,7 @@ export default function ProductForm({
                       />
                     </DialogContent>
                   </Dialog>
+                  <FormMessage />
                 </FormItem>
               )}
             />
@@ -292,7 +294,7 @@ export default function ProductForm({
               control={form.control}
               render={({ field }) => (
                 <FormItem className="flex flex-col">
-                  <FormLabel>Fornecedor</FormLabel>
+                  <FormLabel>Fornecedor*</FormLabel>
                   <Dialog
                     open={dialogsOpen.supplier}
                     onOpenChange={(isOpen) =>
@@ -307,7 +309,7 @@ export default function ProductForm({
                         {selectedNames.supplier || "Selecione um fornecedor"}
                       </Button>
                     </DialogTrigger>
-                    <DialogContent className="max-w-5xl h-5/6 flex flex-col">
+                    <DialogContent className="max-w-5xl flex flex-col">
                       <SupplierSelectionDialog
                         suppliers={suppliers}
                         cities={cities}
@@ -324,6 +326,7 @@ export default function ProductForm({
                       />
                     </DialogContent>
                   </Dialog>
+                  <FormMessage />
                 </FormItem>
               )}
             />

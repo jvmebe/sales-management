@@ -105,7 +105,7 @@ export default function PaymentMethodForm({
             name="descricao"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Descrição</FormLabel>
+                <FormLabel>Descrição*</FormLabel>
                 <FormControl>
                   <Input
                     placeholder="Ex: Dinheiro, Cartão de Crédito"

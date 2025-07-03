@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { fetchCityById } from "@/lib/data/cidades";
 import { fetchActiveCountries } from "@/lib/data/paises";
 import { fetchActiveStates } from "@/lib/data/estados";
-import CityForm from "../../city-form";
+import CityForm from "../../form";
 
 export default async function EditCityPage({ params }: { params: { id: string } }) {
   const id = Number(params.id);

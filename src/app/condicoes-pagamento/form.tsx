@@ -168,7 +168,7 @@ export default function PaymentConditionForm({
             name="descricao"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Descrição</FormLabel>
+                <FormLabel>Descrição*</FormLabel>
                 <FormControl>
                   <Input placeholder="Ex: 30/60/90 dias" {...field} />
                 </FormControl>
@@ -221,7 +221,7 @@ export default function PaymentConditionForm({
           <Separator />
 
           <div className="flex justify-between items-center">
-            <h3 className="text-lg font-medium">Parcelas</h3>
+            <h3 className="text-lg font-medium">Parcelas*</h3>
             {fields.length > 0 && <InstallmentTotal control={form.control} />}
           </div>
 

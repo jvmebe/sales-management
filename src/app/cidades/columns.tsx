@@ -10,6 +10,10 @@ import { SquarePen } from "lucide-react";
 
 export const columns: ColumnDef<City>[] = [
   {
+    accessorKey: "id",
+    header: "Cód."
+  },
+  {
     accessorKey: "nome",
     header: "Nome da Cidade",
   },

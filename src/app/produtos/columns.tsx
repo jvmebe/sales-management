@@ -11,6 +11,7 @@ import { DeleteProductButton } from "./delete-button";
 import { SquarePen } from "lucide-react";
 
 export const columns: ColumnDef<Product>[] = [
+  { accessorKey: "id", header: "Cód."},
   { accessorKey: "nome", header: "Produto" },
   { accessorKey: "valor_venda", header: "Preço Venda", cell: ({ row }) => `R$ ${row.getValue("valor_venda")}` },
   { accessorKey: "estoque", header: "Estoque" },

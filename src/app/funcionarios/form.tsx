@@ -141,7 +141,7 @@ export default function EmployeeForm({
               name="nome"
               render={({ field }) => (
                 <FormItem className="w-2/4">
-                  <FormLabel>Nome Completo</FormLabel>
+                  <FormLabel>Nome Completo*</FormLabel>
                   <FormControl>
                     <Input {...field} />
                   </FormControl>
@@ -168,7 +168,7 @@ export default function EmployeeForm({
               name="data_nascimento"
               render={({ field }) => (
                 <FormItem className="flex flex-col w-1/3">
-                  <FormLabel>Data de Nascimento</FormLabel>
+                  <FormLabel>Data de Nascimento*</FormLabel>
                   <DatePicker
                     value={field.value ?? undefined}
                     onChange={field.onChange}
@@ -184,10 +184,11 @@ export default function EmployeeForm({
               name="cpf"
               render={({ field }) => (
                 <FormItem className="w-1/3">
-                  <FormLabel>CPF</FormLabel>
+                  <FormLabel>CPF*</FormLabel>
                   <FormControl>
                     <Input {...field} />
                   </FormControl>
+                  <FormMessage />
                 </FormItem>
               )}
             />
@@ -200,6 +201,7 @@ export default function EmployeeForm({
                   <FormControl>
                     <Input {...field} />
                   </FormControl>
+                  <FormMessage />
                 </FormItem>
               )}
             />
@@ -212,7 +214,7 @@ export default function EmployeeForm({
               name="email"
               render={({ field }) => (
                 <FormItem className="w-2/4">
-                  <FormLabel>Email</FormLabel>
+                  <FormLabel>Email*</FormLabel>
                   <FormControl>
                     <Input type="email" {...field} />
                   </FormControl>
@@ -225,10 +227,11 @@ export default function EmployeeForm({
               name="telefone"
               render={({ field }) => (
                 <FormItem className="w-2/4">
-                  <FormLabel>Telefone</FormLabel>
+                  <FormLabel>Telefone*</FormLabel>
                   <FormControl>
                     <Input {...field} />
                   </FormControl>
+                  <FormMessage />
                 </FormItem>
               )}
             />
@@ -239,7 +242,7 @@ export default function EmployeeForm({
               name="cep"
               render={({ field }) => (
                 <FormItem className="w-1/7">
-                  <FormLabel>CEP</FormLabel>
+                  <FormLabel>CEP*</FormLabel>
                   <FormControl>
                     <Input {...field} />
                   </FormControl>
@@ -252,7 +255,7 @@ export default function EmployeeForm({
               name="cidade_id"
               render={() => (
                 <FormItem className="flex flex-col md:col-span-2 w-2/7">
-                  <FormLabel>Cidade</FormLabel>
+                  <FormLabel>Cidade*</FormLabel>
                   <Dialog
                     open={dialogsOpen.city}
                     onOpenChange={(isOpen) =>
@@ -285,7 +288,7 @@ export default function EmployeeForm({
               name="endereco"
               render={({ field }) => (
                 <FormItem className="w-3/7">
-                  <FormLabel>Endereço</FormLabel>
+                  <FormLabel>Endereço*</FormLabel>
                   <FormControl>
                     <Input {...field} />
                   </FormControl>
@@ -298,7 +301,7 @@ export default function EmployeeForm({
               name="numero"
               render={({ field }) => (
                 <FormItem className="w-1/7">
-                  <FormLabel>Número</FormLabel>
+                  <FormLabel>Número*</FormLabel>
                   <FormControl>
                     <Input {...field} />
                   </FormControl>
@@ -313,7 +316,7 @@ export default function EmployeeForm({
               name="bairro"
               render={({ field }) => (
                 <FormItem className="md:col-span-2 w-2/4">
-                  <FormLabel>Bairro</FormLabel>
+                  <FormLabel>Bairro*</FormLabel>
                   <FormControl>
                     <Input {...field} />
                   </FormControl>
@@ -343,7 +346,7 @@ export default function EmployeeForm({
               name="matricula"
               render={({ field }) => (
                 <FormItem className="w-1/3">
-                  <FormLabel>Matrícula</FormLabel>
+                  <FormLabel>Matrícula*</FormLabel>
                   <FormControl>
                     <Input {...field} />
                   </FormControl>
@@ -355,7 +358,7 @@ export default function EmployeeForm({
               name="data_admissao"
               render={({ field }) => (
                 <FormItem className="flex flex-col w-1/3">
-                  <FormLabel>Data de Admissão</FormLabel>
+                  <FormLabel>Data de Admissão*</FormLabel>
                   <DatePicker
                     value={field.value ?? undefined}
                     onChange={field.onChange}
@@ -370,7 +373,7 @@ export default function EmployeeForm({
               name="cargo"
               render={({ field }) => (
                 <FormItem className="w-1/3">
-                  <FormLabel>Cargo</FormLabel>
+                  <FormLabel>Cargo*</FormLabel>
                   <FormControl>
                     <Input {...field} />
                   </FormControl>
@@ -384,7 +387,7 @@ export default function EmployeeForm({
             name="salario"
             render={({ field }) => (
               <FormItem className="w-1/3">
-                <FormLabel>Salário (R$)</FormLabel>
+                <FormLabel>Salário (R$)*</FormLabel>
                 <FormControl>
                   <Input type="number" step="0.01" {...field} />
                 </FormControl>

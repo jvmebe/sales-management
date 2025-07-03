@@ -69,7 +69,7 @@ export default function ProductCategoryForm({ initialData }: ProductCategoryForm
             </FormItem>
           )} />
           <FormField control={form.control} name="nome" render={({ field }) => (
-            <FormItem><FormLabel>Nome da Categoria</FormLabel><FormControl><Input placeholder="Ex: Bebidas, Limpeza..." {...field} /></FormControl><FormMessage /></FormItem>
+            <FormItem><FormLabel>Nome da Categoria*</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
           )} />
           <FormField control={form.control} name="descricao" render={({ field }) => (
             <FormItem><FormLabel>Descrição</FormLabel><FormControl><Textarea placeholder="Detalhes sobre a categoria (opcional)" {...field} /></FormControl><FormMessage /></FormItem>

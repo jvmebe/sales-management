@@ -1,5 +1,5 @@
 import { Separator } from "@/components/ui/separator";
-import CityForm from "../city-form";
+import CityForm from "../form";
 import { fetchActiveCountries } from "@/lib/data/paises";
 import { fetchActiveStates } from "@/lib/data/estados";
 

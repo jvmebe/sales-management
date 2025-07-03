@@ -12,12 +12,13 @@ export async function createSupplier(data: SupplierForm) {
   try {
     await query(`
       INSERT INTO supplier (is_juridica, nome, apelido, cpf, rg, data_nascimento, email, telefone, endereco, numero, complemento, bairro, cep, cidade_id, ativo) 
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`, 
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`, 
       [is_juridica, nome, apelido, cpf, rg, data_nascimento, email, telefone, endereco, numero, complemento, bairro, cep, cidade_id, ativo]
     );
     revalidatePath("/fornecedores");
     return { success: true, message: "Fornecedor criado com sucesso!" };
   } catch (error) {
+    console.log(error);
     return { success: false, message: "Erro no banco: Falha ao criar fornecedor." };
   }
 }

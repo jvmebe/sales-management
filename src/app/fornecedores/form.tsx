@@ -50,12 +50,14 @@ export default function SupplierForm({
   const router = useRouter();
   const isEditMode = !!initialData;
 
-  const [isCityDialogOpen, setCityDialogOpen] = useState(false);
-  const [selectedCityName, setSelectedCityName] = useState<string | undefined>(
-    initialData
+  const [dialogsOpen, setDialogsOpen] = useState({
+    city: false,
+  });
+  const [selectedNames, setSelectedNames] = useState({
+    city: initialData
       ? cities.find((c) => c.id === initialData.cidade_id)?.nome
-      : undefined
-  );
+      : undefined,
+  });
 
   const form = useForm<SupplierFormType>({
     resolver: zodResolver(SupplierSchema),
@@ -99,8 +101,8 @@ export default function SupplierForm({
 
   const handleCitySelect = (city: City) => {
     form.setValue("cidade_id", city.id, { shouldValidate: true, shouldDirty: true });
-    setSelectedCityName(city.nome);
-    setCityDialogOpen(false);
+    setSelectedNames((p) => ({ ...p, city: city.nome }));
+    setDialogsOpen((p) => ({ ...p, city: false }));
   };
 
   return (
@@ -140,28 +142,27 @@ export default function SupplierForm({
 
           <Separator />
           <h3 className="text-lg font-medium">Dados Principais</h3>
-
-          <FormField
-            control={form.control}
-            name="nome"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>
-                  {isJuridica ? "Razão Social" : "Nome Completo"}
-                </FormLabel>
-                <FormControl>
-                  <Input {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <div className="grid md:grid-cols-2 gap-4">
+          <div className="flex items-start flex-col md:flex-row md:space-x-5 space-y-5 md:space-y-0">
+            <FormField
+              control={form.control}
+              name="nome"
+              render={({ field }) => (
+                <FormItem className="w-2/4">
+                  <FormLabel>
+                    {isJuridica ? "Razão Social*" : "Nome*"}
+                  </FormLabel>
+                  <FormControl>
+                    <Input {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
             <FormField
               control={form.control}
               name="apelido"
               render={({ field }) => (
-                <FormItem>
+                <FormItem className="w-2/4">
                   <FormLabel>
                     {isJuridica ? "Nome Fantasia" : "Apelido"}
                   </FormLabel>
@@ -171,25 +172,26 @@ export default function SupplierForm({
                 </FormItem>
               )}
             />
+          </div>
+          <div className="flex items-start flex-col md:flex-row md:space-x-5 space-y-5 md:space-y-0">
             <FormField
               control={form.control}
               name="cpf"
               render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{isJuridica ? "CNPJ" : "CPF"}</FormLabel>
+                <FormItem className="w-1/3">
+                  <FormLabel>{isJuridica ? "CNPJ*" : "CPF*"}</FormLabel>
                   <FormControl>
-                    <Input {...field} />
+                    <Input {...field} type="number" />
                   </FormControl>
+                  <FormMessage />
                 </FormItem>
               )}
             />
-          </div>
-          <div className="grid md:grid-cols-2 gap-4">
             <FormField
               control={form.control}
               name="rg"
               render={({ field }) => (
-                <FormItem>
+                <FormItem className="w-1/3">
                   <FormLabel>
                     {isJuridica ? "Inscrição Estadual" : "RG"}
                   </FormLabel>
@@ -203,16 +205,16 @@ export default function SupplierForm({
               control={form.control}
               name="data_nascimento"
               render={({ field }) => (
-                <FormItem>
+                <FormItem className="flex flex-col w-1/3">
                   <FormLabel>
-                    {isJuridica ? "Data de Abertura" : "Data de Nascimento"}
+                    {isJuridica ? "Data de Abertura*" : "Data de Nascimento*"}
                   </FormLabel>
-                  <FormControl>
-                    <DatePicker
-                      value={field.value ?? undefined}
-                      onChange={field.onChange}
-                    />
-                  </FormControl>
+                  <DatePicker
+                    value={field.value ?? undefined}
+                    onChange={field.onChange}
+                    disableFutureDates={true}
+                  />
+                  <FormMessage />
                 </FormItem>
               )}
             />
@@ -220,14 +222,13 @@ export default function SupplierForm({
 
           <Separator />
           <h3 className="text-lg font-medium">Contato e Endereço</h3>
-
-          <div className="grid md:grid-cols-2 gap-4">
+          <div className="flex items-start flex-col md:flex-row md:space-x-5 space-y-5 md:space-y-0">
             <FormField
               control={form.control}
               name="email"
               render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Email</FormLabel>
+                <FormItem className="w-2/4">
+                  <FormLabel>Email*</FormLabel>
                   <FormControl>
                     <Input type="email" {...field} />
                   </FormControl>
@@ -239,25 +240,25 @@ export default function SupplierForm({
               control={form.control}
               name="telefone"
               render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Telefone</FormLabel>
+                <FormItem className="w-2/4">
+                  <FormLabel>Telefone*</FormLabel>
                   <FormControl>
-                    <Input {...field} />
+                    <Input {...field} type="number" />
                   </FormControl>
+                  <FormMessage />
                 </FormItem>
               )}
             />
           </div>
-
-          <div className="grid md:grid-cols-3 gap-4">
+          <div className="flex items-start flex-col md:flex-row md:space-x-5 space-y-5 md:space-y-0">
             <FormField
               control={form.control}
               name="cep"
               render={({ field }) => (
-                <FormItem>
-                  <FormLabel>CEP</FormLabel>
+                <FormItem className="w-1/7">
+                  <FormLabel>CEP*</FormLabel>
                   <FormControl>
-                    <Input {...field} />
+                    <Input {...field} type="number" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -266,22 +267,24 @@ export default function SupplierForm({
             <FormField
               control={form.control}
               name="cidade_id"
-              render={({ field }) => (
-                <FormItem className="flex flex-col md:col-span-2">
-                  <FormLabel>Cidade</FormLabel>
+              render={() => (
+                <FormItem className="flex flex-col md:col-span-2 w-2/7">
+                  <FormLabel>Cidade*</FormLabel>
                   <Dialog
-                    open={isCityDialogOpen}
-                    onOpenChange={setCityDialogOpen}
+                    open={dialogsOpen.city}
+                    onOpenChange={(isOpen) =>
+                      setDialogsOpen((p) => ({ ...p, city: isOpen }))
+                    }
                   >
                     <DialogTrigger asChild>
                       <Button
                         variant="outline"
                         className="w-full justify-start font-normal"
                       >
-                        {selectedCityName || "Selecione uma cidade"}
+                        {selectedNames.city || "Selecione uma cidade"}
                       </Button>
                     </DialogTrigger>
-                    <DialogContent className="max-w-4xl h-5/6 flex flex-col">
+                    <DialogContent className="max-w-6xl flex flex-col">
                       <CitySelectionDialog
                         cities={cities}
                         states={states}
@@ -294,27 +297,40 @@ export default function SupplierForm({
                 </FormItem>
               )}
             />
-          </div>
-          <FormField
-            control={form.control}
-            name="endereco"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Endereço (Rua, Av.)</FormLabel>
-                <FormControl>
-                  <Input {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <div className="grid md:grid-cols-3 gap-4">
+            <FormField
+              control={form.control}
+              name="endereco"
+              render={({ field }) => (
+                <FormItem className="w-3/7">
+                  <FormLabel>Endereço*</FormLabel>
+                  <FormControl>
+                    <Input {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
             <FormField
               control={form.control}
               name="numero"
               render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Número</FormLabel>
+                <FormItem className="w-1/7">
+                  <FormLabel>Número*</FormLabel>
+                  <FormControl>
+                    <Input {...field} type="number" />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+          <div className="flex items-start md:grid-cols-2 gap-4">
+            <FormField
+              control={form.control}
+              name="bairro"
+              render={({ field }) => (
+                <FormItem className="md:col-span-2 w-2/4">
+                  <FormLabel>Bairro*</FormLabel>
                   <FormControl>
                     <Input {...field} />
                   </FormControl>
@@ -324,10 +340,10 @@ export default function SupplierForm({
             />
             <FormField
               control={form.control}
-              name="bairro"
+              name="complemento"
               render={({ field }) => (
-                <FormItem className="md:col-span-2">
-                  <FormLabel>Bairro</FormLabel>
+                <FormItem className="w-2/4">
+                  <FormLabel>Complemento</FormLabel>
                   <FormControl>
                     <Input {...field} />
                   </FormControl>
@@ -336,19 +352,6 @@ export default function SupplierForm({
               )}
             />
           </div>
-          <FormField
-            control={form.control}
-            name="complemento"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Complemento</FormLabel>
-                <FormControl>
-                  <Input {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
           {isEditMode && (
             <><Separator /><div className="grid grid-cols-1 sm:grid-cols-2 gap-4 rounded-lg border p-4">
               <div><p className="text-sm font-medium text-muted-foreground">Data de Criação</p><p className="text-sm">{formatDate(initialData.data_criacao)}</p></div>

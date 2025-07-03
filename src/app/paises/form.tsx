@@ -147,7 +147,7 @@ export default function CountryForm({ initialData }: CountryFormProps) {
             )}
             <FormFooter
               formId={FORM_ID}
-              cancelHref="/condicoes-pagamento"
+              cancelHref="/paises"
               isEditMode={isEditMode}
               isSubmitting={isSubmitting}
               isDirty={isDirty}

@@ -99,7 +99,7 @@ export default function ProductUnitForm({ initialData }: ProductUnitFormProps) {
               name="nome"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Nome</FormLabel>
+                  <FormLabel>Unidade de Medida*</FormLabel>
                   <FormControl>
                     <Input placeholder="Ex: Quilograma" {...field} />
                   </FormControl>
@@ -112,7 +112,7 @@ export default function ProductUnitForm({ initialData }: ProductUnitFormProps) {
               name="sigla"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Sigla</FormLabel>
+                  <FormLabel>Sigla*</FormLabel>
                   <FormControl>
                     <Input placeholder="Ex: KG" {...field} />
                   </FormControl>

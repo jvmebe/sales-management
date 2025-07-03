@@ -10,6 +10,7 @@ import { SquarePen } from "lucide-react";
 import { DeleteEmployeeButton } from "./delete-button";
 
 export const columns: ColumnDef<Employee>[] = [
+  { accessorKey: "id", header: "Cód."},
   { accessorKey: "nome", header: "Nome" },
   { accessorKey: "cargo", header: "Cargo" },
   { accessorKey: "telefone", header: "Telefone" },

@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { SquarePen } from "lucide-react";
 
 export const columns: ColumnDef<PaymentCondition>[] = [
+  { accessorKey: "id", header: "Cód."},
   { accessorKey: "descricao", header: "Descrição" },
   { accessorKey: "num_parcelas", header: "Nº de Parcelas" },
   {

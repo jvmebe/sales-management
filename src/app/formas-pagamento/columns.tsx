@@ -8,10 +8,8 @@ import { SquarePen } from "lucide-react";
 import { DeletePaymentMethodButton } from "./delete-button";
 
 export const columns: ColumnDef<PaymentMethod>[] = [
-  {
-    accessorKey: "descricao",
-    header: "Descrição",
-  },
+  { accessorKey: "id", header: "Cód."},
+  { accessorKey: "descricao", header: "Descrição",},
   {
     accessorKey: "ativo",
     header: "Status",
