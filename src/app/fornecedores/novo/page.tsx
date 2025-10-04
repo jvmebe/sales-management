@@ -3,12 +3,16 @@ import SupplierForm from "../form";
 import { fetchActiveCountries } from "@/lib/data/paises";
 import { fetchActiveStates } from "@/lib/data/estados";
 import { fetchCities } from "@/lib/data/cidades";
+import { fetchPaymentConditions } from "@/lib/data/condicoes-pagamento";
+import { fetchActivePaymentMethods } from "@/lib/data/formas-pagamento";
 
 export default async function NewSupplierPage() {
-  const [countries, states, cities] = await Promise.all([
+  const [countries, states, cities, paymentConditions, paymentMethods] = await Promise.all([
     fetchActiveCountries(),
     fetchActiveStates(),
     fetchCities(),
+    fetchPaymentConditions(),
+    fetchActivePaymentMethods(),
   ]);
 
   return (
@@ -20,7 +24,13 @@ export default async function NewSupplierPage() {
         </p>
       </div>
       <Separator className="my-6" />
-      <SupplierForm countries={countries} states={states} cities={cities} />
+      <SupplierForm
+        countries={countries}
+        states={states}
+        cities={cities}
+        paymentConditions={paymentConditions}
+        paymentMethods={paymentMethods}
+      />
     </div>
   );
 }

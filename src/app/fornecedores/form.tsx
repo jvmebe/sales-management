@@ -13,6 +13,8 @@ import {
   Supplier,
   SupplierForm as SupplierFormType,
   SupplierSchema,
+  PaymentCondition,
+  PaymentMethod,
 } from "@/lib/definitions";
 import { createSupplier, updateSupplier } from "@/lib/actions/fornecedores";
 import { formatDate } from "@/lib/utils";
@@ -33,12 +35,15 @@ import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { CitySelectionDialog } from "@/components/dialogs/city-selection-dialog";
 import { DatePicker } from "@/components/ui/date-picker";
 import { FormFooter } from "@/components/ui/form-footer";
+import { PaymentConditionSelectionDialog } from "@/components/dialogs/payment-condition-selection-dialog";
 
 interface SupplierFormProps {
   initialData?: Supplier;
   cities: City[];
   states: State[];
   countries: Country[];
+  paymentConditions: PaymentCondition[];
+  paymentMethods: PaymentMethod[];
 }
 
 export default function SupplierForm({
@@ -46,16 +51,23 @@ export default function SupplierForm({
   cities,
   states,
   countries,
+  paymentConditions,
+  paymentMethods,
 }: SupplierFormProps) {
   const router = useRouter();
   const isEditMode = !!initialData;
 
   const [dialogsOpen, setDialogsOpen] = useState({
     city: false,
+    paymentCondition: false,
   });
   const [selectedNames, setSelectedNames] = useState({
     city: initialData
       ? cities.find((c) => c.id === initialData.cidade_id)?.nome
+      : undefined,
+    paymentCondition: initialData
+      ? paymentConditions.find((pc) => pc.id === initialData.payment_condition_id)
+          ?.descricao
       : undefined,
   });
 
@@ -84,7 +96,7 @@ export default function SupplierForm({
       <Button variant="destructive" type="button">Excluir</Button>
     </DeleteSupplierButton>
   ) : undefined;
-  
+
 
   const onSubmit = async (data: SupplierFormType) => {
     const action = isEditMode
@@ -104,6 +116,13 @@ export default function SupplierForm({
     setSelectedNames((p) => ({ ...p, city: city.nome }));
     setDialogsOpen((p) => ({ ...p, city: false }));
   };
+
+  const handlePaymentConditionSelect = (pc: PaymentCondition) => {
+    form.setValue("payment_condition_id", pc.id, { shouldValidate: true, shouldDirty: true });
+    setSelectedNames((p) => ({ ...p, paymentCondition: pc.descricao }));
+    setDialogsOpen((p) => ({ ...p, paymentCondition: false }));
+  };
+
 
   return (
     <div className="">
@@ -347,6 +366,46 @@ export default function SupplierForm({
                   <FormControl>
                     <Input {...field} />
                   </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+           <Separator />
+          <h3 className="text-lg font-medium">Financeiro</h3>
+          <div className="flex items-start md:grid-cols-2 gap-4">
+          <FormField
+              control={form.control}
+              name="payment_condition_id"
+              render={() => (
+                <FormItem className="flex flex-col w-2/4">
+                  <FormLabel>Condição de Pagamento Padrão</FormLabel>
+                  <Dialog
+                    open={dialogsOpen.paymentCondition}
+                    onOpenChange={(isOpen) =>
+                      setDialogsOpen((p) => ({
+                        ...p,
+                        paymentCondition: isOpen,
+                      }))
+                    }
+                  >
+                    <DialogTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className="w-full justify-start font-normal"
+                      >
+                        {selectedNames.paymentCondition ||
+                          "Selecione uma condição"}
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="max-w-6xl flex flex-col overflow-auto">
+                      <PaymentConditionSelectionDialog
+                        paymentConditions={paymentConditions}
+                        paymentMethods={paymentMethods}
+                        onSelect={handlePaymentConditionSelect}
+                      />
+                    </DialogContent>
+                  </Dialog>
                   <FormMessage />
                 </FormItem>
               )}

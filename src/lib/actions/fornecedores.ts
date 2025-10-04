@@ -8,12 +8,12 @@ export async function createSupplier(data: SupplierForm) {
   const result = SupplierSchema.safeParse(data);
   if (!result.success) return { success: false, message: "Erro de validação." };
 
-  const { is_juridica, nome, apelido, cpf, rg, data_nascimento, email, telefone, endereco, numero, complemento, bairro, cep, cidade_id, ativo } = result.data;
+  const { is_juridica, nome, apelido, cpf, rg, data_nascimento, email, telefone, endereco, numero, complemento, bairro, cep, cidade_id, payment_condition_id, ativo } = result.data;
   try {
     await query(`
-      INSERT INTO supplier (is_juridica, nome, apelido, cpf, rg, data_nascimento, email, telefone, endereco, numero, complemento, bairro, cep, cidade_id, ativo) 
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`, 
-      [is_juridica, nome, apelido, cpf, rg, data_nascimento, email, telefone, endereco, numero, complemento, bairro, cep, cidade_id, ativo]
+      INSERT INTO supplier (is_juridica, nome, apelido, cpf, rg, data_nascimento, email, telefone, endereco, numero, complemento, bairro, cep, cidade_id, payment_condition_id, ativo)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [is_juridica, nome, apelido, cpf, rg, data_nascimento, email, telefone, endereco, numero, complemento, bairro, cep, cidade_id, payment_condition_id, ativo]
     );
     revalidatePath("/fornecedores");
     return { success: true, message: "Fornecedor criado com sucesso!" };
@@ -27,13 +27,13 @@ export async function updateSupplier(id: number, data: SupplierForm) {
     const result = SupplierSchema.safeParse(data);
     if (!result.success) return { success: false, message: "Erro de validação." };
     console.log(result);
-    const { is_juridica, nome, apelido, cpf, rg, data_nascimento, email, telefone, endereco, numero, complemento, bairro, cep, cidade_id, ativo } = result.data;
+    const { is_juridica, nome, apelido, cpf, rg, data_nascimento, email, telefone, endereco, numero, complemento, bairro, cep, cidade_id, payment_condition_id, ativo } = result.data;
     const dataFormatada = data_nascimento ? format(data_nascimento, 'yyyy-MM-dd') : null;
     try {
         await query(`
-            UPDATE supplier SET is_juridica = ?, nome = ?, apelido = ?, cpf = ?, rg = ?, data_nascimento = ?, email = ?, telefone = ?, endereco = ?, numero = ?, complemento = ?, bairro = ?, cep = ?, cidade_id = ?, ativo = ? 
-            WHERE id = ?`, 
-            [is_juridica, nome, apelido, cpf, rg, dataFormatada, email, telefone, endereco, numero, complemento, bairro, cep, cidade_id, ativo, id]
+            UPDATE supplier SET is_juridica = ?, nome = ?, apelido = ?, cpf = ?, rg = ?, data_nascimento = ?, email = ?, telefone = ?, endereco = ?, numero = ?, complemento = ?, bairro = ?, cep = ?, cidade_id = ?, payment_condition_id = ?, ativo = ?
+            WHERE id = ?`,
+            [is_juridica, nome, apelido, cpf, rg, dataFormatada, email, telefone, endereco, numero, complemento, bairro, cep, cidade_id, payment_condition_id, ativo, id]
         );
         revalidatePath("/fornecedores");
         return { success: true, message: "Fornecedor atualizado com sucesso!" };

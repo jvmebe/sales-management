@@ -7,10 +7,10 @@ export async function fetchProducts(): Promise<Product[]> {
   noStore();
   try {
     return await query<Product>(`
-      SELECT 
-        p.*, 
-        b.nome as brand_nome, 
-        c.nome as category_nome, 
+      SELECT
+        p.*,
+        b.nome as brand_nome,
+        c.nome as category_nome,
         u.sigla as unit_sigla
       FROM product p
       LEFT JOIN product_brand b ON p.brand_id = b.id
@@ -26,8 +26,19 @@ export async function fetchProducts(): Promise<Product[]> {
 export async function fetchProductById(id: number): Promise<Product | null> {
   noStore();
   try {
-    const data = await query<Product>(`SELECT * FROM product WHERE id = ?`, [id]);
-    return data[0] || null;
+    const productData = await query<Product>(`SELECT * FROM product WHERE id = ?`, [id]);
+    const product = productData[0];
+
+    const suppliers = await query<any>(`
+      SELECT s.id
+      FROM supplier s
+      JOIN product_supplier ps ON s.id = ps.supplier_id
+      WHERE ps.product_id = ?
+    `, [id]);
+
+    product.supplier_ids = suppliers.map((s: any) => s.id);
+
+    return product;
   } catch (error) {
     throw new Error('Failed to fetch product.');
   }

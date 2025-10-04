@@ -47,7 +47,7 @@ export default function ProductUnitForm({ initialData }: ProductUnitFormProps) {
     },
   });
 
- const FORM_ID = "city-form";
+ const FORM_ID = "unit-form";
   
  const {
     formState: { errors, isDirty, isSubmitting },
@@ -77,7 +77,7 @@ export default function ProductUnitForm({ initialData }: ProductUnitFormProps) {
   return (
     <div className="mx-auto max-w-2xl">
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8" id={FORM_ID}>
           <FormField
             control={form.control}
             name="ativo"

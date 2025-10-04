@@ -84,9 +84,9 @@ export default function ProductForm({
     unit: initialData
       ? units.find((u) => u.id === initialData.unit_id)?.nome
       : "",
-    supplier: initialData
-      ? suppliers.find((s) => s.id === initialData.supplier_id)?.nome
-      : undefined,
+    suppliers: initialData?.supplier_ids
+      ? suppliers.filter(s => initialData.supplier_ids?.includes(s.id)).map(s => s.nome)
+      : [],
   });
 
   const form = useForm<ProductFormType>({
@@ -96,6 +96,7 @@ export default function ProductForm({
       valor_compra: 0,
       valor_venda: 0,
       estoque: 0,
+      supplier_ids: []
     },
   });
 
@@ -289,12 +290,12 @@ export default function ProductForm({
                 </FormItem>
               )}
             />
-            <FormField
-              name="supplier_id"
+             <FormField
+              name="supplier_ids"
               control={form.control}
               render={({ field }) => (
                 <FormItem className="flex flex-col">
-                  <FormLabel>Fornecedor*</FormLabel>
+                  <FormLabel>Fornecedores</FormLabel>
                   <Dialog
                     open={dialogsOpen.supplier}
                     onOpenChange={(isOpen) =>
@@ -306,7 +307,7 @@ export default function ProductForm({
                         variant="outline"
                         className="justify-start font-normal"
                       >
-                        {selectedNames.supplier || "Selecione um fornecedor"}
+                        {selectedNames.suppliers.join(', ') || "Selecione um ou mais fornecedores"}
                       </Button>
                     </DialogTrigger>
                     <DialogContent className="max-w-5xl flex flex-col">
@@ -315,11 +316,11 @@ export default function ProductForm({
                         cities={cities}
                         states={states}
                         countries={countries}
-                        onSelect={(item) => {
-                          field.onChange(item.id);
+                        onSelect={(selectedSuppliers) => {
+                          field.onChange(selectedSuppliers.map(s => s.id));
                           setSelectedNames((p) => ({
                             ...p,
-                            supplier: item.nome,
+                            suppliers: selectedSuppliers.map(s => s.nome),
                           }));
                           setDialogsOpen((p) => ({ ...p, supplier: false }));
                         }}

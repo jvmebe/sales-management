@@ -8,7 +8,7 @@ function validarCNPJ(cnpj: string): boolean {
 
   if (cnpj.length !== 14) return false;
 
-  
+
   if (/^(\d)\1+$/.test(cnpj)) return false;
 
   let tamanho = cnpj.length - 2;
@@ -43,7 +43,7 @@ function validarCPF(cpf: string): boolean {
   cpf = cpf.replace(/[^\d]+/g, '');
 
   if (cpf.length !== 11) return false;
-  
+
   if (/^(\d)\1+$/.test(cpf)) return false;
 
   let soma = 0;
@@ -60,7 +60,7 @@ function validarCPF(cpf: string): boolean {
 
   if ((resto === 10) || (resto === 11)) resto = 0;
   if (resto !== parseInt(cpf.substring(10, 11))) return false;
-  
+
   return true;
 }
 
@@ -94,7 +94,7 @@ export type State = {
   data_modificacao: string;
 
   // Campo do JOIN
-  country_nome?: string; 
+  country_nome?: string;
 };
 
 export const StateSchema = z.object({
@@ -263,12 +263,14 @@ export type Supplier = {
   bairro: string | null;
   cep: string | null;
   cidade_id: number | null;
+  payment_condition_id: number | null;
   ativo: boolean;
   data_criacao: string;
   data_modificacao: string;
 
-  // Campo do JOIN da DB
+  // Campos de JOIN da DB
   cidade_nome?: string;
+  payment_condition_descricao?: string;
 };
 
 export const SupplierSchema = z.object({
@@ -305,6 +307,7 @@ export const SupplierSchema = z.object({
   bairro: z.string().min(1, "O bairro é obrigatório.").max(80, "O bairro não pode ter mais que 80 caracteres."),
   cep: z.string().min(1, "O CEP é obrigatório.").max(8, "O CEP não pode ter mais que 8 caracteres."),
   cidade_id: z.coerce.number(),
+  payment_condition_id: z.coerce.number().optional().nullable(), // NOVO CAMPO
   ativo: z.coerce.boolean(),
 });
 
@@ -322,11 +325,11 @@ export type Product = {
   brand_id: number | null;
   category_id: number | null;
   unit_id: number;
-  supplier_id: number | null;
+  supplier_ids: number[] | null;
   ativo: boolean;
   data_criacao: string;
   data_modificacao: string;
-  
+
   // Campos de JOINs da DB
   brand_nome?: string;
   category_nome?: string;
@@ -344,7 +347,7 @@ export const ProductSchema = z.object({
   brand_id: z.coerce.number({message: "Campo obrigatório."}),
   category_id: z.coerce.number({message: "Campo obrigatório."}),
   unit_id: z.coerce.number({message: "Campo obrigatório."}),
-  supplier_id: z.coerce.number(),
+  supplier_ids: z.array(z.number()).optional().nullable(),
   ativo: z.coerce.boolean().default(true),
 });
 
@@ -491,7 +494,7 @@ export type Client = {
   ativo: boolean;
   data_criacao: string;
   data_modificacao: string;
-  
+
   // Campos de JOINs da DB
   cidade_nome?: string;
   cond_pag_descricao?: string;
@@ -544,3 +547,83 @@ export const ClientSchema = z.object({
 });
 
 export type ClientForm = z.infer<typeof ClientSchema>;
+
+
+export const PurchaseItemSchema = z.object({
+  id: z.number().optional(),
+  product_id: z.coerce.number({ required_error: "Selecione um produto." }).int().positive(),
+  quantidade: z.coerce.number({ required_error: "A quantidade é obrigatória." }).int().positive("A quantidade deve ser maior que zero."),
+  valor_unitario: z.coerce.number({ required_error: "O valor unitário é obrigatório." }).min(0, "O valor unitário não pode ser negativo."),
+});
+
+export const PurchaseInstallmentSchema = z.object({
+  id: z.number().optional(),
+  numero_parcela: z.coerce.number().int().positive(),
+  data_vencimento: z.date({ required_error: "A data de vencimento é obrigatória." }),
+  valor_parcela: z.coerce.number().positive("O valor da parcela deve ser maior que zero."),
+});
+
+export const PurchaseSchema = z.object({
+  id: z.number().optional(),
+  modelo: z.string().min(1, "O modelo da nota é obrigatório."),
+  serie: z.string().min(1, "A série da nota é obrigatória.").max(3),
+  numero_nota: z.string().min(1, "O número da nota é obrigatório.").max(9),
+  supplier_id: z.coerce.number({ required_error: "Selecione um fornecedor." }).int().positive(),
+  data_emissao: z.date({ required_error: "A data de emissão é obrigatória." }),
+  data_entrega: z.date().optional().nullable(),
+  valor_frete: z.coerce.number().min(0).default(0),
+  seguro: z.coerce.number().min(0).default(0),
+  despesas: z.coerce.number().min(0).default(0),
+  payment_condition_id: z.coerce.number({ required_error: "Selecione uma condição de pagamento." }).int().positive(),
+  motivo_cancelamento: z.string().optional().nullable(),
+  ativo: z.coerce.boolean().default(true),
+  items: z.array(PurchaseItemSchema).min(1, "A compra deve ter pelo menos um item."),
+  installments: z.array(PurchaseInstallmentSchema).min(1, "A compra deve ter pelo menos uma parcela."),
+});
+
+export type Purchase = {
+  id: number;
+  modelo: string;
+  serie: string;
+  numero_nota: string;
+  supplier_id: number;
+  data_emissao: string;
+  data_entrega: string | null;
+  valor_frete: number;
+  seguro: number;
+  despesas: number;
+  payment_condition_id: number;
+  motivo_cancelamento: string | null;
+  ativo: boolean;
+  data_criacao: string;
+  data_modificacao: string;
+
+  // Relações
+  items: PurchaseItem[];
+  installments: PurchaseInstallment[];
+
+  // Campos de JOINs
+  supplier_nome?: string;
+  payment_condition_descricao?: string;
+};
+
+export type PurchaseItem = {
+  id: number;
+  purchase_id: number;
+  product_id: number;
+  quantidade: number;
+  valor_unitario: number;
+
+  // Campos de JOINs
+  product_nome?: string;
+};
+
+export type PurchaseInstallment = {
+  id: number;
+  purchase_id: number;
+  numero_parcela: number;
+  data_vencimento: string;
+  valor_parcela: number;
+};
+
+export type PurchaseForm = z.infer<typeof PurchaseSchema>;

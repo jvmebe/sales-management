@@ -130,3 +130,7 @@
     cursor: pointer;
   }
 }
+
+nextjs-portal {
+  display: none;
+}
