@@ -10,21 +10,30 @@ import { SupplierCreationForm } from "@/components/forms/supplier-form";
 import { PlusCircle } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 
+type SelectionMode = 'single' | 'multiple';
 
 interface SupplierSelectionDialogProps {
   suppliers: Supplier[];
   cities: City[];
   states: State[];
   countries: Country[];
-  onSelect: (suppliers: Supplier[]) => void;
+  onSelect: (suppliers: Supplier | Supplier[]) => void;
+  selectionMode?: SelectionMode;
 }
 
-export function SupplierSelectionDialog({ suppliers, cities, states, countries, onSelect }: SupplierSelectionDialogProps) {
+export function SupplierSelectionDialog({
+  suppliers,
+  cities,
+  states,
+  countries,
+  onSelect,
+  selectionMode = 'multiple',
+}: SupplierSelectionDialogProps) {
   const router = useRouter();
   const [isCreateOpen, setCreateOpen] = useState(false);
   const [selectedSuppliers, setSelectedSuppliers] = useState<Supplier[]>([]);
 
-  const handleSelect = (supplier: Supplier) => {
+  const handleToggleSelect = (supplier: Supplier) => {
     setSelectedSuppliers(prev =>
       prev.find(s => s.id === supplier.id)
         ? prev.filter(s => s.id !== supplier.id)
@@ -32,11 +41,10 @@ export function SupplierSelectionDialog({ suppliers, cities, states, countries, 
     );
   };
 
-
   const columns: ColumnDef<Supplier>[] = [
-    {
+    ...(selectionMode === 'multiple' ? [{
         id: "select",
-        header: ({ table }) => (
+        header: ({ table }: { table: any }) => (
           <Checkbox
             checked={table.getIsAllPageRowsSelected()}
             onCheckedChange={(value) => {
@@ -46,21 +54,25 @@ export function SupplierSelectionDialog({ suppliers, cities, states, countries, 
             aria-label="Select all"
           />
         ),
-        cell: ({ row }) => (
+        cell: ({ row }: { row: any }) => (
           <Checkbox
             checked={row.getIsSelected()}
             onCheckedChange={(value) => {
                 row.toggleSelected(!!value)
-                handleSelect(row.original);
+                handleToggleSelect(row.original);
             }}
             aria-label="Select row"
           />
         ),
         enableSorting: false,
         enableHiding: false,
-      },
+      }] : []),
     { accessorKey: "nome", header: "Fornecedor" },
     { accessorKey: "cidade_nome", header: "Cidade" },
+    ...(selectionMode === 'single' ? [{
+        id: "actions",
+        cell: ({ row }: { row: any }) => <Button variant="outline" size="sm" onClick={() => onSelect(row.original)}>Selecionar</Button>
+    }] : [])
   ];
 
   const handleCreateSuccess = () => {
@@ -77,7 +89,9 @@ export function SupplierSelectionDialog({ suppliers, cities, states, countries, 
             <DialogTrigger asChild><Button variant="ghost"><PlusCircle className="mr-2 h-4 w-4" />Criar novo fornecedor</Button></DialogTrigger>
             <DialogContent className="max-w-4xl"><DialogHeader><DialogTitle>Criar Novo Fornecedor</DialogTitle></DialogHeader><SupplierCreationForm cities={cities} states={states} countries={countries} onSuccess={handleCreateSuccess} /></DialogContent>
         </Dialog>
-        <Button onClick={() => onSelect(selectedSuppliers)}>Confirmar</Button>
+        {selectionMode === 'multiple' && (
+            <Button onClick={() => onSelect(selectedSuppliers)}>Confirmar</Button>
+        )}
       </div>
     </>
   );

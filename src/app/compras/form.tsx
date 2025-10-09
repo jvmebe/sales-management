@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useForm, useFieldArray, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
@@ -16,10 +16,11 @@ import {
   State,
   Country,
 } from "@/lib/definitions";
-import { createPurchase } from "@/lib/actions/compras";
+import { createPurchase, updatePurchase } from "@/lib/actions/compras";
 import { fetchPaymentConditionById } from "@/lib/data/condicoes-pagamento";
+import { format } from 'date-fns';
 
-// UI Components
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -37,8 +38,9 @@ import { SupplierSelectionDialog } from "@/components/dialogs/supplier-selection
 import { PaymentConditionSelectionDialog } from "@/components/dialogs/payment-condition-selection-dialog";
 import { ProductSelectionDialog } from "@/components/dialogs/product-selection-dialog";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Trash2 } from "lucide-react";
+import { Trash2, XCircle } from "lucide-react";
 import { FormFooter } from "@/components/ui/form-footer";
+import { CancelPurchaseButton } from "./cancel-button";
 
 interface PurchaseFormProps {
   initialData?: PurchaseFormType;
@@ -63,7 +65,6 @@ export default function PurchaseForm({
 }: PurchaseFormProps) {
   const router = useRouter();
   const isEditMode = !!initialData;
-  const [formStep, setFormStep] = useState(1); // 1: Header, 2: Items, 3: Installments
 
   const [dialogsOpen, setDialogsOpen] = useState({
     supplier: false,
@@ -74,6 +75,8 @@ export default function PurchaseForm({
     supplier: initialData?.supplier_id ? suppliers.find(s => s.id === initialData.supplier_id)?.nome : "",
     paymentCondition: initialData?.payment_condition_id ? paymentConditions.find(pc => pc.id === initialData.payment_condition_id)?.descricao : "",
   });
+
+  const FORM_ID = "purchase-form"
 
   const form = useForm<PurchaseFormType>({
     resolver: zodResolver(PurchaseSchema),
@@ -94,24 +97,28 @@ export default function PurchaseForm({
     name: "installments",
   });
 
-  const watchedItems = useWatch({ control: form.control, name: "items" });
-  const watchedFrete = useWatch({ control: form.control, name: "valor_frete" }) || 0;
-  const watchedSeguro = useWatch({ control: form.control, name: "seguro" }) || 0;
-  const watchedDespesas = useWatch({ control: form.control, name: "despesas" }) || 0;
+  const watchedFields = useWatch({ control: form.control });
+  const watchedItems = watchedFields.items || [];
+  const watchedFrete = watchedFields.valor_frete || 0;
+  const watchedSeguro = watchedFields.seguro || 0;
+  const watchedDespesas = watchedFields.despesas || 0;
+  const watchedInstallments = watchedFields.installments || [];
 
-  const totalItems = watchedItems.reduce((acc, item) => acc + (item.quantidade * item.valor_unitario), 0);
+  const isHeaderValid = !!(watchedFields.modelo && watchedFields.serie && watchedFields.numero_nota && watchedFields.supplier_id && watchedFields.data_emissao);
+  const isHeaderDisabled = watchedItems.length > 0;
+  const isItemsDisabled = !isHeaderValid || watchedInstallments.length > 0;
+  const isInstallmentsDisabled = watchedItems.length === 0 || watchedInstallments.length > 0;
+
+
+  const totalItems = watchedItems.reduce((acc, item) => acc + ((item.quantidade || 0) * (item.valor_unitario || 0)), 0);
   const totalOutros = Number(watchedFrete) + Number(watchedSeguro) + Number(watchedDespesas);
   const totalNota = totalItems + totalOutros;
 
-  const headerFields = ["modelo", "serie", "numero_nota", "supplier_id", "data_emissao"];
-
-  const checkHeader = () => {
-    const headerValues = form.getValues();
-    const allFilled = headerFields.every(field => !!headerValues[field as keyof PurchaseFormType]);
-    if (allFilled) {
-      setFormStep(2);
-    }
-  };
+  const cancelButton = isEditMode && initialData ? (
+    <CancelPurchaseButton id={initialData.id}>
+      <Button variant="destructive" type="button">Cancelar Compra</Button>
+    </CancelPurchaseButton>
+  ) : undefined;
 
   const handleGenerateInstallments = async () => {
     const pcId = form.getValues("payment_condition_id");
@@ -119,31 +126,56 @@ export default function PurchaseForm({
       toast.error("Selecione uma condição de pagamento primeiro.");
       return;
     }
-
-    const condition = await fetchPaymentConditionById(pcId);
-    if (!condition || !condition.parcelas) {
-      toast.error("Condição de pagamento não encontrada ou sem parcelas.");
+    if (totalNota <= 0) {
+      toast.error("O valor total da nota deve ser maior que zero para gerar parcelas.");
       return;
     }
 
-    const newInstallments = condition.parcelas.map(p => {
-      const dueDate = new Date(form.getValues("data_emissao"));
-      dueDate.setDate(dueDate.getDate() + p.dias_vencimento);
-      return {
-        numero_parcela: p.numero_parcela,
-        data_vencimento: dueDate,
-        valor_parcela: (totalNota * p.percentual_valor) / 100
-      };
+
+    const condition = await fetchPaymentConditionById(pcId);
+    if (!condition || !condition.parcelas || condition.parcelas.length === 0) {
+      toast.error("Condição de pagamento não encontrada ou sem parcelas definidas.");
+      return;
+    }
+
+    const numParcelas = condition.parcelas.length;
+    const valorBaseParcela = Math.floor((totalNota / numParcelas) * 100) / 100;
+    const valorTotalArredondado = valorBaseParcela * numParcelas;
+    const diferenca = parseFloat((totalNota - valorTotalArredondado).toFixed(2));
+
+    const newInstallments = condition.parcelas.map((p, index) => {
+        const dueDate = new Date(form.getValues("data_emissao"));
+        dueDate.setDate(dueDate.getDate() + p.dias_vencimento);
+
+        let valorParcela = valorBaseParcela;
+        if (index === 0) {
+            valorParcela += diferenca;
+        }
+
+        return {
+            numero_parcela: p.numero_parcela,
+            data_vencimento: dueDate,
+            valor_parcela: parseFloat(valorParcela.toFixed(2))
+        };
     });
 
+
     replaceInstallments(newInstallments);
-    setFormStep(3);
     toast.success("Parcelas geradas com sucesso!");
+  };
+
+  const handleClearInstallments = () => {
+    replaceInstallments([]);
+    toast.info("Parcelas limpas. Você pode editar os itens novamente.");
   };
 
 
   const onSubmit = async (data: PurchaseFormType) => {
-    const result = await createPurchase(data);
+    const action = isEditMode
+      ? updatePurchase(initialData!.id, data)
+      : createPurchase(data);
+
+    const result = await action;
     if (result.success) {
       toast.success(result.message);
       router.push("/compras");
@@ -155,27 +187,27 @@ export default function PurchaseForm({
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-        {/* Etapa 1: Cabeçalho */}
-        <fieldset disabled={formStep > 1} className="space-y-4">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8" id={FORM_ID}>
+        {/* itens da etapa 1 da compra */}
+        <fieldset disabled={isHeaderDisabled} className="space-y-4">
           <legend className="text-lg font-medium">Dados da Nota</legend>
           <div className="grid md:grid-cols-3 gap-4">
-            <FormField control={form.control} name="modelo" render={({ field }) => ( <FormItem><FormLabel>Modelo</FormLabel><FormControl><Input {...field} onBlur={checkHeader} /></FormControl><FormMessage /></FormItem> )} />
-            <FormField control={form.control} name="serie" render={({ field }) => ( <FormItem><FormLabel>Série</FormLabel><FormControl><Input {...field} onBlur={checkHeader} /></FormControl><FormMessage /></FormItem> )} />
-            <FormField control={form.control} name="numero_nota" render={({ field }) => ( <FormItem><FormLabel>Número da Nota</FormLabel><FormControl><Input {...field} onBlur={checkHeader} /></FormControl><FormMessage /></FormItem> )} />
+            <FormField control={form.control} name="modelo" render={({ field }) => ( <FormItem><FormLabel>Modelo</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem> )} />
+            <FormField control={form.control} name="serie" render={({ field }) => ( <FormItem><FormLabel>Série</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem> )} />
+            <FormField control={form.control} name="numero_nota" render={({ field }) => ( <FormItem><FormLabel>Número da Nota</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem> )} />
           </div>
           <div className="grid md:grid-cols-2 gap-4">
             <FormField name="supplier_id" control={form.control} render={({ field }) => (
                 <FormItem className="flex flex-col"><FormLabel>Fornecedor</FormLabel>
                   <Dialog open={dialogsOpen.supplier} onOpenChange={(isOpen) => setDialogsOpen((p) => ({ ...p, supplier: isOpen }))}>
                     <DialogTrigger asChild><Button variant="outline" className="justify-start font-normal">{selectedNames.supplier || "Selecione um fornecedor"}</Button></DialogTrigger>
-                    <DialogContent className="max-w-5xl"><SupplierSelectionDialog suppliers={suppliers} cities={cities} states={states} countries={countries} onSelect={(s) => {
-                        field.onChange(s[0].id);
-                        setSelectedNames(p => ({ ...p, supplier: s[0].nome }));
-                        form.setValue("payment_condition_id", s[0].payment_condition_id);
-                        setSelectedNames(p => ({ ...p, paymentCondition: s[0].payment_condition_descricao }));
+                    <DialogContent className="max-w-5xl"><SupplierSelectionDialog suppliers={suppliers} cities={cities} states={states} countries={countries} selectionMode="single" onSelect={(s) => {
+                        const selectedSupplier = s as Supplier;
+                        field.onChange(selectedSupplier.id);
+                        setSelectedNames(p => ({ ...p, supplier: selectedSupplier.nome }));
+                        form.setValue("payment_condition_id", selectedSupplier.payment_condition_id);
+                        setSelectedNames(p => ({ ...p, paymentCondition: paymentConditions.find(pc => pc.id === selectedSupplier.payment_condition_id)?.descricao || "" }));
                         setDialogsOpen(p => ({...p, supplier: false}));
-                        checkHeader();
                     }} /></DialogContent>
                   </Dialog>
                   <FormMessage />
@@ -183,7 +215,7 @@ export default function PurchaseForm({
               )}
             />
             <div className="flex gap-4">
-                <FormField name="data_emissao" render={({ field }) => (<FormItem className="flex flex-col w-1/2"><FormLabel>Data de Emissão</FormLabel><DatePicker value={field.value} onChange={field.onChange} onSelect={checkHeader} /><FormMessage /></FormItem>)} />
+                <FormField name="data_emissao" render={({ field }) => (<FormItem className="flex flex-col w-1/2"><FormLabel>Data de Emissão</FormLabel><DatePicker value={field.value} onChange={field.onChange} /><FormMessage /></FormItem>)} />
                 <FormField name="data_entrega" render={({ field }) => (<FormItem className="flex flex-col w-1/2"><FormLabel>Data de Entrega</FormLabel><DatePicker value={field.value} onChange={field.onChange} /><FormMessage /></FormItem>)} />
             </div>
           </div>
@@ -191,11 +223,11 @@ export default function PurchaseForm({
 
         <Separator />
 
-        {/* Etapa 2: Itens */}
-        <fieldset disabled={formStep < 2 || formStep > 2} className="space-y-4">
+        {/* itens da etapa dois */}
+        <fieldset disabled={isItemsDisabled} className="space-y-4">
           <legend className="text-lg font-medium">Itens da Compra</legend>
           <Dialog open={dialogsOpen.product} onOpenChange={(isOpen) => setDialogsOpen(p => ({ ...p, product: isOpen }))}>
-            <DialogTrigger asChild><Button type="button" variant="outline" disabled={formStep < 2}>Adicionar Produtos</Button></DialogTrigger>
+            <DialogTrigger asChild><Button type="button" variant="outline" disabled={!isHeaderValid}>Adicionar Produtos</Button></DialogTrigger>
             <DialogContent className="max-w-4xl"><ProductSelectionDialog products={products} onSelect={(selected) => {
               const newItems = selected.map(p => ({ product_id: p.id, quantidade: 1, valor_unitario: p.valor_compra }));
               appendItem(newItems);
@@ -232,14 +264,14 @@ export default function PurchaseForm({
 
         <Separator />
 
-        {/* Etapa 3: Financeiro */}
-        <fieldset disabled={formStep < 2} className="space-y-4">
+        {/* itens da etapa 3 */}
+        <fieldset disabled={watchedItems.length === 0} className="space-y-4">
             <legend className="text-lg font-medium">Financeiro</legend>
             <div className="flex items-end gap-4">
             <FormField name="payment_condition_id" control={form.control} render={({ field }) => (
                 <FormItem className="flex flex-col w-1/2"><FormLabel>Condição de Pagamento</FormLabel>
                 <Dialog open={dialogsOpen.paymentCondition} onOpenChange={(isOpen) => setDialogsOpen(p => ({ ...p, paymentCondition: isOpen }))}>
-                    <DialogTrigger asChild><Button variant="outline" className="justify-start font-normal">{selectedNames.paymentCondition || "Selecione uma condição"}</Button></DialogTrigger>
+                    <DialogTrigger asChild><Button variant="outline" className="justify-start font-normal" disabled={isInstallmentsDisabled}>{selectedNames.paymentCondition || "Selecione uma condição"}</Button></DialogTrigger>
                     <DialogContent className="max-w-6xl"><PaymentConditionSelectionDialog paymentConditions={paymentConditions} paymentMethods={paymentMethods} onSelect={(pc) => {
                         field.onChange(pc.id);
                         setSelectedNames(p => ({ ...p, paymentCondition: pc.descricao }));
@@ -249,17 +281,23 @@ export default function PurchaseForm({
                 <FormMessage />
                 </FormItem>
             )} />
-                <Button type="button" onClick={handleGenerateInstallments} disabled={formStep > 2}>Gerar Parcelas</Button>
+                <Button type="button" onClick={handleGenerateInstallments} disabled={isInstallmentsDisabled}>Gerar Parcelas</Button>
+                {watchedInstallments.length > 0 && (
+                    <Button type="button" variant="destructive" onClick={handleClearInstallments}>
+                        <XCircle className="mr-2 h-4 w-4" />
+                        Limpar Parcelas
+                    </Button>
+                )}
             </div>
 
             <Table>
                 <TableHeader><TableRow><TableHead>Nº</TableHead><TableHead>Vencimento</TableHead><TableHead>Valor</TableHead></TableRow></TableHeader>
                 <TableBody>
-                    {installments.map((installment) => (
-                        <TableRow key={installment.id}>
+                    {installments.map((installment, index) => (
+                        <TableRow key={index}>
                             <TableCell>{installment.numero_parcela}</TableCell>
                             <TableCell>{format(new Date(installment.data_vencimento), "dd/MM/yyyy")}</TableCell>
-                            <TableCell>R$ {installment.valor_parcela.toFixed(2)}</TableCell>
+                            <TableCell>R$ {Number(installment.valor_parcela).toFixed(2)}</TableCell>
                         </TableRow>
                     ))}
                 </TableBody>
@@ -267,11 +305,12 @@ export default function PurchaseForm({
         </fieldset>
 
         <FormFooter
-            formId="purchase-form"
+            formId={FORM_ID}
             cancelHref="/compras"
             isEditMode={isEditMode}
             isSubmitting={form.formState.isSubmitting}
             isDirty={form.formState.isDirty}
+            deleteButton={cancelButton}
         />
 
       </form>

@@ -316,7 +316,9 @@ export default function ProductForm({
                         cities={cities}
                         states={states}
                         countries={countries}
-                        onSelect={(selectedSuppliers) => {
+                        selectionMode="multiple" // MODO MÚLTIPLO
+                        onSelect={(selected) => {
+                          const selectedSuppliers = selected as Supplier[];
                           field.onChange(selectedSuppliers.map(s => s.id));
                           setSelectedNames((p) => ({
                             ...p,
