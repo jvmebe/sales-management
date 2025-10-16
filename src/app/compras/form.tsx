@@ -215,8 +215,8 @@ export default function PurchaseForm({
               )}
             />
             <div className="flex gap-4">
-                <FormField name="data_emissao" render={({ field }) => (<FormItem className="flex flex-col w-1/2"><FormLabel>Data de Emissão</FormLabel><DatePicker value={field.value} onChange={field.onChange} /><FormMessage /></FormItem>)} />
-                <FormField name="data_entrega" render={({ field }) => (<FormItem className="flex flex-col w-1/2"><FormLabel>Data de Entrega</FormLabel><DatePicker value={field.value} onChange={field.onChange} /><FormMessage /></FormItem>)} />
+                <FormField name="data_emissao" render={({ field }) => (<FormItem className="flex flex-col w-1/2"><FormLabel>Data de Emissão</FormLabel><DatePicker value={field.value} onChange={field.onChange} disableFutureDates={true} /><FormMessage /></FormItem>)} />
+                <FormField name="data_entrega" render={({ field }) => (<FormItem className="flex flex-col w-1/2"><FormLabel>Data de Chegada</FormLabel><DatePicker value={field.value} onChange={field.onChange} disableFutureDates={true}/><FormMessage /></FormItem>)} />
             </div>
           </div>
         </fieldset>
