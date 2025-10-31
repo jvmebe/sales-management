@@ -9,6 +9,7 @@ import { fetchActivePaymentMethods } from "@/lib/data/formas-pagamento";
 import { fetchCities } from "@/lib/data/cidades";
 import { fetchActiveStates } from "@/lib/data/estados";
 import { fetchActiveCountries } from "@/lib/data/paises";
+import { PurchaseForm as PurchaseFormType } from "@/lib/definitions";
 
 export default async function EditPurchasePage({ params }: { params: { id: string } }) {
   const id = Number(params.id);
@@ -36,14 +37,30 @@ export default async function EditPurchasePage({ params }: { params: { id: strin
 
   if (!purchase) notFound();
 
+  // Converte datas string para Date objects para o formulário
+  const formData: PurchaseFormType = {
+    ...purchase,
+    data_emissao: new Date(purchase.data_emissao),
+    data_entrega: purchase.data_entrega ? new Date(purchase.data_entrega) : null,
+    items: purchase.items.map(item => ({
+      ...item,
+      valor_unitario: Number(item.valor_unitario) // Garante que é número
+    })),
+    installments: purchase.installments.map(inst => ({
+      ...inst,
+      data_vencimento: new Date(inst.data_vencimento),
+      valor_parcela: Number(inst.valor_parcela) // Garante que é número
+    })),
+  };
+
   return (
     <div className="form-container">
       <div>
-        <h1 className="text-2xl font-bold">Editar Compra #{purchase.numero_nota}</h1>
+        <h1 className="text-2xl font-bold">Detalhes da Compra #{purchase.numero_nota}</h1>
       </div>
       <Separator className="my-6" />
       <PurchaseForm
-        initialData={purchase as any}
+        initialData={formData}
         suppliers={suppliers}
         products={products}
         paymentConditions={paymentConditions}

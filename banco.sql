@@ -183,14 +183,14 @@ CREATE TABLE
     bairro VARCHAR(80) NOT NULL,
     cep VARCHAR(8) NOT NULL,
     cidade_id INT,
-    payment_condition_id INT,  
+    payment_condition_id INT,
     ativo TINYINT (1) NOT NULL DEFAULT 1,
     data_criacao TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
     data_modificacao TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     INDEX (cidade_id),
-    INDEX (payment_condition_id), 
+    INDEX (payment_condition_id),
     FOREIGN KEY (cidade_id) REFERENCES city (id),
-    FOREIGN KEY (payment_condition_id) REFERENCES payment_condition (id) 
+    FOREIGN KEY (payment_condition_id) REFERENCES payment_condition (id)
   );
 
 CREATE TABLE
@@ -254,6 +254,8 @@ CREATE TABLE IF NOT EXISTS purchase_item (
     product_id INT NOT NULL,
     quantidade INT NOT NULL,
     valor_unitario DECIMAL(10,2) NOT NULL,
+    valor_compra_anterior DECIMAL(10,2) NOT NULL, -- Coluna para armazenar o custo antigo
+    estoque_anterior INT NOT NULL,             -- Coluna para armazenar o estoque antigo
     UNIQUE KEY uq_purchase_item_product (purchase_id, product_id),
     CONSTRAINT fk_purchase_item_purchase FOREIGN KEY (purchase_id) REFERENCES purchase(id)
         ON DELETE CASCADE ON UPDATE CASCADE,
@@ -267,6 +269,10 @@ CREATE TABLE IF NOT EXISTS purchase_installment (
     numero_parcela INT NOT NULL,
     data_vencimento DATE NOT NULL,
     valor_parcela DECIMAL(10,2) NOT NULL,
+    data_pagamento DATE NULL,
+    valor_pago DECIMAL(10,2) NULL DEFAULT 0,
+    observacao VARCHAR(255) NULL,
+
     UNIQUE KEY uq_purchase_installment_parcela (purchase_id, numero_parcela),
     CONSTRAINT fk_purchase_installment_purchase FOREIGN KEY (purchase_id) REFERENCES purchase(id)
         ON DELETE CASCADE ON UPDATE CASCADE

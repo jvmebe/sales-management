@@ -54,6 +54,11 @@ const menuConfig = [
         label: "Funcionários",
         icon: Building2,
       },
+      {
+        href: "/compras",
+        label: "Compras",
+        icon: Building2,
+      },
     ],
   },
   {
@@ -107,6 +112,10 @@ const menuConfig = [
     label: "Financeiro",
     icon: DollarSign,
     items: [
+      {
+              href: "/contas-pagar",
+              label: "Contas a Pagar",
+            },
       {
         href: "/formas-pagamento",
         label: "Formas de Pagamento",

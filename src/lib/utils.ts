@@ -7,7 +7,7 @@ export function cn(...inputs: ClassValue[]) {
 
 export function formatDate(dateString: string) {
   if (!dateString) return "N/A";
-  
+
   return new Intl.DateTimeFormat('pt-BR', {
     day: '2-digit',
     month: '2-digit',
@@ -16,4 +16,17 @@ export function formatDate(dateString: string) {
     minute: '2-digit',
     second: '2-digit',
   }).format(new Date(dateString));
+}
+
+export function formatDateOnly(dateString: string | Date) {
+  if (!dateString) return "N/A";
+
+  const date = new Date(dateString);
+  const userTimezoneOffset = date.getTimezoneOffset() * 60000;
+
+  return new Intl.DateTimeFormat('pt-BR', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+  }).format(new Date(date.getTime() + userTimezoneOffset));
 }

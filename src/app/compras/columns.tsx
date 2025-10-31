@@ -27,7 +27,7 @@ export const columns: ColumnDef<Purchase>[] = [
       cell: ({ row }) => (
         <a href={`/compras/${row.original.id}/editar`}>
         <Button variant="outline">
-          <SquarePen /> Editar
+          <SquarePen /> Detalhes
         </Button>
         </a>
       ),

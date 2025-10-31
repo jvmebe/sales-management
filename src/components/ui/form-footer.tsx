@@ -30,9 +30,9 @@ export function FormFooter({
           <Button variant="outline" type="button" asChild>
             <Link href={cancelHref}>Cancelar</Link>
           </Button>
-          <Button 
-            type="submit" 
-            form={formId} 
+          <Button
+            type="submit"
+            form={formId}
             disabled={(isEditMode && !isDirty) || isSubmitting}
           >
             {isSubmitting ? "Salvando..." : "Salvar"}

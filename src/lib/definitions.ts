@@ -561,6 +561,9 @@ export const PurchaseInstallmentSchema = z.object({
   numero_parcela: z.coerce.number().int().positive(),
   data_vencimento: z.date({ required_error: "A data de vencimento é obrigatória." }),
   valor_parcela: z.coerce.number().positive("O valor da parcela deve ser maior que zero."),
+  data_pagamento: z.date().optional().nullable(),
+  valor_pago: z.coerce.number().optional().nullable(),
+  observacao: z.string().optional().nullable(),
 });
 
 export const PurchaseSchema = z.object({
@@ -624,6 +627,16 @@ export type PurchaseInstallment = {
   numero_parcela: number;
   data_vencimento: string;
   valor_parcela: number;
+
+  data_pagamento: string | null;
+  valor_pago: number | null;
+  observacao: string | null;
+
+  supplier_nome?: string;
+  numero_nota?: string;
+  purchase_ativo?: boolean;
 };
+
+export type ContasPagarStatus = 'aberto' | 'pago' | 'vencido' | 'cancelado' | 'todas';
 
 export type PurchaseForm = z.infer<typeof PurchaseSchema>;
