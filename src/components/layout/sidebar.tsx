@@ -35,6 +35,12 @@ const menuConfig = [
     icon: Home,
   },
   {
+    type: "single",
+    href: "/vendas",
+    label: "Vendas",
+    icon: Home,
+  },
+  {
     type: "group",
     label: "Cadastros",
     icon: Users,
@@ -124,6 +130,19 @@ const menuConfig = [
       {
         href: "/condicoes-pagamento",
         label: "Condições de Pagamento"
+      }
+      ,
+      {
+        href: "/compras",
+        label: "compras"
+      },
+      {
+        href: "/contas-receber",
+        label: "Contas a Receber"
+      },
+      {
+        href: "/contas-pagar",
+        label: "Contas a Pagar"
       }
     ],
   },

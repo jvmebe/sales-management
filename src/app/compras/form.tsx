@@ -51,6 +51,7 @@ interface PurchaseFormProps {
   cities: City[];
   states: State[];
   countries: Country[];
+  readOnly?: boolean;
 }
 
 export default function PurchaseForm({
@@ -62,6 +63,7 @@ export default function PurchaseForm({
   cities,
   states,
   countries,
+  readOnly = false
 }: PurchaseFormProps) {
   const router = useRouter();
   const isEditMode = !!initialData;
@@ -98,7 +100,7 @@ export default function PurchaseForm({
   });
 
   const watchedFields = useWatch({ control: form.control });
-  const watchedItems = watchedFields.items || [];
+  const watchedItems = useWatch({ control: form.control, name: "items" }) || [];
   const watchedFrete = watchedFields.valor_frete || 0;
   const watchedSeguro = watchedFields.seguro || 0;
   const watchedDespesas = watchedFields.despesas || 0;
@@ -114,6 +116,12 @@ export default function PurchaseForm({
   const totalOutros = Number(watchedFrete) + Number(watchedSeguro) + Number(watchedDespesas);
   const totalNota = totalItems + totalOutros;
 
+  const totalCompra = watchedItems.reduce((acc, item) => {
+      const qtd = Number(item.quantidade) || 0;
+      const valor = Number(item.valor_unitario) || 0; // ou item.custo_unitario, verifique o nome do seu campo
+      return acc + (qtd * valor);
+    }, 0);
+
   const cancelButton = isEditMode && initialData ? (
     <CancelPurchaseButton id={initialData.id}>
       <Button variant="destructive" type="button">Cancelar Compra</Button>
@@ -121,48 +129,70 @@ export default function PurchaseForm({
   ) : undefined;
 
   const handleGenerateInstallments = async () => {
-    const pcId = form.getValues("payment_condition_id");
-    if (!pcId) {
-      toast.error("Selecione uma condição de pagamento primeiro.");
-      return;
-    }
-    if (totalNota <= 0) {
-      toast.error("O valor total da nota deve ser maior que zero para gerar parcelas.");
-      return;
-    }
+      if (readOnly) return;
 
+      const conditionId = form.getValues("payment_condition_id");
+      const date = form.getValues("data_emissao"); // ou data_entrada
 
-    const condition = await fetchPaymentConditionById(pcId);
-    if (!condition || !condition.parcelas || condition.parcelas.length === 0) {
-      toast.error("Condição de pagamento não encontrada ou sem parcelas definidas.");
-      return;
-    }
+      if (!conditionId || totalCompra <= 0 || !date) {
+        toast.error("Preencha os dados e itens antes de gerar parcelas.");
+        return;
+      }
 
-    const numParcelas = condition.parcelas.length;
-    const valorBaseParcela = Math.floor((totalNota / numParcelas) * 100) / 100;
-    const valorTotalArredondado = valorBaseParcela * numParcelas;
-    const diferenca = parseFloat((totalNota - valorTotalArredondado).toFixed(2));
+      const condition = await fetchPaymentConditionById(conditionId);
+      if (!condition || !condition.parcelas.length) {
+        toast.error("Condição de pagamento inválida.");
+        return;
+      }
 
-    const newInstallments = condition.parcelas.map((p, index) => {
-        const dueDate = new Date(form.getValues("data_emissao"));
+      // Trabalhar com Centavos (Inteiros) evita erros de ponto flutuante do JS
+      const totalCentavos = Math.round(totalCompra * 100);
+
+      // 1. Calcula os valores base (arredondando para baixo)
+      const parcelasCalculadas = condition.parcelas.map((p) => {
+        const percentual = Number(p.percentual_valor);
+        const valorCentavos = Math.floor(totalCentavos * (percentual / 100));
+        return {
+          ...p,
+          valor_centavos: valorCentavos,
+          percentual_original: percentual
+        };
+      });
+
+      // 2. Calcula a diferença (sobra)
+      const somaCalculada = parcelasCalculadas.reduce((acc, p) => acc + p.valor_centavos, 0);
+      let diferencaCentavos = totalCentavos - somaCalculada;
+
+      // 3. Identifica qual parcela deve receber a diferença (A de maior % ou a última)
+      // Encontra o índice da parcela com maior percentual
+      let indiceParaAjuste = 0;
+      let maiorPercentual = -1;
+
+      parcelasCalculadas.forEach((p, idx) => {
+        if (p.percentual_original >= maiorPercentual) {
+          maiorPercentual = p.percentual_original;
+          indiceParaAjuste = idx; // Em caso de empate, o último ganha (comportamento padrão)
+        }
+      });
+
+      // 4. Aplica a diferença
+      parcelasCalculadas[indiceParaAjuste].valor_centavos += diferencaCentavos;
+
+      // 5. Gera o array final formatado
+      const newInstallments = parcelasCalculadas.map((p) => {
+        const dueDate = new Date(date);
         dueDate.setDate(dueDate.getDate() + p.dias_vencimento);
 
-        let valorParcela = valorBaseParcela;
-        if (index === 0) {
-            valorParcela += diferenca;
-        }
-
         return {
-            numero_parcela: p.numero_parcela,
-            data_vencimento: dueDate,
-            valor_parcela: parseFloat(valorParcela.toFixed(2))
+          numero_parcela: p.numero_parcela,
+          data_vencimento: dueDate,
+          valor_parcela: p.valor_centavos / 100
         };
-    });
+      });
 
-
-    replaceInstallments(newInstallments);
-    toast.success("Parcelas geradas com sucesso!");
-  };
+      replaceInstallments(newInstallments);
+      toast.success("Parcelas geradas com sucesso!");
+    };
 
   const handleClearInstallments = () => {
     replaceInstallments([]);

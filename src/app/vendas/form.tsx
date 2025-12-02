@@ -32,8 +32,8 @@ interface SaleFormProps {
   employees: Employee[];
   products: Product[];
   paymentConditions: PaymentCondition[];
-  initialData?: SaleFormType & { ativo?: boolean }; // Dados para visualização
-  readOnly?: boolean; // Flag para modo leitura
+  initialData?: SaleFormType & { ativo?: boolean };
+  readOnly?: boolean;
 }
 
 export default function SaleForm({
@@ -48,7 +48,6 @@ export default function SaleForm({
 
   const [dialogsOpen, setDialogsOpen] = useState({ client: false, employee: false, product: false, condition: false });
 
-  // Inicializa nomes se houver initialData
   const [selectedNames, setSelectedNames] = useState({
     client: initialData ? clients.find(c => c.id === initialData.client_id)?.nome : "",
     employee: initialData ? employees.find(e => e.id === initialData.employee_id)?.nome : "",
@@ -86,7 +85,7 @@ export default function SaleForm({
 
   const totalVenda = watchedItems.reduce((acc, item) => acc + (item.quantidade * item.valor_unitario), 0);
 
-  // Bloqueia se for readOnly OU se já tiver parcelas geradas (no modo criação)
+  // Bloqueia se for readOnly (venda salva) OU se já tiver parcelas geradas (no modo criação)
   const isLocked = readOnly || watchedInstallments.length > 0;
 
   const handleProductSelected = (p: Product) => {
@@ -111,38 +110,58 @@ export default function SaleForm({
   const tempTotal = (Number(tempQty) || 0) * (Number(tempPrice) || 0);
 
   const handleGenerateInstallments = async () => {
-    if (readOnly) return; // Segurança
-    const conditionId = form.getValues("payment_condition_id");
-    const date = form.getValues("data_emissao");
+      if (readOnly) return;
+      const conditionId = form.getValues("payment_condition_id");
+      const date = form.getValues("data_emissao");
 
-    if (!conditionId || totalVenda <= 0 || !date) {
-      toast.error("Dados incompletos para gerar parcelas.");
-      return;
-    }
+      if (!conditionId || totalVenda <= 0 || !date) {
+        toast.error("Dados incompletos para gerar parcelas.");
+        return;
+      }
 
-    const condition = await fetchPaymentConditionById(conditionId);
-    if (!condition || !condition.parcelas.length) return;
+      const condition = await fetchPaymentConditionById(conditionId);
+      if (!condition || !condition.parcelas.length) return;
 
-    const numParcelas = condition.parcelas.length;
-    const valorBase = Math.floor((totalVenda / numParcelas) * 100) / 100;
-    const diferenca = parseFloat((totalVenda - (valorBase * numParcelas)).toFixed(2));
+      const totalCentavos = Math.round(totalVenda * 100);
 
-    const newInstallments = condition.parcelas.map((p, idx) => {
-      const dueDate = new Date(date);
-      dueDate.setDate(dueDate.getDate() + p.dias_vencimento);
+      const parcelasCalculadas = condition.parcelas.map((p) => {
+        const percentual = Number(p.percentual_valor);
+        const valorCentavos = Math.floor(totalCentavos * (percentual / 100));
+        return {
+          ...p,
+          valor_centavos: valorCentavos,
+          percentual_original: percentual
+        };
+      });
 
-      let valor = valorBase;
-      if (idx === 0) valor += diferenca;
+      const somaCalculada = parcelasCalculadas.reduce((acc, p) => acc + p.valor_centavos, 0);
+      let diferencaCentavos = totalCentavos - somaCalculada;
 
-      return {
-        numero_parcela: p.numero_parcela,
-        data_vencimento: dueDate,
-        valor_parcela: valor
-      };
-    });
+      let indiceParaAjuste = 0;
+      let maiorPercentual = -1;
 
-    replaceInstallments(newInstallments);
-  };
+      parcelasCalculadas.forEach((p, idx) => {
+        if (p.percentual_original >= maiorPercentual) {
+          maiorPercentual = p.percentual_original;
+          indiceParaAjuste = idx;
+        }
+      });
+
+      parcelasCalculadas[indiceParaAjuste].valor_centavos += diferencaCentavos;
+
+      const newInstallments = parcelasCalculadas.map((p) => {
+        const dueDate = new Date(date);
+        dueDate.setDate(dueDate.getDate() + p.dias_vencimento);
+
+        return {
+          numero_parcela: p.numero_parcela,
+          data_vencimento: dueDate,
+          valor_parcela: p.valor_centavos / 100
+        };
+      });
+
+      replaceInstallments(newInstallments);
+    };
 
   const handleClearInstallments = () => {
     if (readOnly) return;
@@ -164,7 +183,6 @@ export default function SaleForm({
     <Form {...form}>
       <form id="sale-form" onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 pb-24">
 
-        {/* Aviso de Cancelado */}
         {readOnly && initialData?.ativo === false && (
              <div className="bg-destructive/15 p-4 rounded-md border border-destructive text-destructive font-bold text-center">
                 VENDA CANCELADA
@@ -172,85 +190,112 @@ export default function SaleForm({
         )}
 
         <fieldset disabled={isLocked} className="space-y-6 border p-4 rounded-lg bg-card">
-          <legend className="text-lg font-semibold px-2">Dados da Venda</legend>
-          <div className="grid md:grid-cols-3 gap-4">
-            {/* Cliente */}
-            <FormField name="client_id" control={form.control} render={({ field }) => (
-              <FormItem className="flex flex-col">
-                <FormLabel>Cliente</FormLabel>
-                <Dialog open={dialogsOpen.client} onOpenChange={o => setDialogsOpen({...dialogsOpen, client: o})}>
-                  <DialogTrigger asChild>
-                    <Button variant="outline" className="justify-start font-normal text-left truncate" disabled={isLocked}>
-                      {selectedNames.client || "Selecione um cliente"}
-                    </Button>
-                  </DialogTrigger>
-                  {!readOnly && (
-                  <DialogContent className="min-w-7xl w-full h-[60vh]">
-                    <ClientSelectionDialog
-                      clients={clients}
-                      onSelect={(c) => {
-                        const client = Array.isArray(c) ? c[0] : c;
-                        if(client) {
-                            field.onChange(client.id);
-                            setSelectedNames(p => ({...p, client: client.nome}));
-                            setDialogsOpen(p => ({...p, client: false}));
-                        }
-                      }}
-                    />
-                  </DialogContent>
-                  )}
-                </Dialog>
-                <FormMessage />
-              </FormItem>
-            )} />
+                  <legend className="text-lg font-semibold px-2">Dados da Venda</legend>
 
-            {/* Vendedor */}
-            <FormField name="employee_id" control={form.control} render={({ field }) => (
-              <FormItem className="flex flex-col">
-                <FormLabel>Vendedor</FormLabel>
-                <Dialog open={dialogsOpen.employee} onOpenChange={o => setDialogsOpen({...dialogsOpen, employee: o})}>
-                  <DialogTrigger asChild>
-                    <Button variant="outline" className="justify-start font-normal text-left truncate" disabled={isLocked}>
-                      {selectedNames.employee || "Selecione um vendedor"}
-                    </Button>
-                  </DialogTrigger>
-                  {!readOnly && (
-                  <DialogContent className="min-w-7xl h-[60vh]">
-                    <EmployeeSelectionDialog
-                       employees={employees}
-                       onSelect={(e) => {
-                         const emp = Array.isArray(e) ? e[0] : e;
-                         if(emp){
-                             field.onChange(emp.id);
-                             setSelectedNames(p => ({...p, employee: emp.nome}));
-                             setDialogsOpen(p => ({...p, employee: false}));
-                         }
-                       }}
-                    />
-                  </DialogContent>
-                  )}
-                </Dialog>
-                <FormMessage />
-              </FormItem>
-            )} />
+                  {/* LINHA 1: Dados Fiscais (Novos Campos) */}
+                  <div className="grid grid-cols-3 gap-4 mb-4">
+                     <div className="flex flex-col space-y-2">
+                        <FormLabel>Modelo</FormLabel>
+                        <Input value="55" disabled className="bg-slate-100 dark:bg-slate-800" />
+                     </div>
+                     <div className="flex flex-col space-y-2">
+                        <FormLabel>Série</FormLabel>
+                        <Input value="1" disabled className="bg-slate-100 dark:bg-slate-800" />
+                     </div>
+                     <div className="flex flex-col space-y-2">
+                        <FormLabel>Número da Nota</FormLabel>
+                        <Input
+                          value={initialData?.numero_nota ? String(initialData.numero_nota).padStart(6, '0') : "Gerado ao Salvar"}
+                          disabled
+                          className="bg-slate-100 dark:bg-slate-800 font-mono font-bold"
+                        />
+                     </div>
+                  </div>
 
-            {/* Data */}
-            <FormField name="data_emissao" control={form.control} render={({ field }) => (
-              <FormItem className="flex flex-col">
-                <FormLabel>Data de Emissão</FormLabel>
-                <DatePicker value={field.value} onChange={field.onChange} disabled={isLocked} />
-                <FormMessage />
-              </FormItem>
-            )} />
-          </div>
-        </fieldset>
+                  <Separator className="mb-4" />
+
+                  {/* LINHA 2: Cliente, Vendedor, Data (Campos Existentes) */}
+                  <div className="grid md:grid-cols-3 gap-4">
+                    {/* Picker de Cliente */}
+                    <FormField name="client_id" control={form.control} render={({ field }) => (
+                      <FormItem className="flex flex-col">
+                        <FormLabel>Cliente</FormLabel>
+                        <Dialog open={dialogsOpen.client} onOpenChange={o => setDialogsOpen({...dialogsOpen, client: o})}>
+                          <DialogTrigger asChild>
+                            <Button variant="outline" className="justify-start font-normal text-left truncate" disabled={isLocked}>
+                              {selectedNames.client || "Selecione um cliente"}
+                            </Button>
+                          </DialogTrigger>
+                          {!readOnly && (
+                          <DialogContent className="max-w-6xl w-full h-[80vh]">
+                            <ClientSelectionDialog
+                              clients={clients}
+                              onSelect={(c) => {
+                                const client = Array.isArray(c) ? c[0] : c;
+                                if(client) {
+                                    field.onChange(client.id);
+                                    setSelectedNames(p => ({...p, client: client.nome}));
+                                    setDialogsOpen(p => ({...p, client: false}));
+                                }
+                              }}
+                            />
+                          </DialogContent>
+                          )}
+                        </Dialog>
+                        <FormMessage />
+                      </FormItem>
+                    )} />
+
+                    {/* Picker de Funcionário */}
+                    <FormField name="employee_id" control={form.control} render={({ field }) => (
+                      <FormItem className="flex flex-col">
+                        <FormLabel>Vendedor</FormLabel>
+                        <Dialog open={dialogsOpen.employee} onOpenChange={o => setDialogsOpen({...dialogsOpen, employee: o})}>
+                          <DialogTrigger asChild>
+                            <Button variant="outline" className="justify-start font-normal text-left truncate" disabled={isLocked}>
+                              {selectedNames.employee || "Selecione um vendedor"}
+                            </Button>
+                          </DialogTrigger>
+                          {!readOnly && (
+                          <DialogContent className="min-w-7xl h-[70vh]">
+                            <EmployeeSelectionDialog
+                               employees={employees}
+                               onSelect={(e) => {
+                                 const emp = Array.isArray(e) ? e[0] : e;
+                                 if(emp){
+                                     field.onChange(emp.id);
+                                     setSelectedNames(p => ({...p, employee: emp.nome}));
+                                     setDialogsOpen(p => ({...p, employee: false}));
+                                 }
+                               }}
+                            />
+                          </DialogContent>
+                          )}
+                        </Dialog>
+                        <FormMessage />
+                      </FormItem>
+                    )} />
+
+                    {/* Data de Emissão - SEMPRE TRAVADA */}
+                    <FormField name="data_emissao" control={form.control} render={({ field }) => (
+                      <FormItem className="flex flex-col">
+                        <FormLabel>Data de Emissão</FormLabel>
+                        <DatePicker
+                            value={field.value}
+                            onChange={field.onChange}
+                            disabled={true}
+                        />
+                        <FormMessage />
+                      </FormItem>
+                    )} />
+                  </div>
+                </fieldset>
 
         <Separator />
 
         <fieldset disabled={isLocked} className="space-y-4">
           <legend className="text-lg font-medium">Itens da Venda</legend>
 
-          {/* STAGING AREA - Só mostra se não for readOnly */}
           {!readOnly && (
           <div className="grid grid-cols-12 gap-2 items-end border p-3 rounded-lg bg-muted/30">
              <div className="col-span-2 md:col-span-1">
@@ -264,7 +309,7 @@ export default function SaleForm({
                     <Button type="button" size="icon" variant="outline" onClick={() => setDialogsOpen(p => ({...p, product: true}))}><Search className="h-4 w-4"/></Button>
                 </div>
                 <Dialog open={dialogsOpen.product} onOpenChange={o => setDialogsOpen({...dialogsOpen, product: o})}>
-                    <DialogContent className="min-w-7xl w-full h-[60vh]">
+                    <DialogContent className="max-w-6xl w-full h-[80vh]">
                         <ProductSelectionDialog products={products} selectionMode="single" onSelect={(p) => handleProductSelected(p as Product)}/>
                     </DialogContent>
                 </Dialog>
@@ -293,7 +338,6 @@ export default function SaleForm({
           </div>
           )}
 
-          {/* Tabela de Itens */}
           <div className="rounded-md border mt-4">
             <Table>
               <TableHeader>
@@ -310,7 +354,6 @@ export default function SaleForm({
               <TableBody>
                 {items.map((item, index) => {
                     const product = products.find(p => p.id === item.product_id);
-                    // Se readOnly, mostramos texto estático. Se não, Input.
                     return (
                         <TableRow key={item.id}>
                             <TableCell>{item.product_id}</TableCell>
@@ -363,7 +406,7 @@ export default function SaleForm({
                       </Button>
                     </DialogTrigger>
                     {!readOnly && (
-                    <DialogContent className="min-w-7xl h-[60vh]">
+                    <DialogContent className="max-w-4xl h-[80vh]">
                       <PaymentConditionSelectionDialog paymentConditions={paymentConditions} paymentMethods={[]} onSelect={(pc) => {
                           field.onChange(pc.id);
                           setSelectedNames(p => ({...p, condition: pc.descricao}));
@@ -380,11 +423,13 @@ export default function SaleForm({
             {!readOnly && !isLocked && (
               <Button type="button" onClick={handleGenerateInstallments} className="mb-2">Gerar Parcelas</Button>
             )}
+
             {!readOnly && isLocked && (
               <Button type="button" variant="destructive" onClick={handleClearInstallments} className="mb-2">
                 <XCircle className="mr-2 h-4 w-4" /> Refazer Parcelas
               </Button>
             )}
+
           </div>
 
           {installments.length > 0 && (
@@ -412,16 +457,8 @@ export default function SaleForm({
           isEditMode={false}
           isSubmitting={form.formState.isSubmitting}
           isDirty={form.formState.isDirty}
-          // Se for readOnly e a venda estiver ativa, mostra o botão de cancelar
           deleteButton={readOnly && initialData?.ativo ? <CancelSaleButton id={initialData.id!} /> : undefined}
-          // Se for readOnly, esconde o botão de salvar (passando showSaveButton=false se seu componente suportar, ou desabilitando)
-          // Como o componente FormFooter não tem prop explícita para esconder o Save, vamos assumir que isSubmitting trava ou podemos ajustar o componente.
-          // Mas no seu código anterior, o FormFooter sempre mostra o salvar.
-          // Vamos contornar desabilitando o botão via 'isSubmitting' ou 'disabled' se readOnly.
-          // O ideal é editar o FormFooter para aceitar uma prop 'hideSaveButton'.
-          // Por enquanto, vou passar isSubmitting={true} se for readOnly para "travar" visualmente, mas o melhor é esconder.
         />
-        {/* Hack rápido: Se for readOnly, removemos o botão de salvar via CSS ou lógica no Footer se tiver acesso */}
         {readOnly && <style>{`button[type="submit"] { display: none; }`}</style>}
       </form>
     </Form>

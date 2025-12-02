@@ -883,7 +883,7 @@ export type ContasPagarStatus =
 
 export type PurchaseForm = z.infer<typeof PurchaseSchema>;
 
-<<<<<<< HEAD
+
 export const SaleItemSchema = z.object({
   product_id: z.coerce.number().min(1, "Selecione um produto."),
   quantidade: z.coerce.number().min(1, "Qtd mínima é 1."),
@@ -902,26 +902,26 @@ export const SaleSchema = z.object({
   employee_id: z.coerce.number({ required_error: "Selecione um vendedor." }).min(1),
   payment_condition_id: z.coerce.number({ required_error: "Selecione a condição." }).min(1),
   data_emissao: z.date({ required_error: "Data obrigatória." }),
+
+  modelo: z.string().default("55"),
+  serie: z.string().default("1"),
+  numero_nota: z.number().optional(),
+
   items: z.array(SaleItemSchema).min(1, "Adicione pelo menos um produto."),
   installments: z.array(SaleInstallmentSchema).min(1, "Gere as parcelas antes de salvar."),
 });
 
 export type SaleForm = z.infer<typeof SaleSchema>;
 
+export type SaleForm = z.infer<typeof SaleSchema>;
+
 export const BaixaContaReceberSchema = z.object({
-=======
-export const BaixaParcelaSchema = z.object({
->>>>>>> 7d7252dff8fec4cdc6aeafc662f6273f179a9746
   id: z.number(),
   valor_parcela: z.number(),
   data_vencimento: z.date(),
 
   data_pagamento: z.date({
-<<<<<<< HEAD
     required_error: "A data do recebimento é obrigatória.",
-=======
-    required_error: "A data de pagamento é obrigatória.",
->>>>>>> 7d7252dff8fec4cdc6aeafc662f6273f179a9746
   }),
   payment_method_id: z.coerce
     .number({
@@ -939,7 +939,6 @@ export const BaixaParcelaSchema = z.object({
   observacao: z.string().optional().nullable(),
 });
 
-<<<<<<< HEAD
 export type BaixaContaReceberForm = z.infer<typeof BaixaContaReceberSchema>;
 
 // Tipo para listagem (igual ao PurchaseInstallment mas com dados de venda)
@@ -961,16 +960,63 @@ export type SaleInstallmentDTO = {
 
   // JOINs
   client_nome?: string;
-  sale_id_visual?: number;
+  sale_id_visual?: number; // ID da venda para exibição
   sale_ativo?: boolean;
   payment_method_descricao?: string;
 
-  // Dados calculados / Padrões
+  // Dados da condição de pagamento original (para cálculo automático na baixa)
   default_juros_percent?: number | null;
   default_multa?: number | null;
   default_desconto?: number | null;
-  default_payment_method_id?: number | null; // <--- NOVO CAMPO
 };
-=======
-export type BaixaParcelaForm = z.infer<typeof BaixaParcelaSchema>;
->>>>>>> 7d7252dff8fec4cdc6aeafc662f6273f179a9746
+
+export const BaixaParcelaSchema = z.object({
+  id: z.number(),
+  valor_parcela: z.number(),
+  data_vencimento: z.date(),
+
+  data_pagamento: z.date({
+    required_error: "A data do pagamento é obrigatória.",
+  }),
+  payment_method_id: z.coerce
+    .number({
+      required_error: "A forma de pagamento é obrigatória.",
+    })
+    .min(1, "Selecione uma forma de pagamento."),
+
+  valor_multa: z.coerce.number().min(0).default(0),
+  valor_juros: z.coerce.number().min(0).default(0),
+  valor_desconto: z.coerce.number().min(0).default(0),
+
+  valor_juros_calculado: z.number(),
+  valor_pago_calculado: z.number(),
+
+  observacao: z.string().optional().nullable(),
+});
+
+export type BaixaFormType = z.infer<typeof BaixaParcelaSchema>;
+
+export type PurchaseInstallmentDTO = {
+  id: number;
+  purchase_id: number;
+  numero_parcela: number;
+  data_vencimento: string;
+  valor_parcela: number;
+
+  data_pagamento: string | null;
+  valor_pago: number | null;
+  observacao: string | null;
+  payment_method_id: number | null;
+  valor_multa: number | null;
+  valor_juros: number | null;
+  valor_desconto: number | null;
+
+  supplier_nome?: string;
+  purchase_nota?: string;
+  purchase_ativo?: boolean;
+
+  default_juros_percent?: number | null;
+  default_multa?: number | null;
+  default_desconto?: number | null;
+  default_payment_method_id?: number | null;
+};
