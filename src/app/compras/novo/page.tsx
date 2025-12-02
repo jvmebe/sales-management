@@ -2,13 +2,17 @@ import { Separator } from "@/components/ui/separator";
 import PurchaseForm from "../form";
 import { fetchSuppliers } from "@/lib/data/fornecedores";
 import { fetchProducts } from "@/lib/data/produtos";
-import { fetchPaymentConditions, fetchPaymentConditionById } from "@/lib/data/condicoes-pagamento";
+import { fetchPaymentConditions } from "@/lib/data/condicoes-pagamento";
 import { fetchActivePaymentMethods } from "@/lib/data/formas-pagamento";
 import { fetchCities } from "@/lib/data/cidades";
 import { fetchActiveStates } from "@/lib/data/estados";
 import { fetchActiveCountries } from "@/lib/data/paises";
+import { fetchProductBrands } from "@/lib/data/marcas";
+import { fetchProductCategories } from "@/lib/data/categorias-produto";
+import { fetchProductUnits } from "@/lib/data/unidades-medida";
 
 export default async function NewPurchasePage() {
+  // Busca todos os dados necessários em paralelo
   const [
     suppliers,
     products,
@@ -16,7 +20,10 @@ export default async function NewPurchasePage() {
     paymentMethods,
     cities,
     states,
-    countries
+    countries,
+    brands,
+    categories,
+    units
   ] = await Promise.all([
     fetchSuppliers(),
     fetchProducts(),
@@ -25,6 +32,9 @@ export default async function NewPurchasePage() {
     fetchCities(),
     fetchActiveStates(),
     fetchActiveCountries(),
+    fetchProductBrands(),
+    fetchProductCategories(),
+    fetchProductUnits(),
   ]);
 
   return (
@@ -42,6 +52,10 @@ export default async function NewPurchasePage() {
         cities={cities}
         states={states}
         countries={countries}
+        // Repassando as novas props
+        brands={brands}
+        categories={categories}
+        units={units}
       />
     </div>
   );

@@ -70,3 +70,32 @@ export async function darBaixaParcela(data: BaixaParcelaForm) {
     };
   }
 }
+
+export async function desfazerBaixaParcela(id: number) {
+  try {
+    const result = await query<ResultSetHeader>(
+      `UPDATE purchase_installment
+       SET
+         data_pagamento = NULL,
+         valor_pago = NULL,
+         payment_method_id = NULL,
+         valor_multa = 0,
+         valor_juros = 0,
+         valor_desconto = 0,
+         observacao = NULL
+       WHERE id = ?`,
+      [id]
+    );
+
+    if (result.affectedRows === 0) {
+      return { success: false, message: "Parcela não encontrada." };
+    }
+
+    revalidatePath("/contas-pagar");
+    revalidatePath(`/contas-pagar/${id}`);
+    return { success: true, message: "Baixa desfeita com sucesso! A parcela está em aberto novamente." };
+  } catch (error) {
+    console.error("Erro ao desfazer baixa:", error);
+    return { success: false, message: "Erro ao desfazer a baixa da parcela." };
+  }
+}

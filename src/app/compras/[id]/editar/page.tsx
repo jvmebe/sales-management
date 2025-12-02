@@ -9,6 +9,9 @@ import { fetchActivePaymentMethods } from "@/lib/data/formas-pagamento";
 import { fetchCities } from "@/lib/data/cidades";
 import { fetchActiveStates } from "@/lib/data/estados";
 import { fetchActiveCountries } from "@/lib/data/paises";
+import { fetchProductBrands } from "@/lib/data/marcas";
+import { fetchProductCategories } from "@/lib/data/categorias-produto";
+import { fetchProductUnits } from "@/lib/data/unidades-medida";
 import { PurchaseForm as PurchaseFormType } from "@/lib/definitions";
 
 export default async function EditPurchasePage({ params }: { params: { id: string } }) {
@@ -23,7 +26,10 @@ export default async function EditPurchasePage({ params }: { params: { id: strin
     paymentMethods,
     cities,
     states,
-    countries
+    countries,
+    brands,
+    categories,
+    units
   ] = await Promise.all([
     fetchPurchaseById(id),
     fetchSuppliers(),
@@ -33,23 +39,25 @@ export default async function EditPurchasePage({ params }: { params: { id: strin
     fetchCities(),
     fetchActiveStates(),
     fetchActiveCountries(),
+    fetchProductBrands(),
+    fetchProductCategories(),
+    fetchProductUnits(),
   ]);
 
   if (!purchase) notFound();
 
-  // Converte datas string para Date objects para o formulário
   const formData: PurchaseFormType = {
     ...purchase,
     data_emissao: new Date(purchase.data_emissao),
     data_entrega: purchase.data_entrega ? new Date(purchase.data_entrega) : null,
     items: purchase.items.map(item => ({
       ...item,
-      valor_unitario: Number(item.valor_unitario) // Garante que é número
+      valor_unitario: Number(item.valor_unitario)
     })),
     installments: purchase.installments.map(inst => ({
       ...inst,
       data_vencimento: new Date(inst.data_vencimento),
-      valor_parcela: Number(inst.valor_parcela) // Garante que é número
+      valor_parcela: Number(inst.valor_parcela)
     })),
   };
 
@@ -68,6 +76,9 @@ export default async function EditPurchasePage({ params }: { params: { id: strin
         cities={cities}
         states={states}
         countries={countries}
+        brands={brands}
+        categories={categories}
+        units={units}
       />
     </div>
   );
