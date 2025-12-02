@@ -269,13 +269,22 @@ CREATE TABLE IF NOT EXISTS purchase_installment (
     numero_parcela INT NOT NULL,
     data_vencimento DATE NOT NULL,
     valor_parcela DECIMAL(10,2) NOT NULL,
+
     data_pagamento DATE NULL,
     valor_pago DECIMAL(10,2) NULL DEFAULT 0,
     observacao VARCHAR(255) NULL,
 
+    payment_method_id INT NULL,
+    valor_multa DECIMAL(10,2) NULL DEFAULT 0,
+    valor_juros DECIMAL(10,2) NULL DEFAULT 0,
+    valor_desconto DECIMAL(10,2) NULL DEFAULT 0,
+
     UNIQUE KEY uq_purchase_installment_parcela (purchase_id, numero_parcela),
     CONSTRAINT fk_purchase_installment_purchase FOREIGN KEY (purchase_id) REFERENCES purchase(id)
-        ON DELETE CASCADE ON UPDATE CASCADE
+        ON DELETE CASCADE ON UPDATE CASCADE,
+
+    CONSTRAINT fk_purchase_installment_payment_method FOREIGN KEY (payment_method_id) REFERENCES payment_method(id)
+        ON DELETE RESTRICT ON UPDATE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS sale (

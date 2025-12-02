@@ -1,13 +1,11 @@
-import { z } from 'zod';
-
+import { z } from "zod";
 
 //VALIDACAO CNPJ =============================================================================================
 
 function validarCNPJ(cnpj: string): boolean {
-  cnpj = cnpj.replace(/[^\d]+/g, '');
+  cnpj = cnpj.replace(/[^\d]+/g, "");
 
   if (cnpj.length !== 14) return false;
-
 
   if (/^(\d)\1+$/.test(cnpj)) return false;
 
@@ -40,7 +38,7 @@ function validarCNPJ(cnpj: string): boolean {
 // VALIDACAO DE CPF ==============================================================================================
 
 function validarCPF(cpf: string): boolean {
-  cpf = cpf.replace(/[^\d]+/g, '');
+  cpf = cpf.replace(/[^\d]+/g, "");
 
   if (cpf.length !== 11) return false;
 
@@ -48,22 +46,23 @@ function validarCPF(cpf: string): boolean {
 
   let soma = 0;
   let resto;
-  for (let i = 1; i <= 9; i++) soma = soma + parseInt(cpf.substring(i - 1, i)) * (11 - i);
+  for (let i = 1; i <= 9; i++)
+    soma = soma + parseInt(cpf.substring(i - 1, i)) * (11 - i);
   resto = (soma * 10) % 11;
 
-  if ((resto === 10) || (resto === 11)) resto = 0;
+  if (resto === 10 || resto === 11) resto = 0;
   if (resto !== parseInt(cpf.substring(9, 10))) return false;
 
   soma = 0;
-  for (let i = 1; i <= 10; i++) soma = soma + parseInt(cpf.substring(i - 1, i)) * (12 - i);
+  for (let i = 1; i <= 10; i++)
+    soma = soma + parseInt(cpf.substring(i - 1, i)) * (12 - i);
   resto = (soma * 10) % 11;
 
-  if ((resto === 10) || (resto === 11)) resto = 0;
+  if (resto === 10 || resto === 11) resto = 0;
   if (resto !== parseInt(cpf.substring(10, 11))) return false;
 
   return true;
 }
-
 
 export type Country = {
   id: number;
@@ -76,13 +75,20 @@ export type Country = {
 
 export const CountrySchema = z.object({
   id: z.number().optional(),
-  nome: z.string().min(3, { message: 'O nome do país deve ter no mínimo 3 caracteres.' }).max(50, { message: "O nome do país não pode ter mais que 50 caracteres." }),
-  sigla: z.string().length(2, { message: 'A sigla deve ter exatamente 2 caracteres.' }).toUpperCase(),
+  nome: z
+    .string()
+    .min(3, { message: "O nome do país deve ter no mínimo 3 caracteres." })
+    .max(50, {
+      message: "O nome do país não pode ter mais que 50 caracteres.",
+    }),
+  sigla: z
+    .string()
+    .length(2, { message: "A sigla deve ter exatamente 2 caracteres." })
+    .toUpperCase(),
   ativo: z.coerce.boolean(),
 });
 
 export type CountryForm = z.infer<typeof CountrySchema>;
-
 
 export type State = {
   id: number;
@@ -99,14 +105,23 @@ export type State = {
 
 export const StateSchema = z.object({
   id: z.number().optional(),
-  nome: z.string().min(2, { message: "O nome do estado deve ter no mínimo 2 caracteres." }).max(50, { message: 'O nome do estado não pode ter mais que 50 caracteres.' }),
-  sigla: z.string().length(2, { message: "A sigla deve ter exatamente 2 caracteres." }).toUpperCase(),
-  country_id: z.coerce.number({ required_error: "Selecione um país." }).gt(0, { message: "Selecione um país." }),
+  nome: z
+    .string()
+    .min(2, { message: "O nome do estado deve ter no mínimo 2 caracteres." })
+    .max(50, {
+      message: "O nome do estado não pode ter mais que 50 caracteres.",
+    }),
+  sigla: z
+    .string()
+    .length(2, { message: "A sigla deve ter exatamente 2 caracteres." })
+    .toUpperCase(),
+  country_id: z.coerce
+    .number({ required_error: "Selecione um país." })
+    .gt(0, { message: "Selecione um país." }),
   ativo: z.coerce.boolean(),
 });
 
 export type StateForm = z.infer<typeof StateSchema>;
-
 
 export type City = {
   id: number;
@@ -124,8 +139,18 @@ export type City = {
 
 export const CitySchema = z.object({
   id: z.number().optional(),
-  nome: z.string().min(2, { message: "O nome da cidade é obrigatório." }).max(50, {message: "Nome da cidade não pode ter mais que 50 caracteres."}),
-  state_id: z.coerce.number({ message: "Selecione um estado.", invalid_type_error:"Selecione um estado." }).gt(0, { message: "Selecione um estado." }),
+  nome: z
+    .string()
+    .min(2, { message: "O nome da cidade é obrigatório." })
+    .max(50, {
+      message: "Nome da cidade não pode ter mais que 50 caracteres.",
+    }),
+  state_id: z.coerce
+    .number({
+      message: "Selecione um estado.",
+      invalid_type_error: "Selecione um estado.",
+    })
+    .gt(0, { message: "Selecione um estado." }),
   ativo: z.coerce.boolean(),
 });
 
@@ -141,7 +166,10 @@ export type PaymentMethod = {
 
 export const PaymentMethodSchema = z.object({
   id: z.number().optional(),
-  descricao: z.string().min(2, { message: "A descrição deve ter no mínimo 2 caracteres." }).max(50),
+  descricao: z
+    .string()
+    .min(2, { message: "A descrição deve ter no mínimo 2 caracteres." })
+    .max(50),
   ativo: z.coerce.boolean(),
 });
 
@@ -170,30 +198,50 @@ export type PaymentCondition = {
 
 const PaymentInstallmentSchema = z.object({
   numero_parcela: z.coerce.number().int().min(1),
-  dias_vencimento: z.coerce.number().int().min(0, "Os dias devem ser 0 ou mais."),
-  percentual_valor: z.coerce.number().min(0.01, "O percentual deve ser maior que zero.").max(100),
-  forma_pagamento_id: z.coerce.number().min(1, "Selecione uma forma de pagamento."),
+  dias_vencimento: z.coerce
+    .number()
+    .int()
+    .min(0, "Os dias devem ser 0 ou mais."),
+  percentual_valor: z.coerce
+    .number()
+    .min(0.01, "O percentual deve ser maior que zero.")
+    .max(100),
+  forma_pagamento_id: z.coerce
+    .number()
+    .min(1, "Selecione uma forma de pagamento."),
 });
 
-export const PaymentConditionSchema = z.object({
-  id: z.number().optional(),
-  descricao: z.string().min(3, "A descrição é obrigatória.").max(50, { message: "A descrição não pode ter mais que 50 caracteres." }),
-  juros: z.coerce.number().min(0).optional(),
-  multa: z.coerce.number().min(0).optional(),
-  desconto: z.coerce.number().min(0).optional(),
-  ativo: z.coerce.boolean(),
-  parcelas: z.array(PaymentInstallmentSchema).min(1, "Adicione pelo menos uma parcela."),
-}).refine(data => {
-    const totalPercent = data.parcelas.reduce((sum, p) => sum + p.percentual_valor, 0);
-    // Margem de erro da soma para casos onde 100% e impossivel
-    return Math.abs(totalPercent - 100) < 0.001;
-}, {
-    message: "A soma dos percentuais das parcelas deve ser exatamente 100%.",
-    path: ["parcelas"], // Associa erro ao campo de parcelas
-});
+export const PaymentConditionSchema = z
+  .object({
+    id: z.number().optional(),
+    descricao: z
+      .string()
+      .min(3, "A descrição é obrigatória.")
+      .max(50, { message: "A descrição não pode ter mais que 50 caracteres." }),
+    juros: z.coerce.number().min(0).optional(),
+    multa: z.coerce.number().min(0).optional(),
+    desconto: z.coerce.number().min(0).optional(),
+    ativo: z.coerce.boolean(),
+    parcelas: z
+      .array(PaymentInstallmentSchema)
+      .min(1, "Adicione pelo menos uma parcela."),
+  })
+  .refine(
+    (data) => {
+      const totalPercent = data.parcelas.reduce(
+        (sum, p) => sum + p.percentual_valor,
+        0,
+      );
+      // Margem de erro da soma para casos onde 100% e impossivel
+      return Math.abs(totalPercent - 100) < 0.001;
+    },
+    {
+      message: "A soma dos percentuais das parcelas deve ser exatamente 100%.",
+      path: ["parcelas"], // Associa erro ao campo de parcelas
+    },
+  );
 
 export type PaymentConditionForm = z.infer<typeof PaymentConditionSchema>;
-
 
 export type ProductUnit = {
   id: number;
@@ -206,7 +254,10 @@ export type ProductUnit = {
 
 export const ProductUnitSchema = z.object({
   id: z.number().optional(),
-  nome: z.string().min(2, { message: "O nome deve ter no mínimo 2 caracteres." }).max(80, { message: "O nome não pode ter mais que 80 caracteres." }),
+  nome: z
+    .string()
+    .min(2, { message: "O nome deve ter no mínimo 2 caracteres." })
+    .max(80, { message: "O nome não pode ter mais que 80 caracteres." }),
   sigla: z.string().min(1, { message: "A sigla é obrigatória." }).max(10),
   ativo: z.coerce.boolean(),
 });
@@ -223,7 +274,12 @@ export type ProductBrand = {
 
 export const ProductBrandSchema = z.object({
   id: z.number().optional(),
-  nome: z.string().min(2, { message: "O nome da marca deve ter no mínimo 2 caracteres." }).max(80, { message: "O nome da marca não pode ter mais que 80 caracteres." }),
+  nome: z
+    .string()
+    .min(2, { message: "O nome da marca deve ter no mínimo 2 caracteres." })
+    .max(80, {
+      message: "O nome da marca não pode ter mais que 80 caracteres.",
+    }),
   ativo: z.coerce.boolean().default(true),
 });
 
@@ -240,7 +296,12 @@ export type ProductCategory = {
 
 export const ProductCategorySchema = z.object({
   id: z.number().optional(),
-  nome: z.string().min(2, { message: "O nome da categoria deve ter no mínimo 2 caracteres." }).max(80, { message: "O nome da categoria não pode ter mais que 80 caracteres." }),
+  nome: z
+    .string()
+    .min(2, { message: "O nome da categoria deve ter no mínimo 2 caracteres." })
+    .max(80, {
+      message: "O nome da categoria não pode ter mais que 80 caracteres.",
+    }),
   descricao: z.string().optional().nullable().default(null),
   ativo: z.coerce.boolean(),
 });
@@ -276,43 +337,79 @@ export type Supplier = {
 export const SupplierSchema = z.object({
   id: z.number().optional(),
   is_juridica: z.coerce.boolean(),
-  nome: z.string({ message: "Campo obrigatório."}).min(3, "Campo deve ter pelo menos 3 caracteres.").max(80, "Campo não pode ter mais que 80 caracteres."),
-  apelido: z.string().max(80, "O apelido/nome fantasia não pode ter mais que 80 caracteres.").optional().nullable().default(null),
-  cpf: z.string({ message: "Campo obrigatório."})
-  .transform((val) => val.replace(/[^\d]/g, ''))
-  .refine(
-    (val) => val.length === 11 || val.length === 14, {
+  nome: z
+    .string({ message: "Campo obrigatório." })
+    .min(3, "Campo deve ter pelo menos 3 caracteres.")
+    .max(80, "Campo não pode ter mais que 80 caracteres."),
+  apelido: z
+    .string()
+    .max(80, "O apelido/nome fantasia não pode ter mais que 80 caracteres.")
+    .optional()
+    .nullable()
+    .default(null),
+  cpf: z
+    .string({ message: "Campo obrigatório." })
+    .transform((val) => val.replace(/[^\d]/g, ""))
+    .refine((val) => val.length === 11 || val.length === 14, {
       message: "O CPF/CNPJ deve ter 11 ou 14 caracteres.",
-  })
-  .refine(
-    (val) => {
-      if (val.length === 11) {
-        return validarCPF(val);
-      }
-      if (val.length === 14) {
-        return validarCNPJ(val);
-      }
-      return false;
-    }, {
-      message: "O CPF ou CNPJ informado é inválido.",
-    }
-  ),
-  rg: z.string().max(15, "O RG/IE não pode ter mais que 15 caracteres.").optional().nullable().default(null),
-  data_nascimento: z.date({message: "Campo obrigatório."}),
-  email: z.string().email("Email inválido.").max(100, "O email não pode ter mais que 100 caracteres."),
-  telefone: z.string().min(1, "O telefone é obrigatório.").max(15, "O telefone não pode ter mais que 15 caracteres."),
-  endereco: z.string().min(1, "O endereço é obrigatório.").max(80, "O endereço não pode ter mais que 80 caracteres."),
-  numero: z.string().min(1, "O número é obrigatório.").max(6, "O número não pode ter mais que 6 caracteres."),
-  complemento: z.string().max(80, "O complemento não pode ter mais que 80 caracteres.").optional().nullable().default(null),
-  bairro: z.string().min(1, "O bairro é obrigatório.").max(80, "O bairro não pode ter mais que 80 caracteres."),
-  cep: z.string().min(1, "O CEP é obrigatório.").max(8, "O CEP não pode ter mais que 8 caracteres."),
+    })
+    .refine(
+      (val) => {
+        if (val.length === 11) {
+          return validarCPF(val);
+        }
+        if (val.length === 14) {
+          return validarCNPJ(val);
+        }
+        return false;
+      },
+      {
+        message: "O CPF ou CNPJ informado é inválido.",
+      },
+    ),
+  rg: z
+    .string()
+    .max(15, "O RG/IE não pode ter mais que 15 caracteres.")
+    .optional()
+    .nullable()
+    .default(null),
+  data_nascimento: z.date({ message: "Campo obrigatório." }),
+  email: z
+    .string()
+    .email("Email inválido.")
+    .max(100, "O email não pode ter mais que 100 caracteres."),
+  telefone: z
+    .string()
+    .min(1, "O telefone é obrigatório.")
+    .max(15, "O telefone não pode ter mais que 15 caracteres."),
+  endereco: z
+    .string()
+    .min(1, "O endereço é obrigatório.")
+    .max(80, "O endereço não pode ter mais que 80 caracteres."),
+  numero: z
+    .string()
+    .min(1, "O número é obrigatório.")
+    .max(6, "O número não pode ter mais que 6 caracteres."),
+  complemento: z
+    .string()
+    .max(80, "O complemento não pode ter mais que 80 caracteres.")
+    .optional()
+    .nullable()
+    .default(null),
+  bairro: z
+    .string()
+    .min(1, "O bairro é obrigatório.")
+    .max(80, "O bairro não pode ter mais que 80 caracteres."),
+  cep: z
+    .string()
+    .min(1, "O CEP é obrigatório.")
+    .max(8, "O CEP não pode ter mais que 8 caracteres."),
   cidade_id: z.coerce.number(),
   payment_condition_id: z.coerce.number().optional().nullable(), // NOVO CAMPO
   ativo: z.coerce.boolean(),
 });
 
 export type SupplierForm = z.infer<typeof SupplierSchema>;
-
 
 export type Product = {
   id: number;
@@ -338,15 +435,23 @@ export type Product = {
 
 export const ProductSchema = z.object({
   id: z.number().optional(),
-  nome: z.string({message: "Campo obrigatório."}).min(3, "Nome deve ter pelo menos 3 caracteres.").max(80, "O nome do produto não pode ter mais que 80 caracteres."),
+  nome: z
+    .string({ message: "Campo obrigatório." })
+    .min(3, "Nome deve ter pelo menos 3 caracteres.")
+    .max(80, "O nome do produto não pode ter mais que 80 caracteres."),
   descricao: z.string().optional().nullable().default(null),
-  codigo_barras: z.string().max(20, "O código de barras não pode ter mais que 20 caracteres.").optional().nullable().default(null),
+  codigo_barras: z
+    .string()
+    .max(20, "O código de barras não pode ter mais que 20 caracteres.")
+    .optional()
+    .nullable()
+    .default(null),
   valor_compra: z.coerce.number().min(0, "O valor não pode ser negativo."),
   valor_venda: z.coerce.number().min(0, "O valor não pode ser negativo."),
   estoque: z.coerce.number().min(0),
-  brand_id: z.coerce.number({message: "Campo obrigatório."}),
-  category_id: z.coerce.number({message: "Campo obrigatório."}),
-  unit_id: z.coerce.number({message: "Campo obrigatório."}),
+  brand_id: z.coerce.number({ message: "Campo obrigatório." }),
+  category_id: z.coerce.number({ message: "Campo obrigatório." }),
+  unit_id: z.coerce.number({ message: "Campo obrigatório." }),
   supplier_ids: z.array(z.number()).optional().nullable(),
   ativo: z.coerce.boolean().default(true),
 });
@@ -382,8 +487,17 @@ export const TransportadoraSchema = z.object({
   apelido: z.string().optional().nullable().default(null),
   cpf: z.string().optional().nullable().default(null),
   rg: z.string().optional().nullable().default(null),
-  data_nascimento: z.date({ invalid_type_error: "Data inválida." }).optional().nullable().default(null),
-  email: z.string().email("Email inválido.").optional().nullable().default(null),
+  data_nascimento: z
+    .date({ invalid_type_error: "Data inválida." })
+    .optional()
+    .nullable()
+    .default(null),
+  email: z
+    .string()
+    .email("Email inválido.")
+    .optional()
+    .nullable()
+    .default(null),
   telefone: z.string().optional().nullable().default(null),
   endereco: z.string().optional().nullable().default(null),
   numero: z.string().optional().nullable().default(null),
@@ -425,51 +539,104 @@ export type Employee = {
 
 export const EmployeeSchema = z.object({
   id: z.number().optional(),
-  nome: z.string().min(3, "O nome é obrigatório.")
+  nome: z
+    .string()
+    .min(3, "O nome é obrigatório.")
     .max(80, "O nome não pode ter mais que 80 caracteres."),
-  apelido: z.string()
-    .max(80, "O apelido não pode ter mais que 80 caracteres.").optional().nullable().default(null),
+  apelido: z
+    .string()
+    .max(80, "O apelido não pode ter mais que 80 caracteres.")
+    .optional()
+    .nullable()
+    .default(null),
   data_nascimento: z.date({ invalid_type_error: "Data inválida." }),
-  cpf: z.string({
-    required_error: "Campo obrigatório.",
-    invalid_type_error: "O valor deve ser uma string."
-  })
-  .transform((val) => val.replace(/[^\d]/g, ''))
-  .refine(
-    (val) => val.length === 11, {
+  cpf: z
+    .string({
+      required_error: "Campo obrigatório.",
+      invalid_type_error: "O valor deve ser uma string.",
+    })
+    .transform((val) => val.replace(/[^\d]/g, ""))
+    .refine((val) => val.length === 11, {
       message: "O CPF deve ter 11 caracteres.",
-  })
-  .refine(
-    (val) => {
-      if (val.length === 11) {
-        return validarCPF(val);
-      }
-      if (val.length === 14) {
-        return validarCNPJ(val);
-      }
-      return false;
-    }, {
-      message: "O CPF ou CNPJ informado é inválido.",
-    }
-  ),
-  rg: z.string()
-    .max(15, "O RG não pode ter mais que 15 caracteres.").optional().nullable().default(null),
-  email: z.string().email("Email inválido.").max(100, "O email não pode ter mais que 100 caracteres."),
-  telefone: z.string().min(1, "O telefone é obrigatório.").max(15, "O telefone não pode ter mais que 15 caracteres."),
-  endereco: z.string().min(1, "O endereço é obrigatório.").max(80, "O endereço não pode ter mais que 80 caracteres."),
-  numero: z.string().min(1, "O número é obrigatório.").max(6, "O número não pode ter mais que 6 caracteres."),
-  complemento: z.string().max(80, "O complemento não pode ter mais que 80 caracteres.").optional().nullable().default(null),
-  bairro: z.string().min(1, "O bairro é obrigatório.").max(80, "O bairro não pode ter mais que 80 caracteres."),
+    })
+    .refine(
+      (val) => {
+        if (val.length === 11) {
+          return validarCPF(val);
+        }
+        if (val.length === 14) {
+          return validarCNPJ(val);
+        }
+        return false;
+      },
+      {
+        message: "O CPF ou CNPJ informado é inválido.",
+      },
+    ),
+  rg: z
+    .string()
+    .max(15, "O RG não pode ter mais que 15 caracteres.")
+    .optional()
+    .nullable()
+    .default(null),
+  email: z
+    .string()
+    .email("Email inválido.")
+    .max(100, "O email não pode ter mais que 100 caracteres."),
+  telefone: z
+    .string()
+    .min(1, "O telefone é obrigatório.")
+    .max(15, "O telefone não pode ter mais que 15 caracteres."),
+  endereco: z
+    .string()
+    .min(1, "O endereço é obrigatório.")
+    .max(80, "O endereço não pode ter mais que 80 caracteres."),
+  numero: z
+    .string()
+    .min(1, "O número é obrigatório.")
+    .max(6, "O número não pode ter mais que 6 caracteres."),
+  complemento: z
+    .string()
+    .max(80, "O complemento não pode ter mais que 80 caracteres.")
+    .optional()
+    .nullable()
+    .default(null),
+  bairro: z
+    .string()
+    .min(1, "O bairro é obrigatório.")
+    .max(80, "O bairro não pode ter mais que 80 caracteres."),
   cidade_id: z.coerce.number().min(1, "A cidade é obrigatória."),
-  cep: z.string().min(1, "O CEP é obrigatório.").max(9, "O CEP não pode ter mais que 9 caracteres."),
+  cep: z
+    .string()
+    .min(1, "O CEP é obrigatório.")
+    .max(9, "O CEP não pode ter mais que 9 caracteres."),
   ativo: z.coerce.boolean().default(true),
-  matricula: z.string().min(1, "A matrícula é obrigatória.").max(15, "A matrícula não pode ter mais que 15 caracteres."),
-  cargo: z.string().min(1, "O cargo é obrigatório.").max(50, "O cargo não pode ter mais que 50 caracteres."),
+  matricula: z
+    .string()
+    .min(1, "A matrícula é obrigatória.")
+    .max(15, "A matrícula não pode ter mais que 15 caracteres."),
+  cargo: z
+    .string()
+    .min(1, "O cargo é obrigatório.")
+    .max(50, "O cargo não pode ter mais que 50 caracteres."),
   salario: z.coerce.number().min(0, "O salário não pode ser negativo."),
-  data_admissao: z.date({ required_error: "A data de admissão é obrigatória.", invalid_type_error: "Data inválida." }),
-  turno: z.string()
-    .max(20, "O turno não pode ter mais que 20 caracteres.").optional().nullable().default(null),
-  carga_horaria: z.coerce.number().int().min(0).optional().nullable().default(null),
+  data_admissao: z.date({
+    required_error: "A data de admissão é obrigatória.",
+    invalid_type_error: "Data inválida.",
+  }),
+  turno: z
+    .string()
+    .max(20, "O turno não pode ter mais que 20 caracteres.")
+    .optional()
+    .nullable()
+    .default(null),
+  carga_horaria: z.coerce
+    .number()
+    .int()
+    .min(0)
+    .optional()
+    .nullable()
+    .default(null),
 });
 
 export type EmployeeForm = z.infer<typeof EmployeeSchema>;
@@ -503,64 +670,114 @@ export type Client = {
 export const ClientSchema = z.object({
   id: z.number().optional(),
   is_juridica: z.coerce.boolean(),
-  nome: z.string({message: "Campo obrigatório."}).min(3, "Nome deve ter mais de 3 caracteres.")
+  nome: z
+    .string({ message: "Campo obrigatório." })
+    .min(3, "Nome deve ter mais de 3 caracteres.")
     .max(80, "O nome/razão social não pode ter mais que 80 caracteres."),
-  apelido: z.string()
-    .max(80, "O apelido/nome fantasia não pode ter mais que 80 caracteres.").optional().nullable().default(null),
-  cpf: z.string({
-    required_error: "Campo obrigatório.",
-    invalid_type_error: "O valor deve ser uma string."
-  })
-  .transform((val) => val.replace(/[^\d]/g, ''))
-  .refine(
-    (val) => val.length === 11 || val.length === 14, {
+  apelido: z
+    .string()
+    .max(80, "O apelido/nome fantasia não pode ter mais que 80 caracteres.")
+    .optional()
+    .nullable()
+    .default(null),
+  cpf: z
+    .string({
+      required_error: "Campo obrigatório.",
+      invalid_type_error: "O valor deve ser uma string.",
+    })
+    .transform((val) => val.replace(/[^\d]/g, ""))
+    .refine((val) => val.length === 11 || val.length === 14, {
       message: "O CPF/CNPJ deve ter 11 ou 14 caracteres.",
-  })
-  .refine(
-    (val) => {
-      if (val.length === 11) {
-        return validarCPF(val);
-      }
-      if (val.length === 14) {
-        return validarCNPJ(val);
-      }
-      return false;
-    }, {
-      message: "O CPF ou CNPJ informado é inválido.",
-    }
-  ),
-  rg: z.string()
-    .max(15, "O RG/IE não pode ter mais que 15 caracteres.").optional().nullable().default(null),
-  data_nascimento: z.date({ required_error: "A data de nascimento é obrigatória.", invalid_type_error: "Data inválida." }),
-  telefone: z.string()
-    .max(15, "O telefone não pode ter mais que 15 caracteres.").optional().nullable().default(null),
-  email: z.string().email("Email inválido.")
-    .max(100, "O email não pode ter mais que 100 caracteres.").optional().nullable().default(null),
-  endereco: z.string({message: "Campo obrigatório."}).min(1, "O endereço é obrigatório.").max(80, "O endereço não pode ter mais que 80 caracteres."),
-  numero: z.string({message: "Campo obrigatório."}).min(1, "O número é obrigatório.").max(6, "O número não pode ter mais que 6 caracteres."),
-  bairro: z.string({message: "Campo obrigatório."}).min(1, "O bairro é obrigatório.").max(80, "O bairro não pode ter mais que 80 caracteres."),
-  cep: z.string({message: "CEP é obrigatório."}).min(1, "O CEP é obrigatório.").max(8, "O CEP não pode ter mais que 8 caracteres."),
+    })
+    .refine(
+      (val) => {
+        if (val.length === 11) {
+          return validarCPF(val);
+        }
+        if (val.length === 14) {
+          return validarCNPJ(val);
+        }
+        return false;
+      },
+      {
+        message: "O CPF ou CNPJ informado é inválido.",
+      },
+    ),
+  rg: z
+    .string()
+    .max(15, "O RG/IE não pode ter mais que 15 caracteres.")
+    .optional()
+    .nullable()
+    .default(null),
+  data_nascimento: z.date({
+    required_error: "A data de nascimento é obrigatória.",
+    invalid_type_error: "Data inválida.",
+  }),
+  telefone: z
+    .string()
+    .max(15, "O telefone não pode ter mais que 15 caracteres.")
+    .optional()
+    .nullable()
+    .default(null),
+  email: z
+    .string()
+    .email("Email inválido.")
+    .max(100, "O email não pode ter mais que 100 caracteres.")
+    .optional()
+    .nullable()
+    .default(null),
+  endereco: z
+    .string({ message: "Campo obrigatório." })
+    .min(1, "O endereço é obrigatório.")
+    .max(80, "O endereço não pode ter mais que 80 caracteres."),
+  numero: z
+    .string({ message: "Campo obrigatório." })
+    .min(1, "O número é obrigatório.")
+    .max(6, "O número não pode ter mais que 6 caracteres."),
+  bairro: z
+    .string({ message: "Campo obrigatório." })
+    .min(1, "O bairro é obrigatório.")
+    .max(80, "O bairro não pode ter mais que 80 caracteres."),
+  cep: z
+    .string({ message: "CEP é obrigatório." })
+    .min(1, "O CEP é obrigatório.")
+    .max(8, "O CEP não pode ter mais que 8 caracteres."),
   limite_credito: z.coerce.number().min(0),
-  cidade_id: z.coerce.number({message: "Campo obrigatório."}).min(1, "A cidade é obrigatória."),
-  cond_pag_id: z.coerce.number({message: "Campo obrigatório."}).min(1, "A condição de pagamento é obrigatória."),
+  cidade_id: z.coerce
+    .number({ message: "Campo obrigatório." })
+    .min(1, "A cidade é obrigatória."),
+  cond_pag_id: z.coerce
+    .number({ message: "Campo obrigatório." })
+    .min(1, "A condição de pagamento é obrigatória."),
   ativo: z.coerce.boolean(),
 });
 
 export type ClientForm = z.infer<typeof ClientSchema>;
 
-
 export const PurchaseItemSchema = z.object({
   id: z.number().optional(),
-  product_id: z.coerce.number({ required_error: "Selecione um produto." }).int().positive(),
-  quantidade: z.coerce.number({ required_error: "A quantidade é obrigatória." }).int().positive("A quantidade deve ser maior que zero."),
-  valor_unitario: z.coerce.number({ required_error: "O valor unitário é obrigatório." }).min(0, "O valor unitário não pode ser negativo."),
+  product_id: z.coerce
+    .number({ required_error: "Selecione um produto." })
+    .int()
+    .positive(),
+  quantidade: z.coerce
+    .number({ required_error: "A quantidade é obrigatória." })
+    .int()
+    .positive("A quantidade deve ser maior que zero."),
+  valor_unitario: z.coerce
+    .number({ required_error: "O valor unitário é obrigatório." })
+    .min(0, "O valor unitário não pode ser negativo."),
 });
 
 export const PurchaseInstallmentSchema = z.object({
   id: z.number().optional(),
   numero_parcela: z.coerce.number().int().positive(),
-  data_vencimento: z.date({ required_error: "A data de vencimento é obrigatória." }),
-  valor_parcela: z.coerce.number().positive("O valor da parcela deve ser maior que zero."),
+  data_vencimento: z.date({
+    required_error: "A data de vencimento é obrigatória.",
+  }),
+  valor_parcela: z.coerce
+    .number()
+    .positive("O valor da parcela deve ser maior que zero."),
   data_pagamento: z.date().optional().nullable(),
   valor_pago: z.coerce.number().optional().nullable(),
   observacao: z.string().optional().nullable(),
@@ -571,17 +788,27 @@ export const PurchaseSchema = z.object({
   modelo: z.string().min(1, "O modelo da nota é obrigatório."),
   serie: z.string().min(1, "A série da nota é obrigatória.").max(3),
   numero_nota: z.string().min(1, "O número da nota é obrigatório.").max(9),
-  supplier_id: z.coerce.number({ required_error: "Selecione um fornecedor." }).int().positive(),
+  supplier_id: z.coerce
+    .number({ required_error: "Selecione um fornecedor." })
+    .int()
+    .positive(),
   data_emissao: z.date({ required_error: "A data de emissão é obrigatória." }),
   data_entrega: z.date().optional().nullable(),
   valor_frete: z.coerce.number().min(0).default(0),
   seguro: z.coerce.number().min(0).default(0),
   despesas: z.coerce.number().min(0).default(0),
-  payment_condition_id: z.coerce.number({ required_error: "Selecione uma condição de pagamento." }).int().positive(),
+  payment_condition_id: z.coerce
+    .number({ required_error: "Selecione uma condição de pagamento." })
+    .int()
+    .positive(),
   motivo_cancelamento: z.string().optional().nullable(),
   ativo: z.coerce.boolean().default(true),
-  items: z.array(PurchaseItemSchema).min(1, "A compra deve ter pelo menos um item."),
-  installments: z.array(PurchaseInstallmentSchema).min(1, "A compra deve ter pelo menos uma parcela."),
+  items: z
+    .array(PurchaseItemSchema)
+    .min(1, "A compra deve ter pelo menos um item."),
+  installments: z
+    .array(PurchaseInstallmentSchema)
+    .min(1, "A compra deve ter pelo menos uma parcela."),
 });
 
 export type Purchase = {
@@ -632,15 +859,31 @@ export type PurchaseInstallment = {
   valor_pago: number | null;
   observacao: string | null;
 
+  payment_method_id: number | null;
+  valor_multa: number | null;
+  valor_juros: number | null;
+  valor_desconto: number | null;
+
   supplier_nome?: string;
   numero_nota?: string;
   purchase_ativo?: boolean;
+  payment_method_descricao?: string;
+
+  default_juros_percent?: number | null;
+  default_multa?: number | null;
+  default_desconto?: number | null;
 };
 
-export type ContasPagarStatus = 'aberto' | 'pago' | 'vencido' | 'cancelado' | 'todas';
+export type ContasPagarStatus =
+  | "aberto"
+  | "pago"
+  | "vencido"
+  | "cancelado"
+  | "todas";
 
 export type PurchaseForm = z.infer<typeof PurchaseSchema>;
 
+<<<<<<< HEAD
 export const SaleItemSchema = z.object({
   product_id: z.coerce.number().min(1, "Selecione um produto."),
   quantidade: z.coerce.number().min(1, "Qtd mínima é 1."),
@@ -666,12 +909,19 @@ export const SaleSchema = z.object({
 export type SaleForm = z.infer<typeof SaleSchema>;
 
 export const BaixaContaReceberSchema = z.object({
+=======
+export const BaixaParcelaSchema = z.object({
+>>>>>>> 7d7252dff8fec4cdc6aeafc662f6273f179a9746
   id: z.number(),
   valor_parcela: z.number(),
   data_vencimento: z.date(),
 
   data_pagamento: z.date({
+<<<<<<< HEAD
     required_error: "A data do recebimento é obrigatória.",
+=======
+    required_error: "A data de pagamento é obrigatória.",
+>>>>>>> 7d7252dff8fec4cdc6aeafc662f6273f179a9746
   }),
   payment_method_id: z.coerce
     .number({
@@ -689,6 +939,7 @@ export const BaixaContaReceberSchema = z.object({
   observacao: z.string().optional().nullable(),
 });
 
+<<<<<<< HEAD
 export type BaixaContaReceberForm = z.infer<typeof BaixaContaReceberSchema>;
 
 // Tipo para listagem (igual ao PurchaseInstallment mas com dados de venda)
@@ -720,3 +971,6 @@ export type SaleInstallmentDTO = {
   default_desconto?: number | null;
   default_payment_method_id?: number | null; // <--- NOVO CAMPO
 };
+=======
+export type BaixaParcelaForm = z.infer<typeof BaixaParcelaSchema>;
+>>>>>>> 7d7252dff8fec4cdc6aeafc662f6273f179a9746
