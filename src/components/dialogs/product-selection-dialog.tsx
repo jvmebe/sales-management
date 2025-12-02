@@ -1,22 +1,24 @@
 "use client";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { Product } from "@/lib/definitions";
 import { DataTable } from "@/components/ui/data-table";
 import { ColumnDef } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
 import { DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Checkbox } from "../ui/checkbox";
+import { Checkbox } from "@/components/ui/checkbox";
+
+type SelectionMode = 'single' | 'multiple';
 
 interface ProductSelectionDialogProps {
   products: Product[];
-  onSelect: (products: Product[]) => void;
+  onSelect: (products: Product | Product[]) => void;
+  selectionMode?: SelectionMode;
 }
 
-export function ProductSelectionDialog({ products, onSelect }: ProductSelectionDialogProps) {
+export function ProductSelectionDialog({ products, onSelect, selectionMode = 'multiple' }: ProductSelectionDialogProps) {
   const [selectedProducts, setSelectedProducts] = useState<Product[]>([]);
 
-  const handleSelect = (product: Product) => {
+  const handleSelectMultiple = (product: Product) => {
     setSelectedProducts(prev =>
       prev.find(p => p.id === product.id)
         ? prev.filter(p => p.id !== product.id)
@@ -25,9 +27,10 @@ export function ProductSelectionDialog({ products, onSelect }: ProductSelectionD
   };
 
   const columns: ColumnDef<Product>[] = [
-    {
+    // Lógica para Multipla Seleção (Checkboxes)
+    ...(selectionMode === 'multiple' ? [{
       id: "select",
-      header: ({ table }) => (
+      header: ({ table }: { table: any }) => (
         <Checkbox
           checked={table.getIsAllPageRowsSelected()}
           onCheckedChange={(value) => {
@@ -37,33 +40,49 @@ export function ProductSelectionDialog({ products, onSelect }: ProductSelectionD
           aria-label="Select all"
         />
       ),
-      cell: ({ row }) => (
+      cell: ({ row }: { row: any }) => (
         <Checkbox
           checked={row.getIsSelected()}
           onCheckedChange={(value) => {
             row.toggleSelected(!!value);
-            handleSelect(row.original);
+            handleSelectMultiple(row.original);
           }}
           aria-label="Select row"
         />
       ),
-    },
+    }] : []),
+
+    { accessorKey: "id", header: "Cód." },
     { accessorKey: "nome", header: "Produto" },
     { accessorKey: "brand_nome", header: "Marca" },
-    { accessorKey: "category_nome", header: "Categoria" },
+    { accessorKey: "estoque", header: "Estoque" },
+    { accessorKey: "valor_venda", header: "Preço", cell: ({row}) => `R$ ${Number(row.original.valor_venda).toFixed(2)}` },
+
+    // Lógica para Seleção Única (Botão na linha)
+    ...(selectionMode === 'single' ? [{
+        id: "actions",
+        cell: ({ row }: { row: any }) => (
+            <Button variant="outline" size="sm" onClick={() => onSelect(row.original)}>
+                Selecionar
+            </Button>
+        )
+    }] : [])
   ];
 
   return (
-    <>
+    <div className="flex flex-col h-full">
       <DialogHeader>
-        <DialogTitle>Selecione os Produtos</DialogTitle>
+        <DialogTitle>Selecione o Produto</DialogTitle>
       </DialogHeader>
-      <div className="py-4">
+      <div className="py-4 flex-1 overflow-auto">
         <DataTable columns={columns} data={products} filterColumn="nome" filterPlaceholder="Filtrar produtos..." />
       </div>
-      <div className="flex justify-end">
-        <Button onClick={() => onSelect(selectedProducts)}>Adicionar Produtos</Button>
-      </div>
-    </>
+
+      {selectionMode === 'multiple' && (
+        <div className="flex justify-end pt-2">
+            <Button onClick={() => onSelect(selectedProducts)}>Adicionar Selecionados</Button>
+        </div>
+      )}
+    </div>
   );
 }

@@ -277,3 +277,57 @@ CREATE TABLE IF NOT EXISTS purchase_installment (
     CONSTRAINT fk_purchase_installment_purchase FOREIGN KEY (purchase_id) REFERENCES purchase(id)
         ON DELETE CASCADE ON UPDATE CASCADE
 );
+
+CREATE TABLE IF NOT EXISTS sale (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    client_id INT NOT NULL,
+    employee_id INT NOT NULL,
+    data_emissao DATE NOT NULL,
+    valor_total DECIMAL(10,2) NOT NULL DEFAULT 0,
+    payment_condition_id INT NOT NULL,
+    ativo BOOLEAN NOT NULL DEFAULT TRUE,
+    data_criacao TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    data_modificacao TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    CONSTRAINT fk_sale_client FOREIGN KEY (client_id) REFERENCES client(id)
+        ON DELETE RESTRICT ON UPDATE CASCADE,
+    CONSTRAINT fk_sale_employee FOREIGN KEY (employee_id) REFERENCES employee(id)
+        ON DELETE RESTRICT ON UPDATE CASCADE,
+    CONSTRAINT fk_sale_payment_condition FOREIGN KEY (payment_condition_id) REFERENCES payment_condition(id)
+        ON DELETE RESTRICT ON UPDATE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS sale_item (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    sale_id INT NOT NULL,
+    product_id INT NOT NULL,
+    quantidade INT NOT NULL,
+    valor_unitario DECIMAL(10,2) NOT NULL,
+    CONSTRAINT fk_sale_item_sale FOREIGN KEY (sale_id) REFERENCES sale(id)
+        ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT fk_sale_item_product FOREIGN KEY (product_id) REFERENCES product(id)
+        ON DELETE RESTRICT ON UPDATE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS sale_installment (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    sale_id INT NOT NULL,
+    numero_parcela INT NOT NULL,
+    data_vencimento DATE NOT NULL,
+    valor_parcela DECIMAL(10,2) NOT NULL,
+
+    data_pagamento DATE NULL,
+    valor_pago DECIMAL(10,2) NULL DEFAULT 0,
+    observacao VARCHAR(255) NULL,
+
+    payment_method_id INT NULL,
+
+    valor_multa DECIMAL(10,2) NULL DEFAULT 0,
+    valor_juros DECIMAL(10,2) NULL DEFAULT 0,
+    valor_desconto DECIMAL(10,2) NULL DEFAULT 0;
+
+
+    CONSTRAINT fk_sale_installment_sale FOREIGN KEY (sale_id) REFERENCES sale(id)
+        ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT fk_sale_installment_payment_method FOREIGN KEY (payment_method_id) REFERENCES payment_method(id)
+        ON DELETE RESTRICT ON UPDATE CASCADE
+);

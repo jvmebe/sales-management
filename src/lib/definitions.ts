@@ -640,3 +640,83 @@ export type PurchaseInstallment = {
 export type ContasPagarStatus = 'aberto' | 'pago' | 'vencido' | 'cancelado' | 'todas';
 
 export type PurchaseForm = z.infer<typeof PurchaseSchema>;
+
+export const SaleItemSchema = z.object({
+  product_id: z.coerce.number().min(1, "Selecione um produto."),
+  quantidade: z.coerce.number().min(1, "Qtd mínima é 1."),
+  valor_unitario: z.coerce.number().min(0.01, "Valor inválido."),
+});
+
+export const SaleInstallmentSchema = z.object({
+  numero_parcela: z.number(),
+  data_vencimento: z.date(),
+  valor_parcela: z.number(),
+});
+
+export const SaleSchema = z.object({
+  id: z.number().optional(),
+  client_id: z.coerce.number({ required_error: "Selecione um cliente." }).min(1),
+  employee_id: z.coerce.number({ required_error: "Selecione um vendedor." }).min(1),
+  payment_condition_id: z.coerce.number({ required_error: "Selecione a condição." }).min(1),
+  data_emissao: z.date({ required_error: "Data obrigatória." }),
+  items: z.array(SaleItemSchema).min(1, "Adicione pelo menos um produto."),
+  installments: z.array(SaleInstallmentSchema).min(1, "Gere as parcelas antes de salvar."),
+});
+
+export type SaleForm = z.infer<typeof SaleSchema>;
+
+export const BaixaContaReceberSchema = z.object({
+  id: z.number(),
+  valor_parcela: z.number(),
+  data_vencimento: z.date(),
+
+  data_pagamento: z.date({
+    required_error: "A data do recebimento é obrigatória.",
+  }),
+  payment_method_id: z.coerce
+    .number({
+      required_error: "A forma de pagamento é obrigatória.",
+    })
+    .min(1, "Selecione uma forma de pagamento."),
+
+  valor_multa: z.coerce.number().min(0).default(0),
+  valor_juros: z.coerce.number().min(0).default(0),
+  valor_desconto: z.coerce.number().min(0).default(0),
+
+  valor_juros_calculado: z.number(),
+  valor_pago_calculado: z.number(),
+
+  observacao: z.string().optional().nullable(),
+});
+
+export type BaixaContaReceberForm = z.infer<typeof BaixaContaReceberSchema>;
+
+// Tipo para listagem (igual ao PurchaseInstallment mas com dados de venda)
+export type SaleInstallmentDTO = {
+  id: number;
+  sale_id: number;
+  numero_parcela: number;
+  data_vencimento: string;
+  valor_parcela: number;
+
+  data_pagamento: string | null;
+  valor_pago: number | null;
+  observacao: string | null;
+
+  payment_method_id: number | null;
+  valor_multa: number | null;
+  valor_juros: number | null;
+  valor_desconto: number | null;
+
+  // JOINs
+  client_nome?: string;
+  sale_id_visual?: number;
+  sale_ativo?: boolean;
+  payment_method_descricao?: string;
+
+  // Dados calculados / Padrões
+  default_juros_percent?: number | null;
+  default_multa?: number | null;
+  default_desconto?: number | null;
+  default_payment_method_id?: number | null; // <--- NOVO CAMPO
+};
